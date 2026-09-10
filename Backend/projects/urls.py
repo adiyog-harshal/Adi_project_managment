@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import ProjectListCreateView, ProjectDetailView
 
 from .views import(
@@ -21,5 +21,11 @@ urlpatterns = [
         "project-comments/<int:pk>/",
         ProjectCommentDetailView.as_view(),
         name="project-comment-detail"
+    ),
+
+# ProjectMember 
+    path(
+        "<int:project_id>/members/",
+        include("projects.ProjectMember.urls")
     ),
 ]

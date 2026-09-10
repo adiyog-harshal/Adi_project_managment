@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User 
 
+from .ProjectMember .models import ProjectMember
+
 
 
 # Create your models here.
