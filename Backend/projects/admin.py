@@ -17,7 +17,7 @@ class ProjectCommentAdmin(admin.ModelAdmin):
     search_fields = (
         "message",
         "user__username",
-        "project__name",
+        "project__project_name",
     )
 
     ordering = ("-created_at",)

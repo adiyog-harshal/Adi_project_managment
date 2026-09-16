@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'projects',
     'tasks',
     'designations',
+    'milestones',
+    
+    
 ]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
