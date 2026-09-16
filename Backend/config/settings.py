@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'teams',
     'users',
     'milestones',
+    'tasks',
     
 ]
 
