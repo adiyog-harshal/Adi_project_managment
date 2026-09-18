@@ -2,11 +2,13 @@ from django.urls import path
 from .views import (
     ProjectListCreateView,
     ProjectDetailView,
-   
-   )
-from .views import (
     NotificationListView,
     NotificationReadView,
+    ResourceListCreateView,
+    ResourceDetailView,
+    AttachmentListCreateView,
+    AttachmentDetailView,
+    ProjectCommentListCreateView,
 )
 
 
@@ -25,4 +27,31 @@ urlpatterns = [
         NotificationReadView.as_view(),
         name='notification-read'
     ),
+    path(
+        'resources/',
+        ResourceListCreateView.as_view(),
+        name='resource-list-create'
+    ),
+
+    path(
+        'resources/<int:pk>/',
+        ResourceDetailView.as_view(),
+        name='resource-detail'
+    ),
+    path(
+    'attachments/',
+    AttachmentListCreateView.as_view(),
+    name='attachment-list-create'
+),
+
+    path(
+    'attachments/<int:pk>/',
+    AttachmentDetailView.as_view(),
+    name='attachment-detail'
+),
+   path(
+    '<int:project_id>/comments/',
+    ProjectCommentListCreateView.as_view(),
+    name='project-comment-list-create'
+),
 ]

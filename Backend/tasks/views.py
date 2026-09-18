@@ -4,13 +4,11 @@ from rest_framework.exceptions import PermissionDenied
 
 from .models import Task, TaskComment
 from .serializers import TaskSerializer, TaskCommentSerializer
+
 from helpers import (
     notify_task_assigned,
     notify_task_reassigned,
 )
-
-
-# Create your views here.
 
 
 class TaskListCreateView(generics.ListCreateAPIView):
@@ -18,15 +16,13 @@ class TaskListCreateView(generics.ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
-    
+
     def perform_create(self, serializer):
 
         task = serializer.save()
 
-        if task.assigned_to :
+        if task.assigned_to:
             notify_task_assigned(task)
-
-        
 
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -34,32 +30,28 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
-    
-    def perform_update(self,serializer):
-        
-        #get the assignee before updatintg the task
+
+    def perform_update(self, serializer):
+
         old_assignee = self.get_object().assigned_to
-        
-        #save the updated task
+
         task = serializer.save()
-        
-        #get the assignee after updating the task
+
         new_assignee = task.assigned_to
-        
-        #first-time assignment
+
         if old_assignee is None and new_assignee is not None:
             notify_task_assigned(task)
 
-        #reassignment
-        elif(
+        elif (
             old_assignee is not None
             and new_assignee is not None
             and old_assignee != new_assignee
         ):
-            notify_task_reassignment(
+            notify_task_reassigned(
                 task,
                 old_assignee,
             )
+
 
 class TaskCommentListCreateView(
     generics.ListCreateAPIView

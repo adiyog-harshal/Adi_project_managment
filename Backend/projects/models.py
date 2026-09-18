@@ -87,3 +87,72 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.recipient.username}: {self.message}"
+
+class Attachment(models.Model):
+
+    file = models.FileField(
+        upload_to='attachments/'
+    )
+
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='attachments',
+        null=True,
+        blank=True
+    )
+
+    task = models.ForeignKey(
+        'tasks.Task',
+        on_delete=models.CASCADE,
+        related_name='attachments',
+        null=True,
+        blank=True
+    )
+
+    comment = models.ForeignKey(
+        'tasks.TaskComment',
+        on_delete=models.CASCADE,
+        related_name='attachments',
+        null=True,
+        blank=True
+    )
+
+    uploaded_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='uploaded_attachments'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.file.name
+class ProjectComment(models.Model):
+
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='project_comments'
+    )
+
+    comment = models.TextField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return self.comment
