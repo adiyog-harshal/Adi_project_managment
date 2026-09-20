@@ -44,9 +44,12 @@ INSTALLED_APPS = [
     'projects',
     'tasks',
     'designations',
+    'role',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,6 +59,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -82,9 +89,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'project_management',
+        'NAME': 'project_management_db',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD':'',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }

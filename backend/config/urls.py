@@ -20,6 +20,7 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import ( 
     TokenObtainPairView, 
     TokenRefreshView )
+from role.views import RoleDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,5 +32,8 @@ urlpatterns = [
     path('api/projects/', include('projects.urls')),
     path('api/tasks/', include('tasks.urls')),
     path('api/designations/', include('designations.urls')),
+    path('api/roles/', include('role.urls')),
+    path('api/role/', include('role.urls')),
+    path('api/role/<int:pk>', RoleDetailView.as_view(), name='role-detail-no-slash'),
     
 ]
