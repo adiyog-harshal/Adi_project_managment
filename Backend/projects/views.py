@@ -1,27 +1,26 @@
-from django.shortcuts import render
-
-from django.contrib.auth.models import User
-
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-
-from .models import Project
-from .serializers import ProjectSerializer
-
-from .models import ProjectComment
-from .serializers import ProjectCommentSerializer
-
 from rest_framework.exceptions import PermissionDenied
 
+from .models import Project, ProjectComment, Notification
+from .serializers import (
+    ProjectSerializer,
+    ProjectCommentSerializer,
+    NotificationSerializer,
+)
 
-# Create your views here.
+from helpers import mark_notification_as_read
+
+
 class ProjectListCreateView(generics.ListCreateAPIView):
+
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
+
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
@@ -46,8 +45,6 @@ class ProjectCommentListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
 
         project_id = self.kwargs["project_id"]
-
-        # user = User.objects.get(id=1)
 
         serializer.save(
             project_id=project_id,
@@ -88,8 +85,35 @@ class ProjectCommentDetailView(
             )
 
         instance.delete()
-        
 
 
+class NotificationListView(generics.ListAPIView):
+
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+
+        return Notification.objects.filter(
+            recipient=self.request.user
+        ).order_by('-created_at')
 
 
+class NotificationReadView(generics.UpdateAPIView):
+
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+
+        return Notification.objects.filter(
+            recipient=self.request.user
+        )
+
+    def perform_update(self, serializer):
+
+        notification = serializer.save(
+            is_read=True
+        )
+
+        mark_notification_as_read(notification)
