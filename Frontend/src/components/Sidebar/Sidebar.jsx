@@ -60,9 +60,19 @@ const Sidebar = () => {
                     }
                 >
 
-                    <folderKanban size={20} />
+                    <FolderKanban size={20} />
 
                     <span>Projects</span>
+                </NavLink>
+
+                <NavLink
+                    to="/designations"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <Badge size={20} />
+                    <span>Designations</span>
                 </NavLink>
 
                 <a href="#" className="sidebar-link">

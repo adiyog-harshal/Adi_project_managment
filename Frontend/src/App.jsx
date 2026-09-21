@@ -9,6 +9,7 @@ import {
 import Sidebar from "./components/Sidebar/Sidebar";
 
 import Projects from "./pages/Projects/projects";
+import Designations from "./pages/Designations/designations";
 
 import "./App.css";
 
@@ -52,6 +53,11 @@ function App() {
                     <Route
                         path="/projects"
                         element={<Projects />}
+                    />
+
+                    <Route
+                        path="/designations"
+                        element={<Designations />}
                     />
 
                 </Routes>
