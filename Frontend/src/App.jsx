@@ -1,12 +1,15 @@
-import { useState } from 'react'
-
-import './App.css'
-import AppRoutes from './routes/AppRoutes'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Roles from "./pages/Roles";
 
 function App() {
-  return <AppRoutes />
-
-
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Roles />} />
+                <Route path="/roles" element={<Roles />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
-export default App
+export default App;

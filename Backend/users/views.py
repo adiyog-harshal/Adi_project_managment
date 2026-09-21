@@ -1,4 +1,4 @@
-# from django.shortcuts import render
+
 from django.contrib.auth.models import User
 
 from rest_framework.views import APIView
@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializers import UserSerializer
 
-# Create your views here.
+
 class ProfileView(APIView):
 
     permission_classes = [IsAuthenticated]

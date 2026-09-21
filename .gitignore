@@ -1,3 +1,5 @@
+venv
+venv/*
 # Backend
 Backend/venv/
 Backend/__pycache__/
