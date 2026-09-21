@@ -67,7 +67,6 @@
 .add-role-btn:hover {
     background: var(--gold-400);
 }
-
 /* SUMMARY */
 
 .summary-grid {
@@ -495,4 +494,35 @@
     .roles-table td {
         padding: 13px 14px;
     }
+}
+
+
+/* Add Role Button */
+
+.add-role-btn {
+    height: 42px;
+
+    padding: 0 16px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #6c5ce7;
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+.add-role-btn:hover {
+    background: #5b4bd6;
 }

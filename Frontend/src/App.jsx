@@ -10,6 +10,8 @@ import Sidebar from "./components/Sidebar/Sidebar";
 
 import Projects from "./pages/Projects/projects";
 import Designations from "./pages/Designations/designations";
+import Roles from "./pages/Roles";
+import Login from "./pages/Login/login";
 
 import "./App.css";
 
@@ -39,30 +41,59 @@ function App() {
 
         <BrowserRouter>
 
-            <Sidebar />
+            <Routes>
 
-            <main className="main-content">
+                {/* LOGIN */}
 
-                <Routes>
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
 
-                    <Route
-                        path="/"
-                        element={<Dashboard />}
-                    />
+                {/* MAIN PMS */}
 
-                    <Route
-                        path="/projects"
-                        element={<Projects />}
-                    />
+                <Route
+                    path="/*"
+                    element={
 
-                    <Route
-                        path="/designations"
-                        element={<Designations />}
-                    />
+                        <>
 
-                </Routes>
+                            <Sidebar />
 
-            </main>
+                            <main className="main-content">
+
+                                <Routes>
+
+                                    <Route
+                                        path="/"
+                                        element={<Dashboard />}
+                                    />
+
+                                    <Route
+                                        path="/projects"
+                                        element={<Projects />}
+                                    />
+
+                                    <Route
+                                        path="/designations"
+                                        element={<Designations />}
+                                    />
+
+                                    <Route
+                                        path="/roles"
+                                        element={<Roles />}
+                                    />
+
+                                </Routes>
+
+                            </main>
+
+                        </>
+
+                    }
+                />
+
+            </Routes>
 
         </BrowserRouter>
 

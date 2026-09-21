@@ -9,6 +9,7 @@ import {
     Users,
     Badge,
     Settings,
+    ShieldCheck,
     LogOut
 } from "lucide-react";
 
@@ -73,6 +74,16 @@ const Sidebar = () => {
                 >
                     <Badge size={20} />
                     <span>Designations</span>
+                </NavLink>
+
+                <NavLink
+                    to="/roles"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <ShieldCheck size={20} />
+                    <span>Roles</span>
                 </NavLink>
 
                 <a href="#" className="sidebar-link">
