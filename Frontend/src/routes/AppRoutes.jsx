@@ -1,4 +1,5 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom';
+import Login from "../pages/Login/login";
 
 function AppRoutes() {
     return (
@@ -24,6 +25,7 @@ function AppRoutes() {
 
 
 
-    )
+    );
 }
-export default AppRoutes
+
+export default AppRoutes;

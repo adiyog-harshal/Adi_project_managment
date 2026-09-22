@@ -19,30 +19,8 @@ function Roles() {
             description: "Full access to the PMS system",
             status: "Active",
         },
-        {
-            id: 2,
-            name: "Project Manager",
-            description: "Manage projects, tasks and team members",
-            status: "Active",
-        },
-        {
-            id: 3,
-            name: "Team Lead",
-            description: "Manage team tasks and project activities",
-            status: "Active",
-        },
-        {
-            id: 4,
-            name: "Employee",
-            description: "Access assigned projects and tasks",
-            status: "Active",
-        },
-        {
-            id: 5,
-            name: "Viewer",
-            description: "Read-only access to project information",
-            status: "Inactive",
-        },
+        
+        
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -147,8 +125,7 @@ function Roles() {
                     </div>
 
                     <p className="page-description">
-                        Manage user roles and access permissions
-                        across your PMS.
+                        Manage roles and permissions
                     </p>
 
                 </div>
