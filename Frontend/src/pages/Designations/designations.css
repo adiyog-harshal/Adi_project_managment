@@ -1,0 +1,587 @@
+.designations-page {
+    padding: 30px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.designations-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.designations-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #202124;
+}
+
+.designations-header p {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+
+/* =========================
+   ADD BUTTON
+========================= */
+
+.add-designation-btn {
+    height: 42px;
+    padding: 0 16px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #6c5ce7;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.add-designation-btn:hover {
+    background: #5b4bd6;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.designations-toolbar {
+    margin-bottom: 20px;
+}
+
+.designation-search-box {
+    width: 320px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 0 13px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+    box-sizing: border-box;
+
+    color: #9ca3af;
+}
+
+.designation-search-box svg {
+    width: 18px;
+    height: 18px;
+
+    flex-shrink: 0;
+}
+
+.designation-search-box input {
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    font-size: 14px;
+    color: #202124;
+
+    box-sizing: border-box;
+}
+
+.designation-search-box input::placeholder {
+    color: #9ca3af;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.designations-card {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.designation-table-header,
+.designation-table-row {
+    display: grid;
+
+    grid-template-columns:
+        2fr
+        2fr
+        1fr
+        1.2fr
+        0.5fr;
+
+    align-items: center;
+}
+
+.designation-table-header {
+    min-height: 52px;
+
+    padding: 0 20px;
+
+    background: #f9fafb;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #6b7280;
+
+    box-sizing: border-box;
+}
+
+.designation-table-row {
+    min-height: 72px;
+
+    padding: 0 20px;
+
+    border-bottom: 1px solid #f0f0f0;
+
+    font-size: 14px;
+
+    color: #4b5563;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================
+   DESIGNATION NAME
+========================= */
+
+.designation-name {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.designation-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: #eeeafd;
+
+    color: #6c5ce7;
+}
+
+.designation-name strong {
+    display: block;
+
+    font-size: 14px;
+
+    color: #202124;
+}
+
+.designation-name small {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 11px;
+
+    color: #9ca3af;
+}
+
+.designation-description {
+    padding-right: 15px;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.designation-status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.designation-status.active {
+    background: #eaf8ef;
+    color: #2e8b57;
+}
+
+.designation-status.inactive {
+    background: #fcecec;
+    color: #dc3545;
+}
+
+
+/* =========================
+   ACTION
+========================= */
+
+.designation-action-menu button {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    background: transparent;
+
+    color: #6b7280;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+.designation-action-menu button:hover {
+    background: #f3f4f6;
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty-designations {
+    padding: 25px;
+
+    text-align: center;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+.designations-error {
+    margin-bottom: 20px;
+
+    padding: 12px 15px;
+
+    border-radius: 8px;
+
+    background: #fff1f1;
+
+    color: #dc3545;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   MODAL OVERLAY
+========================= */
+
+.designation-modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1000;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.designation-modal {
+    width: 100%;
+    max-width: 720px;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.18);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================
+   MODAL HEADER
+========================= */
+
+.designation-modal-header {
+    width: 100%;
+    height: 65px;
+
+    padding: 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid #eeeeee;
+
+    box-sizing: border-box;
+}
+
+.designation-modal-header h2 {
+    margin: 0;
+
+    font-size: 19px;
+    font-weight: 600;
+
+    color: #202124;
+}
+
+.designation-close-btn {
+    width: 32px;
+    height: 32px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #6b7280;
+
+    font-size: 25px;
+
+    line-height: 1;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+.designation-close-btn:hover {
+    background: #f3f4f6;
+
+    color: #202124;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.designation-form {
+    width: 100%;
+
+    padding: 22px 26px 24px;
+
+    box-sizing: border-box;
+}
+
+.designation-form-group {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 14px;
+
+    box-sizing: border-box;
+}
+
+.designation-form-group label {
+    margin-bottom: 7px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #374151;
+}
+
+.designation-form-group label span {
+    color: #dc3545;
+}
+
+
+/* INPUT / TEXTAREA / SELECT */
+
+.designation-form-group input,
+.designation-form-group textarea,
+.designation-form-group select {
+    width: 100%;
+    max-width: 100%;
+
+    padding: 10px 12px;
+
+    border: 1px solid #dfe3e8;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #202124;
+
+    box-sizing: border-box;
+}
+
+
+/* INPUT + SELECT */
+
+.designation-form-group input,
+.designation-form-group select {
+    height: 42px;
+}
+
+
+/* TEXTAREA */
+
+.designation-form-group textarea {
+    min-height: 80px;
+
+    resize: none;
+}
+
+
+/* FOCUS */
+
+.designation-form-group input:focus,
+.designation-form-group textarea:focus,
+.designation-form-group select:focus {
+    border-color: #6c5ce7;
+}
+
+
+/* =========================
+   FORM BUTTONS
+========================= */
+
+.designation-form-actions {
+    width: 100%;
+
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding-top: 18px;
+
+    margin-top: 5px;
+
+    border-top: 1px solid #eeeeee;
+
+    box-sizing: border-box;
+}
+
+.designation-cancel-btn,
+.designation-create-btn {
+    height: 40px;
+
+    padding: 0 18px;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+}
+
+
+/* CANCEL */
+
+.designation-cancel-btn {
+    border: 1px solid #dfe3e8;
+
+    background: #ffffff;
+
+    color: #4b5563;
+}
+
+.designation-cancel-btn:hover {
+    background: #f8f9fa;
+}
+
+
+/* CREATE */
+
+.designation-create-btn {
+    border: none;
+
+    background: #6c5ce7;
+
+    color: #ffffff;
+}
+
+.designation-create-btn:hover {
+    background: #5b4bd6;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 650px) {
+
+    .designation-modal-overlay {
+        padding: 12px;
+    }
+
+    .designation-modal {
+        max-width: 100%;
+    }
+
+    .designation-form {
+        padding: 18px;
+    }
+
+}

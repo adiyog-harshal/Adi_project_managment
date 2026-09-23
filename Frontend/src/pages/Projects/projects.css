@@ -1,0 +1,592 @@
+.projects-page {
+    padding: 30px;
+}
+
+
+/* Header */
+
+.projects-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 25px;
+}
+
+
+.projects-header h1 {
+    margin: 0;
+
+    font-size: 24px;
+    font-weight: 600;
+
+    color: #202124;
+}
+
+
+.projects-header p {
+    margin: 6px 0 0;
+
+    font-size: 14px;
+
+    color: #6b7280;
+}
+
+
+/* Add Project Button */
+
+.add-project-btn {
+    height: 42px;
+
+    padding: 0 16px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #6c5ce7;
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+.add-project-btn:hover {
+    background: #5b4bd6;
+}
+
+
+/* Toolbar */
+
+.projects-toolbar {
+    margin-bottom: 20px;
+}
+
+
+.search-box {
+    width: 320px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 13px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 8px;
+
+    box-sizing: border-box;
+
+    color: #9ca3af;
+}
+
+
+.search-box input {
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    font-size: 14px;
+
+    color: #202124;
+
+    background: transparent;
+}
+
+
+.search-box input::placeholder {
+    color: #9ca3af;
+}
+
+
+/* Project Card */
+
+.projects-card {
+    background: white;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+
+/* Table */
+
+.table-header,
+.table-row {
+    display: grid;
+
+    grid-template-columns:
+        2fr
+        1.3fr
+        1.2fr
+        1fr
+        0.5fr;
+
+    align-items: center;
+}
+
+
+.table-header {
+    min-height: 52px;
+
+    padding: 0 20px;
+
+    background: #f9fafb;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color: #6b7280;
+}
+
+
+.table-row {
+    min-height: 72px;
+
+    padding: 0 20px;
+
+    border-bottom: 1px solid #f0f0f0;
+
+    font-size: 14px;
+
+    color: #4b5563;
+}
+
+
+/* Project Name */
+
+.project-name {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.project-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #eeeafd;
+
+    color: #6c5ce7;
+}
+
+
+.project-name strong {
+    display: block;
+
+    font-size: 14px;
+
+    color: #202124;
+}
+
+
+.project-name small {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 11px;
+
+    color: #9ca3af;
+}
+
+
+/* Status */
+
+.status-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
+
+
+.active-status {
+    background: #eaf8ef;
+
+    color: #2e8b57;
+}
+
+
+/* Action */
+
+.action-menu button {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    background: transparent;
+
+    color: #6b7280;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+
+.action-menu button:hover {
+    background: #f3f4f6;
+}
+
+
+/* Empty */
+
+.empty-projects {
+    padding: 20px;
+
+    text-align: center;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+/* ============================= */
+/* CREATE PROJECT FORM */
+/* ============================= */
+
+/* ============================= */
+/* CREATE PROJECT FORM */
+/* ============================= */
+
+
+/* ============================= */
+/* CREATE PROJECT FORM */
+/* ============================= */
+
+/* ================================= */
+/* ADD PROJECT FORM */
+/* ================================= */
+
+/* ========================================= */
+/* ADD PROJECT FORM */
+/* ========================================= */
+
+/* ========================================= */
+/* ADD PROJECT MODAL */
+/* ========================================= */
+
+.project-form-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: rgba(0, 0, 0, 0.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1000;
+
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+/* ========================================= */
+/* FORM CARD */
+/* ========================================= */
+
+.project-form-card {
+    width: 100%;
+    max-width: 650px;
+
+    max-height: 90vh;
+    overflow-y: auto;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    padding: 28px 32px;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ========================================= */
+/* FORM HEADER */
+/* ========================================= */
+
+.project-form-header {
+    margin-bottom: 24px;
+}
+
+.project-form-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 600;
+
+    color: #202124;
+}
+
+.project-form-header p {
+    margin: 6px 0 0;
+
+    font-size: 13px;
+
+    color: #6b7280;
+}
+
+
+/* ========================================= */
+/* ERROR */
+/* ========================================= */
+
+.project-form-error {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 18px;
+
+    padding: 10px 12px;
+
+    border: 1px solid #f3c4c4;
+
+    border-radius: 7px;
+
+    background: #fdeaea;
+
+    color: #d64545;
+
+    font-size: 13px;
+}
+
+
+/* ========================================= */
+/* FORM GRID */
+/* ========================================= */
+
+.project-form-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    column-gap: 22px;
+
+    row-gap: 18px;
+}
+
+
+/* ========================================= */
+/* FORM FIELD */
+/* ========================================= */
+
+.form-group {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.form-group label {
+    margin: 0;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    color: #374151;
+}
+
+
+/* ========================================= */
+/* INPUTS */
+/* ========================================= */
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    height: 42px;
+
+    box-sizing: border-box;
+
+    padding: 0 12px;
+
+    border: 1px solid #d9dee7;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #202124;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.form-group input::placeholder {
+    color: #9ca3af;
+}
+
+
+/* ========================================= */
+/* FOCUS */
+/* ========================================= */
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #6c5ce7;
+
+    box-shadow:
+        0 0 0 2px rgba(108, 92, 231, 0.08);
+}
+
+
+/* ========================================= */
+/* BUTTONS */
+/* ========================================= */
+
+.project-form-actions {
+    width: 100%;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 24px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #eeeeee;
+}
+
+
+/* CANCEL */
+
+.cancel-project-btn {
+    height: 40px;
+
+    padding: 0 18px;
+
+    border: 1px solid #d9dee7;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #4b5563;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.cancel-project-btn:hover {
+    background: #f9fafb;
+}
+
+
+/* SAVE */
+
+.create-project-btn {
+    height: 40px;
+
+    padding: 0 20px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #6c5ce7;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.create-project-btn:hover {
+    background: #5b4bd6;
+}
+
+
+/* ========================================= */
+/* MOBILE */
+/* ========================================= */
+
+@media (max-width: 768px) {
+
+    .project-form-wrapper {
+        padding: 15px;
+    }
+
+    .project-form-card {
+        padding: 22px;
+
+        max-height: 92vh;
+    }
+
+    .project-form-grid {
+        grid-template-columns: 1fr;
+
+        row-gap: 16px;
+    }
+
+}

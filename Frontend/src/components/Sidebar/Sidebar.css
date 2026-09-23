@@ -1,0 +1,61 @@
+/* MAIN DESIGN */
+.sidebar {
+    background: #1c1742 !important;
+}
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+
+    display: flex;
+    flex-direction: column;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    box-sizing: border-box;
+}
+
+/* NAVIGATION CSS */
+
+.sidebar-nav {
+    padding: 25px 14px;
+    flex: 1;
+}
+
+.sidebar-link {
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 0 13px;
+
+    margin-bottom: 5px;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    color: #606770;
+
+    font-size: 14px;
+
+    transition: 0.2s;
+}
+
+.sidebar-link:hover {
+    background: #f4f2ff;
+    color: #6c5ce7;
+}
+
+.sidebar-link.active {
+    background: #eeeafd;
+    color: #6c5ce7;
+
+    font-weight: 600;
+}

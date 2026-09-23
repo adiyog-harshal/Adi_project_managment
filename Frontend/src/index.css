@@ -1,0 +1,790 @@
+:root {
+    --navy-950: #0a1930;
+    --navy-900: #0f2545;
+    --navy-800: #17335f;
+    --navy-700: #22447a;
+
+    --gold-500: #c9962e;
+    --gold-400: #dcae52;
+    --gold-050: #fbf3e3;
+
+    --ink: #1a2233;
+    --slate-500: #5b6478;
+    --slate-300: #b7bdc9;
+
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+
+    --success: #1f9d55;
+    --success-bg: #e8f8ee;
+
+    --danger: #d64545;
+    --danger-bg: #fdeaea;
+
+    --radius: 12px;
+
+    --shadow:
+        0 1px 2px rgba(15, 37, 69, 0.06),
+        0 8px 24px rgba(15, 37, 69, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: var(--bg);
+    color: var(--ink);
+}
+
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* =========================
+   APP LAYOUT
+========================= */
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+
+    background: var(--navy-950);
+
+    color: white;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    padding: 24px 14px;
+}
+
+.brand {
+    padding: 5px 15px 30px;
+}
+
+.brand-name {
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+.brand-name span {
+    color: var(--gold-400);
+}
+
+.brand-subtitle {
+    margin-top: 5px;
+
+    color: #aebbd0;
+
+    font-size: 11px;
+}
+
+/* Sidebar links */
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sidebar-link {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    color: #c7d1df;
+
+    font-size: 14px;
+
+    transition: 0.2s;
+}
+
+.sidebar-link:hover {
+    background: var(--navy-800);
+    color: white;
+}
+
+.sidebar-link.active {
+    background: var(--navy-800);
+
+    color: white;
+
+    box-shadow:
+        inset 3px 0 0 var(--gold-400);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main-content {
+    margin-left: 250px;
+
+    width: calc(100% - 250px);
+
+    min-height: 100vh;
+
+    padding: 35px;
+}
+
+/* =========================
+   ROLES PAGE
+========================= */
+
+.roles-page {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+
+.page-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 28px;
+}
+
+.page-title-wrapper {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.page-title-wrapper h1 {
+    margin: 0;
+
+    font-size: 27px;
+
+    color: var(--navy-950);
+}
+
+.page-title-icon {
+    color: var(--gold-500);
+}
+
+.page-description {
+    margin: 8px 0 0;
+
+    color: var(--slate-500);
+
+    font-size: 14px;
+}
+
+/* Add button */
+
+.add-role-button {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    border: none;
+
+    background: var(--navy-900);
+
+    color: white;
+
+    padding: 11px 18px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+.add-role-button:hover {
+    background: var(--navy-800);
+}
+
+/* =========================
+   CARD
+========================= */
+
+.roles-card {
+    background: var(--surface);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 20px 24px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    border-bottom: 1px solid #edf0f4;
+}
+
+.card-header h2 {
+    margin: 0;
+
+    color: var(--navy-950);
+
+    font-size: 18px;
+}
+
+.card-header p {
+    margin: 5px 0 0;
+
+    font-size: 13px;
+
+    color: var(--slate-500);
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-box {
+    width: 270px;
+
+    height: 40px;
+
+    border: 1px solid #dfe3ea;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 12px;
+
+    color: var(--slate-500);
+}
+
+.search-box input {
+    width: 100%;
+
+    border: none;
+
+    outline: none;
+
+    font-size: 13px;
+
+    color: var(--ink);
+}
+
+.search-box:focus-within {
+    border-color: var(--gold-500);
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.table-container {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f8f9fb;
+}
+
+th {
+    padding: 14px 24px;
+
+    text-align: left;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+    color: var(--slate-500);
+
+    border-bottom: 1px solid #edf0f4;
+}
+
+td {
+    padding: 16px 24px;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid #edf0f4;
+
+    color: var(--ink);
+}
+
+tbody tr:hover {
+    background: #fafbfd;
+}
+
+/* Role */
+
+.role-name {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-weight: 600;
+
+    color: var(--navy-900);
+}
+
+.role-icon {
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: var(--gold-050);
+
+    color: var(--gold-500);
+}
+
+.description-cell {
+    color: var(--slate-500);
+
+    max-width: 450px;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.active-status {
+    color: var(--success);
+
+    background: var(--success-bg);
+}
+
+.inactive-status {
+    color: var(--danger);
+
+    background: var(--danger-bg);
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+
+.action-buttons {
+    display: flex;
+
+    gap: 8px;
+}
+
+.edit-button,
+.delete-button {
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: white;
+}
+
+.edit-button {
+    border: 1px solid #dce2eb;
+
+    color: var(--navy-700);
+}
+
+.edit-button:hover {
+    background: #f1f5fa;
+}
+
+.delete-button {
+    border: 1px solid #f0cccc;
+
+    color: var(--danger);
+}
+
+.delete-button:hover {
+    background: var(--danger-bg);
+}
+
+/* Empty */
+
+.empty-state {
+    text-align: center;
+
+    padding: 50px !important;
+
+    color: var(--slate-500);
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(10, 25, 48, 0.55);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 1000;
+
+    padding: 20px;
+}
+
+.role-modal {
+    width: 100%;
+
+    max-width: 500px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    padding: 22px 24px;
+
+    border-bottom: 1px solid #edf0f4;
+}
+
+.modal-header h2 {
+    margin: 0;
+
+    color: var(--navy-950);
+
+    font-size: 20px;
+}
+
+.modal-header p {
+    margin: 5px 0 0;
+
+    color: var(--slate-500);
+
+    font-size: 13px;
+}
+
+.close-button {
+    border: none;
+
+    background: transparent;
+
+    color: var(--slate-500);
+
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 6px;
+}
+
+.close-button:hover {
+    background: #f1f3f6;
+}
+
+/* Form */
+
+.role-modal form {
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--navy-900);
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+
+    border: 1px solid #dce1e8;
+
+    border-radius: 8px;
+
+    padding: 11px 12px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    color: var(--ink);
+
+    background: white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--gold-500);
+
+    box-shadow:
+        0 0 0 3px rgba(201, 150, 46, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+/* Modal actions */
+
+.modal-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding-top: 5px;
+}
+
+.cancel-button {
+    padding: 10px 17px;
+
+    border: 1px solid #dce1e8;
+
+    background: white;
+
+    color: var(--slate-500);
+
+    border-radius: 7px;
+
+    font-size: 14px;
+}
+
+.cancel-button:hover {
+    background: #f6f7f9;
+}
+
+.save-button {
+    padding: 10px 17px;
+
+    border: none;
+
+    background: var(--navy-900);
+
+    color: white;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+.save-button:hover {
+    background: var(--navy-800);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+        width: 210px;
+    }
+
+    .main-content {
+        margin-left: 210px;
+
+        width: calc(100% - 210px);
+
+        padding: 25px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+
+        gap: 20px;
+    }
+
+    .card-header {
+        align-items: flex-start;
+
+        gap: 15px;
+
+        flex-direction: column;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .sidebar {
+        width: 70px;
+
+        padding: 20px 8px;
+    }
+
+    .brand {
+        padding: 5px 5px 25px;
+    }
+
+    .brand-name {
+        font-size: 18px;
+
+        text-align: center;
+    }
+
+    .brand-subtitle {
+        display: none;
+    }
+
+    .sidebar-link {
+        justify-content: center;
+
+        padding: 12px;
+    }
+
+    .sidebar-link span {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 70px;
+
+        width: calc(100% - 70px);
+
+        padding: 20px 14px;
+    }
+
+    .page-header {
+        flex-direction: column;
+    }
+
+    .add-role-button {
+        width: 100%;
+
+        justify-content: center;
+    }
+
+    .page-title-wrapper h1 {
+        font-size: 22px;
+    }
+
+    th,
+    td {
+        padding: 12px 15px;
+    }
+}
