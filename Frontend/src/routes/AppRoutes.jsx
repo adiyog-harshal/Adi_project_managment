@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Login from "../pages/Login/login";
-
+import Users from "../pages/Users";
 function AppRoutes() {
     return (
         <Routes>
@@ -8,7 +8,7 @@ function AppRoutes() {
             <Route path="/login" element={<Login />} />
 
             <Route path="/dashboard" element={<h1>Dashboard</h1>} />
-            <Route path="/users" element={<h1>Users</h1>} />
+            <Route path="/users" element={<Users />} />
             <Route path="/teams" element={<h1>Teams</h1>} />
             <Route path="/projects" element={<h1>Projects</h1>} />
             <Route path="/tasks" element={<h1>Tasks</h1>} />

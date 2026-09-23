@@ -65,6 +65,15 @@ const Sidebar = () => {
 
                     <span>Projects</span>
                 </NavLink>
+                <NavLink
+                    to="/users"
+                    className={({ isActive }) =>
+                    `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                <Users size={20} />
+                <span>Users</span>
+                </NavLink>
 
                 <NavLink
                     to="/designations"

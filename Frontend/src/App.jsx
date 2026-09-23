@@ -12,6 +12,7 @@ import Projects from "./pages/Projects/projects";
 import Designations from "./pages/Designations/designations";
 import Roles from "./pages/Roles";
 import Login from "./pages/Login/login";
+import Users from "./pages/Users";
 
 import "./App.css";
 
@@ -72,6 +73,12 @@ function App() {
                                     <Route
                                         path="/projects"
                                         element={<Projects />}
+
+                                    />
+
+                                    <Route
+                                         path="/users"
+                                         element={<Users />}
                                     />
 
                                     <Route
