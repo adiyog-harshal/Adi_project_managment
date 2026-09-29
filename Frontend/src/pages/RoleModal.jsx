@@ -56,17 +56,7 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
                             onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                         />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="role-description">Description</label>
-                        <textarea
-                            id="role-description"
-                            required
-                            rows="3"
-                            value={formData.description}
-                            onChange={(event) => setFormData({ ...formData, description: event.target.value })}
-                        />
-                    </div>
-                    <div className="form-group">
+                     <div className="form-group">
                         <label htmlFor="role-status">Status</label>
                         <select
                             id="role-status"
