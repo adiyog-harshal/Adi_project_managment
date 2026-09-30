@@ -18,6 +18,7 @@ class Milestone(models.Model):
     )
     milestone_name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    start_date = models.DateField(null=True, blank=True)
     due_date = models.DateField()
     status = models.CharField(
         max_length=20,
