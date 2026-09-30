@@ -124,12 +124,12 @@
     margin-right: 1px;
 }
 
-.tasks_table tboy tr:hover {
-    backgroun: #f0fafc;
+.tasks_table tbody tr:hover {
+    background: #f0fafc;
 
 }
 
-.tasks_table tboy tr:last-child td {
+.tasks_table tbody tr:last-child td {
     border-bottom: none;
 }
 
