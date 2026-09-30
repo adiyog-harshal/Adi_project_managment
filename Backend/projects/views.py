@@ -2,11 +2,20 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
-from .models import Project, ProjectComment, Notification
+from .models import (
+    Project,
+    Notification,
+    Resource,
+    Attachment,
+    ProjectComment,
+)
+
 from .serializers import (
     ProjectSerializer,
-    ProjectCommentSerializer,
     NotificationSerializer,
+    ResourceSerializer,
+    AttachmentSerializer,
+    ProjectCommentSerializer,
 )
 
 from helpers import mark_notification_as_read
@@ -69,7 +78,6 @@ class ProjectCommentDetailView(
         comment = self.get_object()
 
         if comment.user != self.request.user:
-
             raise PermissionDenied(
                 "You can only edit your own comments."
             )
@@ -79,7 +87,6 @@ class ProjectCommentDetailView(
     def perform_destroy(self, instance):
 
         if instance.user != self.request.user:
-
             raise PermissionDenied(
                 "You can only delete your own comments."
             )
@@ -96,7 +103,7 @@ class NotificationListView(generics.ListAPIView):
 
         return Notification.objects.filter(
             recipient=self.request.user
-        ).order_by('-created_at')
+        ).order_by("-created_at")
 
 
 class NotificationReadView(generics.UpdateAPIView):
@@ -117,3 +124,71 @@ class NotificationReadView(generics.UpdateAPIView):
         )
 
         mark_notification_as_read(notification)
+
+
+class ResourceListCreateView(generics.ListCreateAPIView):
+
+    serializer_class = ResourceSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+
+        project_id = self.request.query_params.get("project")
+
+        if project_id:
+            return Resource.objects.filter(
+                project_id=project_id
+            ).select_related(
+                "project",
+                "task"
+            )
+
+        return Resource.objects.all().select_related(
+            "project",
+            "task"
+        )
+
+
+class ResourceDetailView(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Resource.objects.select_related(
+        "project",
+        "task"
+    )
+
+    serializer_class = ResourceSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class AttachmentListCreateView(generics.ListCreateAPIView):
+
+    serializer_class = AttachmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+
+        return Attachment.objects.select_related(
+            "project",
+            "task",
+            "comment",
+            "uploaded_by"
+        ).order_by("-created_at")
+
+    def perform_create(self, serializer):
+
+        serializer.save(
+            uploaded_by=self.request.user
+        )
+
+
+class AttachmentDetailView(generics.RetrieveDestroyAPIView):
+
+    queryset = Attachment.objects.select_related(
+        "project",
+        "task",
+        "comment",
+        "uploaded_by"
+    )
+
+    serializer_class = AttachmentSerializer
+    permission_classes = [IsAuthenticated]

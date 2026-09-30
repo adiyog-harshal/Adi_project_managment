@@ -5,6 +5,10 @@ from .views import (
     ProjectDetailView,
     NotificationListView,
     NotificationReadView,
+    ResourceListCreateView,
+    ResourceDetailView,
+    AttachmentListCreateView,
+    AttachmentDetailView,
     ProjectCommentListCreateView,
     ProjectCommentDetailView,
 )
@@ -50,5 +54,29 @@ urlpatterns = [
         'notifications/<int:pk>/read/',
         NotificationReadView.as_view(),
         name='notification-read'
+    ),
+
+    path(
+        'resources/',
+        ResourceListCreateView.as_view(),
+        name='resource-list-create'
+    ),
+
+    path(
+        'resources/<int:pk>/',
+        ResourceDetailView.as_view(),
+        name='resource-detail'
+    ),
+
+    path(
+        'attachments/',
+        AttachmentListCreateView.as_view(),
+        name='attachment-list-create'
+    ),
+
+    path(
+        'attachments/<int:pk>/',
+        AttachmentDetailView.as_view(),
+        name='attachment-detail'
     ),
 ]
