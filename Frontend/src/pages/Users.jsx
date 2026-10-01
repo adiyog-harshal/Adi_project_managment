@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import './Users.css';
 
@@ -24,6 +25,8 @@ function Users() {
     const [search, setSearch] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+    const [openMenu, setOpenMenu] = useState(null);
+    const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState({
         name: '',
@@ -46,6 +49,60 @@ function Users() {
             ...previousData,
             [name]: value,
         }));
+
+        // Clear the error for the field being edited
+        setErrors((previousErrors) => ({
+            ...previousErrors,
+            [name]: '',
+        }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        const trimmedName = formData.name.trim();
+        const trimmedEmail = formData.email.trim();
+
+        // Name validation
+        if (!trimmedName) {
+            newErrors.name = 'Name is required.';
+        } else if (trimmedName.length < 2) {
+            newErrors.name =
+                'Name must contain at least 2 characters.';
+        } else if (!/^[A-Za-z\s]+$/.test(trimmedName)) {
+            newErrors.name =
+                'Name can contain only letters and spaces.';
+        }
+
+        // Email validation
+        if (!trimmedEmail) {
+            newErrors.email = 'Email is required.';
+        } else if (
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)
+        ) {
+            newErrors.email =
+                'Enter a valid email address.';
+        }
+
+        // Role validation
+        if (!formData.role) {
+            newErrors.role = 'Please select a role.';
+        }
+
+        // Designation validation
+        if (!formData.designation) {
+            newErrors.designation =
+                'Please select a designation.';
+        }
+
+        // Status validation
+        if (!formData.status) {
+            newErrors.status = 'Please select a status.';
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
     };
 
     const openAddForm = () => {
@@ -56,9 +113,10 @@ function Users() {
             email: '',
             role: '',
             designation: '',
-            status: 'Active',
+            status: '',
         });
 
+        setErrors({});
         setShowForm(true);
     };
 
@@ -73,29 +131,42 @@ function Users() {
             status: user.status,
         });
 
+        setErrors({});
         setShowForm(true);
     };
 
     const closeForm = () => {
         setShowForm(false);
         setEditingUser(null);
+        setErrors({});
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Stop submission if validation fails
+        if (!validateForm()) {
+            return;
+        }
+
+        const cleanedFormData = {
+            ...formData,
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+        };
+
         if (editingUser) {
             setUsers((previousUsers) =>
                 previousUsers.map((user) =>
                     user.id === editingUser.id
-                        ? { ...user, ...formData }
+                        ? { ...user, ...cleanedFormData }
                         : user
                 )
             );
         } else {
             const newUser = {
                 id: Date.now(),
-                ...formData,
+                ...cleanedFormData,
             };
 
             setUsers((previousUsers) => [
@@ -170,7 +241,7 @@ function Users() {
 
                     <tbody>
                         {filteredUsers.length > 0 ? (
-                            filteredUsers.map((user) => (
+                            filteredUsers.map((user, index) => (
                                 <tr key={user.id}>
                                     <td className="user-name">
                                         {user.name}
@@ -197,30 +268,55 @@ function Users() {
                                     </td>
 
                                     <td>
-                                        <div className="user-actions">
+                                    <div className="user-actions">
 
-                                            <button
-                                                type="button"
-                                                className="user-edit-btn"
-                                                onClick={() =>
-                                                    openEditForm(user)
-                                                }
+                                        <button
+                                            type="button"
+                                            className="user-menu-btn"
+                                            onClick={() =>
+                                                setOpenMenu(
+                                                    openMenu === user.id
+                                                        ? null
+                                                        : user.id
+                                                )
+                                            }
+                                            aria-label="User actions"
+                                        >
+                                            ⋮
+                                        </button>
+
+                                        {openMenu === user.id && (
+                                            <div
+                                                className={`user-action-menu ${
+                                                    index === filteredUsers.length - 1
+                                                        ? 'user-action-menu-up'
+                                                        : ''
+                                                }`}
                                             >
-                                                Edit
-                                            </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setOpenMenu(null);
+                                                        openEditForm(user);
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
 
-                                            <button
-                                                type="button"
-                                                className="user-delete-btn"
-                                                onClick={() =>
-                                                    handleDelete(user.id)
-                                                }
-                                            >
-                                                Delete
-                                            </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setOpenMenu(null);
+                                                        handleDelete(user.id);
+                                                    }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
 
-                                        </div>
-                                    </td>
+                                    </div>
+                                </td>
                                 </tr>
                             ))
                         ) : (
@@ -271,8 +367,18 @@ function Users() {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    required
+                                    className={
+                                        errors.name
+                                            ? 'input-error'
+                                            : ''
+                                    }
                                 />
+
+                                {errors.name && (
+                                    <span className="field-error">
+                                        {errors.name}
+                                    </span>
+                                )}
                             </div>
 
                             {/* Email */}
@@ -280,12 +386,22 @@ function Users() {
                                 <label>Email:</label>
 
                                 <input
-                                    type="email"
+                                    type="text"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    required
+                                    className={
+                                        errors.email
+                                            ? 'input-error'
+                                            : ''
+                                    }
                                 />
+
+                                {errors.email && (
+                                    <span className="field-error">
+                                        {errors.email}
+                                    </span>
+                                )}
                             </div>
 
                             {/* Role */}
@@ -296,7 +412,11 @@ function Users() {
                                     name="role"
                                     value={formData.role}
                                     onChange={handleChange}
-                                    required
+                                    className={
+                                        errors.role
+                                            ? 'input-error'
+                                            : ''
+                                    }
                                 >
                                     <option value="">
                                         Select Role
@@ -322,6 +442,12 @@ function Users() {
                                         Viewer
                                     </option>
                                 </select>
+
+                                {errors.role && (
+                                    <span className="field-error">
+                                        {errors.role}
+                                    </span>
+                                )}
                             </div>
 
                             {/* Designation */}
@@ -332,7 +458,11 @@ function Users() {
                                     name="designation"
                                     value={formData.designation}
                                     onChange={handleChange}
-                                    required
+                                    className={
+                                        errors.designation
+                                            ? 'input-error'
+                                            : ''
+                                    }
                                 >
                                     <option value="">
                                         Select Designation
@@ -374,30 +504,32 @@ function Users() {
                                         Intern
                                     </option>
                                 </select>
+
+                                {errors.designation && (
+                                    <span className="field-error">
+                                        {errors.designation}
+                                    </span>
+                                )}
                             </div>
 
                             {/* Status */}
                             <div>
                                 <label>Status:</label>
-
                                 <select
-                                    name="status"
                                     value={formData.status}
                                     onChange={handleChange}
-                                    required
+                                    name="status"
+                                    className={errors.status ? 'input-error' : ''}
                                 >
-                                    <option value="">
-                                        Select Status
-                                    </option>
-
-                                    <option value="Active">
-                                        Active
-                                    </option>
-
-                                    <option value="Inactive">
-                                        Inactive
-                                    </option>
+                                    <option value="">Select Status</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
                                 </select>
+
+                                {errors.status && (
+                                    <span className="field-error">{errors.status}</span>
+                                )}
+                                                            
                             </div>
 
                             {/* Form Actions */}
@@ -426,4 +558,4 @@ function Users() {
     );
 }
 
-export default Users
+export default Users;
