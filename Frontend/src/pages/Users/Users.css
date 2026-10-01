@@ -493,3 +493,16 @@
     top: 10px;
     right: 14px;
 }
+
+/* Validation */
+
+.input-error {
+    border: 1px solid #e74c3c !important;
+}
+.field-error {
+    display: block;
+    margin-top: 5px;
+    color: #e74c3c;
+    font-size: 12px;
+    line-height: 1.4;
+}
