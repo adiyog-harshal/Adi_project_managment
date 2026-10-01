@@ -67,6 +67,21 @@
 .add-role-btn:hover {
     background: var(--gold-400);
 }
+
+.roles-table-card {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.roles-table-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
 /* SUMMARY */
 
 .summary-grid {
@@ -173,26 +188,44 @@
 
 .roles-table {
     width: 100%;
+    margin: 0;
+    padding: 0;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
-.roles-table th {
-    background: #fafbfc;
-    color: var(--slate-500);
+.roles-table th:nth-child(1),
+.roles-table td:nth-child(1) {
+    width: 18%;
+}
 
-    font-size: 11px;
-    font-weight: 700;
+.roles-table th:nth-child(2),
+.roles-table td:nth-child(2) {
+    width: 38%;
+}
 
+.roles-table th:nth-child(3),
+.roles-table td:nth-child(3) {
+    width: 18%;
+}
+
+.roles-table th:nth-child(4),
+.roles-table td:nth-child(4) {
+    width: 26%;
+}
+
+.roles-table thead th {
+    text-transform: none !important;
+    font-size: 13px;
+    font-weight: 500;
     text-align: left;
-    padding: 14px 24px;
-
-    letter-spacing: 0.5px;
+    padding: 14px 20px;
 }
 
 .roles-table td {
-    padding: 17px 24px;
-    border-top: 1px solid #edf0f4;
-    font-size: 14px;
+    padding: 14px 20px;
+    text-align: left;
+    vertical-align: middle;
 }
 
 .roles-table tbody tr:hover {
@@ -258,48 +291,49 @@
     color: var(--danger);
 }
 
-/* ACTIONS */
+/* =========================
+   ACTIONS
+========================= */
 
-.action-buttons {
+.role-actions {
     display: flex;
+    align-items: center;
+    justify-content: flex-start;
     gap: 8px;
 }
 
-.edit-btn,
-.delete-btn {
-    padding: 7px 13px;
+.action-btn {
+    width: 34px;
+    height: 34px;
 
-    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    font-size: 12px;
-    font-weight: 600;
+    border-radius: 7px;
+    background: #ffffff;
 
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .edit-btn {
-    background: var(--gold-050);
-    color: var(--gold-500);
-    border: 1px solid #ead7ad;
+    border: 1px solid #d8e0eb;
+    color: #163a63;
+}
+
+.edit-btn:hover {
+    background: #f3f7fb;
 }
 
 .delete-btn {
-    background: var(--danger-bg);
-    color: var(--danger);
-    border: 1px solid #f4caca;
+    border: 1px solid #f1cccc;
+    color: #dc3545;
 }
 
-.edit-btn:hover,
 .delete-btn:hover {
-    opacity: 0.8;
+    background: #fff5f5;
 }
-
-.no-data {
-    text-align: center;
-    padding: 40px !important;
-    color: var(--slate-500);
-}
-
 /* MODAL */
 
 .modal-overlay {
@@ -492,7 +526,8 @@
 
     .roles-table th,
     .roles-table td {
-        padding: 13px 14px;
+        text-align: left;
+        box-sizing: border-box;
     }
 }
 

@@ -2,16 +2,24 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 const emptyRole = {
-    name: "",
+    role_name: "",
     description: "",
-    status: "Active",
+    is_active: true,
 };
 
 function RoleModal({ isOpen, onClose, onSave, role }) {
     const [formData, setFormData] = useState(emptyRole);
 
     useEffect(() => {
-        setFormData(role ? { ...role } : emptyRole);
+        if (role) {
+            setFormData({
+                role_name: role.role_name || "",
+                description: role.description || "",
+                is_active: role.is_active ?? true,
+            });
+        } else {
+            setFormData(emptyRole);
+        }
     }, [role, isOpen]);
 
     if (!isOpen) {
@@ -20,15 +28,20 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
         onSave({
-            name: formData.name.trim(),
+            role_name: formData.role_name.trim(),
             description: formData.description.trim(),
-            status: formData.status,
+            is_active: formData.is_active,
         });
     };
 
     return (
-        <div className="modal-overlay" role="presentation" onMouseDown={onClose}>
+        <div
+            className="modal-overlay"
+            role="presentation"
+            onMouseDown={onClose}
+        >
             <div
                 className="role-modal"
                 role="dialog"
@@ -38,48 +51,107 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
             >
                 <div className="modal-header">
                     <div>
-                        <h2 id="role-modal-title">{role ? "Edit Role" : "Add Role"}</h2>
-                        <p>{role ? "Update this role's details." : "Create a new role for your team."}</p>
+                        <h2 id="role-modal-title">
+                            {role ? "Edit Role" : "Add Role"}
+                        </h2>
+
+                        <p>
+                            {role
+                                ? "Update this role's details."
+                                : "Create a new role for your team."}
+                        </p>
                     </div>
-                    <button className="close-button" type="button" aria-label="Close" onClick={onClose}>
+
+                    <button
+                        className="close-button"
+                        type="button"
+                        aria-label="Close"
+                        onClick={onClose}
+                    >
                         <X size={20} />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="role-name">Role name</label>
+                        <label htmlFor="role-name">
+                            Role name
+                        </label>
+
                         <input
                             id="role-name"
+                            type="text"
                             required
-                            value={formData.name}
-                            onChange={(event) => setFormData({ ...formData, name: event.target.value })}
+                            value={formData.role_name}
+                            onChange={(event) =>
+                                setFormData({
+                                    ...formData,
+                                    role_name: event.target.value,
+                                })
+                            }
                         />
                     </div>
+
                     <div className="form-group">
-                        <label htmlFor="role-description">Description</label>
+                        <label htmlFor="role-description">
+                            Description
+                        </label>
+
                         <textarea
                             id="role-description"
                             required
                             rows="3"
                             value={formData.description}
-                            onChange={(event) => setFormData({ ...formData, description: event.target.value })}
+                            onChange={(event) =>
+                                setFormData({
+                                    ...formData,
+                                    description: event.target.value,
+                                })
+                            }
                         />
                     </div>
+
                     <div className="form-group">
-                        <label htmlFor="role-status">Status</label>
+                        <label htmlFor="role-status">
+                            Status
+                        </label>
+
                         <select
                             id="role-status"
-                            value={formData.status}
-                            onChange={(event) => setFormData({ ...formData, status: event.target.value })}
+                            value={formData.is_active}
+                            onChange={(event) =>
+                                setFormData({
+                                    ...formData,
+                                    is_active:
+                                        event.target.value === "true",
+                                })
+                            }
                         >
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
+                            <option value="true">
+                                Active
+                            </option>
+
+                            <option value="false">
+                                Inactive
+                            </option>
                         </select>
                     </div>
+
                     <div className="modal-actions">
-                        <button className="cancel-button" type="button" onClick={onClose}>Cancel</button>
-                        <button className="save-button" type="submit">Save Role</button>
+                        <button
+                            className="cancel-button"
+                            type="button"
+                            onClick={onClose}
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            className="save-button"
+                            type="submit"
+                        >
+                            Save Role
+                        </button>
                     </div>
                 </form>
             </div>

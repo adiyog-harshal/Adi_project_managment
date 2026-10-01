@@ -219,10 +219,6 @@
     color: #9ca3af;
 }
 
-.designation-description {
-    padding-right: 15px;
-}
-
 
 /* =========================
    STATUS
@@ -446,6 +442,12 @@
     color: #dc3545;
 }
 
+.designation-form-error {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
 
 /* INPUT / TEXTAREA / SELECT */
 
@@ -584,4 +586,234 @@
         padding: 18px;
     }
 
+}
+
+.designation-title-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.designation-title-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+    color: #d99a00;
+}
+
+.designation-title-icon svg {
+    color: #d99a00;
+}
+
+.designation-title-section h1 {
+    margin: 0;
+}
+
+.designation-title-section p {
+    margin: 4px 0 0;
+}
+
+
+
+/* ================================
+   DESIGNATION PAGINATION
+================================ */
+
+.designation-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-top: 1px solid #eaecf0;
+    background: #ffffff;
+}
+
+.pagination-info {
+    font-size: 13px;
+    color: #667085;
+}
+
+.pagination-info strong {
+    color: #344054;
+    font-weight: 600;
+}
+
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-btn,
+.pagination-number {
+    height: 34px;
+    min-width: 34px;
+    padding: 0 10px;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-number {
+    padding: 0;
+}
+
+.pagination-btn:hover:not(:disabled),
+.pagination-number:hover {
+    background: #f9fafb;
+    border-color: #98a2b3;
+}
+
+.pagination-number.active {
+    background: #7229d1;
+    border-color: #844bee;
+    color: #ffffff;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+    .designation-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .pagination-buttons {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+}
+
+/* =========================================
+   STATUS DROPDOWN
+========================================= */
+
+.designation-status-menu {
+    position: relative;
+    display: inline-block;
+    width: auto;
+}
+
+/* Current status button */
+
+.designation-status-trigger {
+    width: 95px !important;
+    min-width: 95px !important;
+    height: 32px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    padding: 0 10px !important;
+    margin: 0 !important;
+
+    border-radius: 999px !important;
+
+    font-size: 12px !important;
+    font-weight: 600 !important;
+
+    cursor: pointer !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Active */
+
+.designation-status-trigger.active {
+    background: #ecfdf3 !important;
+    border: 1px solid #abefc6 !important;
+    color: #027a48 !important;
+}
+
+/* Inactive */
+
+.designation-status-trigger.inactive {
+    background: #fef3f2 !important;
+    border: 1px solid #fecdca !important;
+    color: #d92d20 !important;
+}
+
+.designation-status-trigger.inactive:hover {
+    background: #fee4e2 !important;
+    border-color: #fda29b !important;
+}
+
+/* Arrow */
+
+.status-chevron {
+    font-size: 13px !important;
+    line-height: 1 !important;
+}
+
+/* Dropdown */
+
+.designation-status-dropdown {
+    position: absolute !important;
+
+    top: calc(100% + 5px) !important;
+    left: 0 !important;
+
+    width: 95px !important;
+    min-width: 95px !important;
+
+    padding: 4px !important;
+
+    background: #ffffff !important;
+    border: 1px solid #eaecf0 !important;
+    border-radius: 7px !important;
+
+    box-shadow: 0 4px 10px rgba(16, 24, 40, 0.12) !important;
+
+    z-index: 9999 !important;
+    box-sizing: border-box !important;
+}
+
+/* Dropdown option */
+
+.designation-status-dropdown button {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 30px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    padding: 0 8px !important;
+    margin: 0 !important;
+
+    border: none !important;
+    border-radius: 5px !important;
+
+    background: transparent !important;
+
+    color: #344054 !important;
+
+    font-size: 12px !important;
+    font-weight: 500 !important;
+
+    text-align: left !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+}
+
+.designation-status-dropdown button:hover {
+    background: #f2f4f7 !important;
 }

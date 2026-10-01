@@ -1,30 +1,78 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import ProtectedRoute from "./ProtectedRoute";
+
 import Login from "../pages/Login/login";
+import Dashboard from "../pages/Dashboards/dashboards";
+import Projects from "../pages/Projects/projects";
+import ProjectDetails from "../pages/ProjectDetails/projectdetails";
+import Roles from "../pages/Roles";
+import Users from "../pages/Users";
+import Designations from "../pages/Designations/designations";
 
 function AppRoutes() {
     return (
         <Routes>
 
+            {/* Login */}
             <Route path="/login" element={<Login />} />
 
-            <Route path="/dashboard" element={<h1>Dashboard</h1>} />
-            <Route path="/users" element={<h1>Users</h1>} />
-            <Route path="/teams" element={<h1>Teams</h1>} />
-            <Route path="/projects" element={<h1>Projects</h1>} />
-            <Route path="/tasks" element={<h1>Tasks</h1>} />
-            <Route path="/milestones" element={<h1>Milestones</h1>} />
-            <Route path="/notifications" element={<h1>Notifications</h1>} />
-            <Route path="/activity" element={<h1>Activity</h1>} />
-            <Route path="/reports" element={<h1>Reports</h1>} />
-            <Route path="/profile" element={<h1>Profile</h1>} />
+            {/* Main pages */}
+            <Route 
+                path="/" 
+                element={
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                } 
+            />
 
-            {/*Default route*/}
-            <Route path="/" element={<Login />} />
+            <Route 
+                path="/projects" 
+                element={
+                    <ProtectedRoute>
+                        <Projects /> 
+                    </ProtectedRoute>
+                }
+            /> 
+
+            <Route 
+                path="/projects/:id" 
+                element={
+                    <ProtectedRoute>
+                        <ProjectDetails />
+                    </ProtectedRoute>
+                } 
+            />
+
+            <Route 
+                path="/designations" 
+                element={
+                    <ProtectedRoute>
+                        <Designations />
+                    </ProtectedRoute>
+                } 
+            />
+
+            <Route 
+                path="/roles" 
+                element={
+                    <ProtectedRoute>
+                        <Roles />
+                    </ProtectedRoute>
+                } 
+            />
+
+            <Route 
+                path="/users" 
+                element={
+                    <ProtectedRoute>
+                        <Users />
+                    </ProtectedRoute>
+                } 
+            />
+
         </Routes>
-
-
-
-
     );
 }
 

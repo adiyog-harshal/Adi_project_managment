@@ -1,0 +1,1942 @@
+/* =========================================
+   DASHBOARD PAGE
+========================================= */
+
+.dashboard-page {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 30px 34px 40px;
+    background: #f7f8fa;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.dashboard-header {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 26px;
+
+    box-sizing: border-box;
+}
+
+
+.dashboard-heading {
+    min-width: 0;
+}
+
+.dashboard-heading h1 {
+    margin: 0;
+
+    font-size: 28px;
+    line-height: 34px;
+
+    font-weight: 600;
+
+    color: #171717;
+}
+
+.dashboard-heading p {
+    margin: 5px 0 0;
+
+    font-size: 14px;
+    line-height: 20px;
+
+    color: #969696;
+}
+
+
+/* =========================================
+   HEADER RIGHT
+========================================= */
+
+.dashboard-header-right {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    flex-shrink: 0;
+}
+
+
+/* SEARCH */
+
+.dashboard-search {
+    width: 280px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 13px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 9px;
+
+    color: #999;
+}
+
+.dashboard-search input {
+    width: 100%;
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    font-size: 13px;
+}
+
+.dashboard-search input::placeholder {
+    color: #999;
+}
+
+
+/* BELL */
+
+.dashboard-notification {
+    width: 40px;
+    height: 40px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 9px;
+
+    color: #555;
+
+    cursor: pointer;
+}
+
+
+/* AVATAR */
+
+.dashboard-avatar {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eee6ff;
+
+    color: #6638df;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.dashboard-content {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+/* =========================================
+   TOP GRID
+========================================= */
+
+.dashboard-top-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.05fr)
+        minmax(0, 1.45fr);
+
+    gap: 16px;
+
+    align-items: stretch;
+}
+
+
+/* =========================================
+   STATISTICS
+========================================= */
+
+.dashboard-stats {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+
+    min-width: 0;
+}
+
+
+/* =========================================
+   STAT CARD
+========================================= */
+
+.stat-card {
+    min-width: 0;
+
+    min-height: 165px;
+
+    padding: 16px 16px 14px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5ea;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 7px rgba(25, 25, 25, 0.035);
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-between;
+}
+
+
+.stat-card-top {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+
+.stat-card-top p {
+    margin: 0;
+
+    font-size: 14px;
+    line-height: 20px;
+
+    color: #777;
+}
+
+
+.stat-card h2 {
+    margin: 22px 0 0;
+
+    font-size: 36px;
+    line-height: 42px;
+
+    font-weight: 500;
+
+    color: #171717;
+}
+
+
+.card-more {
+    width: 26px;
+    height: 26px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f1f1f1;
+
+    color: #777;
+
+    cursor: pointer;
+
+    flex-shrink: 0;
+}
+
+
+.stat-bottom {
+    display: flex;
+    justify-content: flex-end;
+}
+
+
+/* =========================================
+   STAT ICONS
+========================================= */
+
+.stat-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+}
+
+
+.total-icon {
+    background: #eee9ff;
+    color: #6638df;
+}
+
+
+.completed-icon {
+    background: #e8f7ee;
+    color: #2e9b5b;
+}
+
+
+.running-icon {
+    background: #e8f0ff;
+    color: #4777d8;
+}
+
+
+.pending-icon {
+    background: #fff1df;
+    color: #e69a35;
+}
+
+
+/* =========================================
+   PROJECT ANALYTICS
+========================================= */
+
+.dashboard-analytics {
+    width: 100%;
+    min-width: 0;
+
+    padding: 18px 18px 14px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5ea;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 7px rgba(25, 25, 25, 0.035);
+}
+
+
+.analytics-header {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+}
+
+
+.analytics-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+    line-height: 26px;
+
+    font-weight: 500;
+
+    color: #171717;
+}
+
+
+.analytics-menu {
+    width: 30px;
+    height: 30px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f1f1;
+
+    color: #666;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   ANALYTICS CHART
+========================================= */
+
+.analytics-chart {
+    width: 100%;
+    height: 250px;
+
+    padding: 5px 4px 0;
+
+    box-sizing: border-box;
+}
+
+
+.chart-bars {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 7px;
+
+    border-bottom: 1px solid #dedede;
+}
+
+
+.chart-bar-item {
+    height: 100%;
+
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+.chart-bar {
+    width: 100%;
+    max-width: 42px;
+
+    min-height: 7px;
+
+    background: #cfc2f7;
+
+    border-top: 1px solid #7044e8;
+
+    box-sizing: border-box;
+}
+
+
+.chart-bar-item span {
+    font-size: 10px;
+
+    line-height: 17px;
+
+    color: #555;
+}
+
+
+/* =========================================
+   BOTTOM GRID
+========================================= */
+
+.dashboard-bottom-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.45fr)
+        minmax(0, 1fr);
+
+    gap: 16px;
+
+    align-items: stretch;
+}
+
+
+/* =========================================
+   TEAM COLLABORATION
+========================================= */
+
+.team-card {
+    width: 100%;
+    min-width: 0;
+
+    padding: 18px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5ea;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 7px rgba(25, 25, 25, 0.035);
+}
+
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+}
+
+
+.section-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+    line-height: 26px;
+
+    font-weight: 500;
+
+    color: #171717;
+}
+
+
+.circle-action {
+    width: 30px;
+    height: 30px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f1f1;
+
+    color: #555;
+
+    cursor: pointer;
+}
+
+
+/* TEAM LIST */
+
+.team-list {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.team-row {
+    min-height: 55px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    border-bottom: 1px solid #f0f0f0;
+}
+
+
+.team-row:last-child {
+    border-bottom: none;
+}
+
+
+.team-avatar {
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eee6ff;
+
+    color: #6638df;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.team-info {
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.team-info strong {
+    font-size: 13px;
+    font-weight: 500;
+
+    color: #333;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.team-info span {
+    font-size: 10px;
+
+    color: #999;
+}
+
+
+/* STATUS */
+
+.team-status {
+    padding: 5px 10px;
+
+    border-radius: 4px;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+}
+
+
+.team-status.completed {
+    background: #e5f6ee;
+    color: #339267;
+}
+
+
+.team-status.in-progress,
+.team-status.running {
+    background: #fff6d9;
+    color: #a88916;
+}
+
+
+.team-status.pending,
+.team-status.not-started {
+    background: #ffe7e7;
+    color: #d14a4a;
+}
+
+
+/* =========================================
+   PROJECT PROGRESS
+========================================= */
+
+.project-progress-card {
+    width: 100%;
+    min-width: 0;
+
+    padding: 18px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5ea;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 7px rgba(25, 25, 25, 0.035);
+}
+
+
+.project-progress-content {
+    min-height: 245px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 35px;
+
+    margin-top: 5px;
+}
+
+
+/* DONUT */
+
+.progress-circle {
+    width: 180px;
+    height: 180px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.progress-circle-inner {
+    width: 132px;
+    height: 132px;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.progress-circle-inner span {
+    font-size: 30px;
+
+    font-weight: 600;
+
+    color: #171717;
+}
+
+
+.progress-circle-inner small {
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    color: #8a8a8a;
+}
+
+
+/* LEGEND */
+
+.progress-details {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
+    min-width: 150px;
+}
+
+
+.progress-details p {
+    margin: 0;
+
+    display: grid;
+
+    grid-template-columns: 9px 1fr auto;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 12px;
+
+    color: #555;
+}
+
+
+.progress-details strong {
+    color: #333;
+
+    font-weight: 600;
+}
+
+
+.progress-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+}
+
+
+.completed-dot {
+    background: #6638df;
+}
+
+
+.running-dot {
+    background: #a99aef;
+}
+
+
+.pending-dot {
+    background: #d8d8d8;
+}
+
+
+/* =========================================
+   PROJECT TABLE
+========================================= */
+
+.dashboard-table-card {
+    width: 100%;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5ea;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 7px rgba(25, 25, 25, 0.035);
+
+    overflow: hidden;
+}
+
+
+/* TABLE HEADER */
+
+.table-header {
+    min-height: 65px;
+
+    padding: 0 18px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.table-title {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    color: #444;
+
+    font-size: 13px;
+}
+
+
+.table-icon {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: #eee9ff;
+
+    color: #6638df;
+}
+
+
+.table-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.table-search {
+    width: 190px;
+    height: 34px;
+
+    padding: 0 9px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 7px;
+
+    color: #999;
+}
+
+
+.table-search input {
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    font-size: 11px;
+
+    color: #333;
+}
+
+
+.table-button {
+    height: 34px;
+
+    padding: 0 12px;
+
+    border: 1px solid #e3e3e3;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #555;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+.project-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+.project-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 650px;
+}
+
+
+.project-table th {
+    padding: 13px 16px;
+
+    text-align: left;
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+    color: #999;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.project-table td {
+    padding: 13px 16px;
+
+    font-size: 12px;
+
+    color: #555;
+
+    border-bottom: 1px solid #f1f1f1;
+}
+
+
+.project-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+.project-table td:nth-child(2) {
+    color: #333;
+
+    font-weight: 500;
+}
+
+
+/* STATUS */
+
+.table-status {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 5px;
+
+    font-size: 10px;
+}
+
+
+.table-status.completed {
+    background: #e5f6ee;
+    color: #339267;
+}
+
+
+.table-status.in-progress,
+.table-status.running {
+    background: #fff6d9;
+    color: #a88916;
+}
+
+
+.table-status.pending,
+.table-status.not-started {
+    background: #ffe7e7;
+    color: #d14a4a;
+}
+
+
+.no-projects {
+    text-align: center !important;
+
+    padding: 30px !important;
+
+    color: #999 !important;
+}
+
+
+/* =========================================
+   EMPTY TEAM
+========================================= */
+
+.empty-team {
+    min-height: 230px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    color: #aaa;
+
+    font-size: 13px;
+}
+
+
+/* =========================================
+   MAIN CONTENT FIX
+========================================= */
+
+.main-content {
+    min-width: 0;
+
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1200px) {
+
+    .dashboard-top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .dashboard-page {
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+    }
+
+    .dashboard-header-right {
+        width: 100%;
+    }
+
+    .dashboard-search {
+        flex: 1;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .project-progress-content {
+        flex-direction: column;
+
+        padding-bottom: 20px;
+    }
+
+    .table-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        padding: 15px;
+    }
+
+    .table-actions {
+        width: 100%;
+    }
+
+    .table-search {
+        flex: 1;
+    }
+
+}
+
+
+/* =========================================
+   TABLE ACTION DROPDOWNS
+========================================= */
+
+.table-action-wrapper {
+    position: relative;
+}
+
+
+.table-dropdown {
+    position: absolute;
+
+    top: calc(100% + 6px);
+    right: 0;
+
+    width: 155px;
+
+    padding: 5px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5ea;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.10);
+
+    z-index: 100;
+}
+
+
+.table-dropdown button {
+    width: 100%;
+
+    padding: 9px 10px;
+
+    border: none;
+
+    border-radius: 5px;
+
+    background: transparent;
+
+    text-align: left;
+
+    font-size: 12px;
+
+    color: #555;
+
+    cursor: pointer;
+}
+
+
+.table-dropdown button:hover {
+    background: #f5f1ff;
+
+    color: #6638df;
+}
+
+
+.dropdown-arrow {
+    font-size: 9px;
+    margin-left: 3px;
+    line-height: 1;
+}
+
+/* EXPORT BUTTON DOWNLOAD */
+.export-btn {
+    background: #6638df;
+    color: #fff;
+    border: 1px solid #6638df;
+}
+
+.export-btn:hover {
+    background: #5428c7;
+    border-color: #5428c7;
+}
+
+/* FILTER & SORT BUTTONS */
+.table-button {
+    height: 34px;
+    padding: 0 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    background: #ffffff;
+    color: #555;
+
+    border: 1px solid #e2e2e8;
+    border-radius: 7px;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.table-button:hover {
+    background: #f5f1ff;
+    color: #6638df;
+    border-color: #cfc2f5;
+}
+
+
+/* FILTER / SORT ARROW */
+.dropdown-arrow {
+    font-size: 8px;
+    margin-left: 2px;
+    color: #777;
+    
+}
+
+
+/* EXPORT BUTTON */
+.export-btn {
+    background: #564385;
+    color: #ffffff;
+    border: 1px solid #6638df;
+}
+
+.export-btn:hover {
+    background: #5428c7;
+    color: #ffffff;
+    border-color: #5428c7;
+}
+
+/* team collaboration form  */
+
+.team-card {
+    position: relative;
+}
+
+.add-member-form {
+    position: absolute;
+    top: 55px;
+    right: 15px;
+
+    width: 280px;
+
+    padding: 16px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5ea;
+    border-radius: 10px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+
+    z-index: 100;
+}
+
+.add-member-form h3 {
+    margin: 0 0 15px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-group select {
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 12px;
+    color: #444;
+    outline: none;
+}
+
+.form-group select:focus {
+    border-color: #6638df;
+}
+
+.add-member-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.cancel-member-btn,
+.save-member-btn {
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.cancel-member-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #555;
+}
+
+.save-member-btn {
+    background: #6638df;
+    border: 1px solid #6638df;
+    color: #fff;
+}
+
+.save-member-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* CLICKING PROJECT  */
+.project-table tbody tr {
+    cursor: pointer;
+}
+
+.project-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.project-table tbody tr.selected-project-row {
+    background: #f5f3ff;
+}
+
+
+/* =========================================
+   NEW DASHBOARD PROJECT LAYOUT
+========================================= */
+
+.dashboard-project-section {
+    display: grid !important;
+    grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr) !important;
+    gap: 12px !important;
+
+    width: 100% !important;
+    margin: 0 0 12px 0 !important;
+
+    align-items: stretch !important;
+}
+
+
+/* PROJECT LIST */
+
+.dashboard-project-list-card {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+
+/* PROJECT PROGRESS */
+
+.dashboard-project-progress-card {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+
+    min-height: 250px !important;
+}
+
+
+/* PROJECT PROGRESS HEADER */
+
+.dashboard-project-progress-card .section-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+
+/* SELECTED PROJECT */
+
+.selected-project-name {
+    display: block !important;
+    margin-top: 4px !important;
+
+    color: #667085 !important;
+    font-size: 12px !important;
+}
+
+
+/* PROJECT ROW */
+
+.dashboard-project-list-card
+.project-table tbody tr {
+    cursor: pointer !important;
+    transition: background 0.2s ease !important;
+}
+
+.dashboard-project-list-card
+.project-table tbody tr:hover {
+    background: #f9fafb !important;
+}
+
+.dashboard-project-list-card
+.project-table tbody tr.selected-project-row {
+    background: #f5f3ff !important;
+}
+
+
+/* TEAM COLLABORATION */
+
+.dashboard-team-card {
+    display: block !important;
+    width: 100% !important;
+    min-height: 220px !important;
+
+    margin: 0 !important;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1000px) {
+
+    .dashboard-project-section {
+        grid-template-columns: 1fr !important;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .dashboard-project-section {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+}
+
+
+
+
+/* ================================
+   PROJECT PROGRESS - FIX VISIBILITY
+================================ */
+
+.dashboard-project-progress-card {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 300px !important;
+    padding: 20px !important;
+    background: #ffffff !important;
+    border: 1px solid #eaecf0 !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+.dashboard-project-progress-card .section-header {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    margin-bottom: 20px !important;
+}
+
+.dashboard-project-progress-card .section-header h2 {
+    display: block !important;
+    margin: 0 !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #101828 !important;
+}
+
+.dashboard-project-progress-card .selected-project-name {
+    display: block !important;
+    margin-top: 5px !important;
+    font-size: 13px !important;
+    color: #667085 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 220px !important;
+}
+
+.project-progress-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 35px !important;
+    flex: 1 !important;
+    width: 100% !important;
+    min-height: 210px !important;
+    padding: 10px 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Progress circle */
+.project-progress-content .progress-circle {
+    width: 155px !important;
+    height: 155px !important;
+    min-width: 155px !important;
+    min-height: 155px !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+}
+
+/* White center of donut */
+.project-progress-content .progress-circle-inner {
+    width: 115px !important;
+    height: 115px !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+}
+
+.project-progress-content .progress-circle-inner span {
+    display: block !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    color: #101828 !important;
+}
+
+.project-progress-content .progress-circle-inner small {
+    display: block !important;
+    margin-top: 4px !important;
+    font-size: 12px !important;
+    color: #667085 !important;
+}
+
+/* Progress details */
+.project-progress-content .progress-details {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    min-width: 120px !important;
+}
+
+.project-progress-content .progress-details p {
+    display: grid !important;
+    grid-template-columns: 10px 1fr auto !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 13px !important;
+    color: #667085 !important;
+}
+
+.project-progress-content .progress-details p strong {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #101828 !important;
+}
+
+/* Dots */
+.project-progress-content .progress-dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    display: block !important;
+}
+
+.project-progress-content .completed-dot {
+    background: #12b76a !important;
+}
+
+.project-progress-content .running-dot {
+    background: #f79009 !important;
+}
+
+.project-progress-content .pending-dot {
+    background: #98a2b3 !important;
+}
+
+
+/* ================================
+   NO PROJECT SELECTED
+================================ */
+
+.dashboard-project-progress-card .progress-circle {
+    background: conic-gradient(
+        #e4e7ec 0% 100%
+    ) !important;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1200px) {
+    .project-progress-content {
+        gap: 20px !important;
+    }
+
+    .project-progress-content .progress-circle {
+        width: 135px !important;
+        height: 135px !important;
+        min-width: 135px !important;
+        min-height: 135px !important;
+    }
+
+    .project-progress-content .progress-circle-inner {
+        width: 100px !important;
+        height: 100px !important;
+    }
+}
+
+@media (max-width: 1000px) {
+    .dashboard-project-progress-card {
+        min-height: 280px !important;
+    }
+
+    .project-progress-content {
+        gap: 40px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .project-progress-content {
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+
+    .dashboard-project-progress-card {
+        min-height: 450px !important;
+    }
+
+    .project-progress-content .progress-details {
+        width: 180px !important;
+    }
+}
+
+
+/* ================================
+   TEAM COLLABORATION
+================================ */
+
+.dashboard-team-card {
+    position: relative !important;
+    width: 100% !important;
+    min-height: 220px !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+.dashboard-team-card .section-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    margin-bottom: 18px !important;
+}
+
+.dashboard-team-card .section-header h2 {
+    margin: 0 !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #101828 !important;
+}
+
+.dashboard-team-card .circle-action {
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #d0d5dd !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #667085 !important;
+    cursor: pointer !important;
+}
+
+.dashboard-team-card .circle-action:hover {
+    background: #f9fafb !important;
+}
+
+
+/* Team members */
+
+.dashboard-team-card .team-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+}
+
+.dashboard-team-card .team-row {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+}
+
+.dashboard-team-card .team-row:hover {
+    background: #f9fafb !important;
+}
+
+.dashboard-team-card .team-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background: #f0eaff !important;
+    color: #6941c6 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+.dashboard-team-card .team-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    margin-left: 10px !important;
+}
+
+.dashboard-team-card .team-info strong {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #344054 !important;
+}
+
+.dashboard-team-card .team-info span {
+    font-size: 11px !important;
+    color: #98a2b3 !important;
+}
+
+.dashboard-team-card .team-status {
+    margin-left: auto !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    color: #027a48 !important;
+    background: #ecfdf3 !important;
+    padding: 4px 8px !important;
+    border-radius: 999px !important;
+}
+
+
+/* ================================
+   ADD TEAM MEMBER POPUP
+================================ */
+
+.dashboard-team-card {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+.dashboard-team-card .add-member-form {
+    position: absolute !important;
+    top: 58px !important;
+    right: 12px !important;
+
+    width: 250px !important;
+    padding: 16px !important;
+
+    background: #ffffff !important;
+    border: 1px solid #eaecf0 !important;
+    border-radius: 10px !important;
+
+    box-shadow:
+        0 8px 24px rgba(16, 24, 40, 0.12),
+        0 2px 6px rgba(16, 24, 40, 0.06) !important;
+
+    z-index: 9999 !important;
+    box-sizing: border-box !important;
+}
+
+.dashboard-team-card .add-member-form h3 {
+    margin: 0 0 16px 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #101828 !important;
+}
+
+.dashboard-team-card .add-member-form .form-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin-bottom: 14px !important;
+}
+
+.dashboard-team-card .add-member-form label {
+    display: block !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #344054 !important;
+}
+
+/* SELECT */
+
+.dashboard-team-card .add-member-form select {
+    display: block !important;
+    width: 100% !important;
+    height: 38px !important;
+
+    padding: 0 32px 0 10px !important;
+
+    border: 1px solid #d0d5dd !important;
+    border-radius: 6px !important;
+
+    background-color: #ffffff !important;
+    color: #344054 !important;
+
+    font-size: 12px !important;
+    line-height: 38px !important;
+
+    outline: none !important;
+    box-sizing: border-box !important;
+}
+
+.dashboard-team-card .add-member-form select:focus {
+    border-color: #6941c6 !important;
+    box-shadow: 0 0 0 2px rgba(105, 65, 198, 0.08) !important;
+}
+
+/* PLACEHOLDER OPTION */
+
+.dashboard-team-card .add-member-form select option {
+    color: #344054 !important;
+    background: #ffffff !important;
+}
+
+.dashboard-team-card .add-member-form select option[value=""] {
+    color: #667085 !important;
+}
+
+/* BUTTONS */
+
+.dashboard-team-card .add-member-actions {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-top: 16px !important;
+}
+
+.dashboard-team-card .cancel-member-btn,
+.dashboard-team-card .save-member-btn {
+    height: 34px !important;
+    padding: 0 12px !important;
+
+    border-radius: 6px !important;
+
+    font-size: 12px !important;
+    font-weight: 600 !important;
+
+    cursor: pointer !important;
+}
+
+.dashboard-team-card .cancel-member-btn {
+    background: #ffffff !important;
+    border: 1px solid #d0d5dd !important;
+    color: #344054 !important;
+}
+
+.dashboard-team-card .save-member-btn {
+    background: #6941c6 !important;
+    border: 1px solid #6941c6 !important;
+    color: #ffffff !important;
+}
+
+.dashboard-team-card .save-member-btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}

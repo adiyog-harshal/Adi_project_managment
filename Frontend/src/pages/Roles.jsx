@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+import api from "../services/api";
 
 import {
     Plus,
@@ -12,16 +14,7 @@ import RoleModal from "./RoleModal";
 
 function Roles() {
 
-    const [roles, setRoles] = useState([
-        {
-            id: 1,
-            name: "Super Admin",
-            description: "Full access to the PMS system",
-            status: "Active",
-        },
-        
-        
-    ]);
+    const [roles, setRoles] = useState([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -40,8 +33,8 @@ function Roles() {
         setIsModalOpen(true);
     };
 
-
-    const handleDeleteRole = (id) => {
+    // DELETE ROLE
+    const handleDeleteRole = async (id) => {
 
         const confirmed = window.confirm(
             "Are you sure you want to delete this role?"
@@ -51,56 +44,73 @@ function Roles() {
             return;
         }
 
-        setRoles((previousRoles) =>
-            previousRoles.filter((role) => role.id !== id)
-        );
+        try {
+
+            await api.delete(`roles/${id}/`);
+
+            await fetchRoles();
+
+        } catch (error) {
+
+            console.error("Failed to delete role:", error);
+
+            alert("Failed to delete role.");
+
+        }
     };
 
     // Save role
-    const handleSaveRole = (roleData) => {
+    const handleSaveRole = async (roleData) => {
+        try {
+            console.log("ROLE DATA:", roleData);
 
-        if (selectedRole) {
+            if (selectedRole) {
+                await api.put(`roles/${selectedRole.id}/`, roleData);
+            } else {
+                await api.post("roles/", roleData);
+            }
 
+            await fetchRoles();
 
-            setRoles((previousRoles) =>
-                previousRoles.map((role) =>
-                    role.id === selectedRole.id
-                        ? {
-                            ...role,
-                            ...roleData,
-                        }
-                        : role
-                )
+            // Close form after successful save
+            setIsModalOpen(false);
+            setSelectedRole(null);
+
+        } catch (error) {
+            console.error("Failed to save role:", error);
+            console.error("Backend response:", error.response?.data);
+
+            alert(
+                error.response?.data
+                    ? JSON.stringify(error.response.data)
+                    : "Failed to save role."
             );
-
-        } else {
-
-            // Create new role
-            const newRole = {
-                id: Date.now(),
-                ...roleData,
-            };
-
-            setRoles((previousRoles) => [
-                ...previousRoles,
-                newRole,
-            ]);
         }
-
-        setIsModalOpen(false);
-        setSelectedRole(null);
     };
-
     // Search
     const filteredRoles = roles.filter((role) => {
 
         const searchText = search.toLowerCase();
 
         return (
-            role.name.toLowerCase().includes(searchText) ||
-            role.description.toLowerCase().includes(searchText)
+            (role.role_name || "").toLowerCase().includes(searchText) ||
+            (role.description || "").toLowerCase().includes(searchText)
         );
     });
+    const fetchRoles = async () => {
+        try {
+            const response = await api.get("roles/");
+            console.log("ROLES DATA:", response.data);
+
+            setRoles(response.data);
+        } catch (error) {
+            console.error("Failed to fetch roles:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRoles();
+    }, []);
 
     return (
         <div className="roles-page">
@@ -114,7 +124,7 @@ function Roles() {
                     <div className="page-title-wrapper">
 
                         <ShieldCheck
-                            size={27}
+                            size={22}
                             className="page-title-icon"
                         />
 
@@ -178,6 +188,8 @@ function Roles() {
 
                 {/* Table */}
 
+                {/* Table */}
+
                 <div className="table-container">
 
                     <table>
@@ -185,10 +197,6 @@ function Roles() {
                         <thead>
 
                             <tr>
-
-                                <th>
-                                    #
-                                </th>
 
                                 <th>
                                     Role Name
@@ -217,7 +225,7 @@ function Roles() {
                                 <tr>
 
                                     <td
-                                        colSpan="5"
+                                        colSpan="4"
                                         className="empty-state"
                                     >
                                         No roles found
@@ -227,13 +235,9 @@ function Roles() {
 
                             ) : (
 
-                                filteredRoles.map((role, index) => (
+                                filteredRoles.map((role) => (
 
                                     <tr key={role.id}>
-
-                                        <td>
-                                            {index + 1}
-                                        </td>
 
                                         <td>
 
@@ -243,7 +247,7 @@ function Roles() {
                                                     <ShieldCheck size={17} />
                                                 </div>
 
-                                                {role.name}
+                                                {role.role_name}
 
                                             </div>
 
@@ -257,12 +261,12 @@ function Roles() {
 
                                             <span
                                                 className={
-                                                    role.status === "Active"
+                                                    role.is_active
                                                         ? "status active-status"
                                                         : "status inactive-status"
                                                 }
                                             >
-                                                {role.status}
+                                                {role.is_status ? "Active" : "Inactive"}
                                             </span>
 
                                         </td>

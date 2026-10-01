@@ -1,0 +1,602 @@
+/* =====================================================
+   PROJECT DETAILS PAGE
+   ===================================================== */
+
+.project-details-page {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+
+    padding: 38px 56px 60px;
+
+    background: #ffffff;
+
+    color: #102d63;
+}
+
+
+/* =====================================================
+   BACK TO PROJECTS
+   ===================================================== */
+
+.back-project-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 12px;
+
+    border: 1px solid #bec4ca;
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    color: #52698f;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    margin-bottom: 24px;
+
+    transition: 0.2s ease;
+}
+
+.back-project-btn svg {
+    width: 15px;
+    height: 15px;
+}
+
+.back-project-btn:hover {
+    background: #f7faff;
+    color: #2563eb;
+    border-color: #c7dbf5;
+}
+
+
+/* =====================================================
+   PROJECT HEADER
+   ===================================================== */
+
+.project-details-header {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 22px 28px;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe7f5;
+    border-radius: 14px;
+
+    margin-bottom: 24px;
+}
+
+
+/* Left side of header */
+
+.project-title-section {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+
+    min-width: 0;
+}
+
+
+/* Project document icon */
+
+.project-details-icon {
+    width: 92px;
+    height: 92px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eaf3ff;
+
+    border-radius: 18px;
+
+    color: #2563eb;
+}
+
+.project-details-icon svg {
+    width: 48px;
+    height: 48px;
+
+    color: #2563eb;
+}
+
+
+/* Project name */
+
+.project-title-section h1 {
+    margin: 0 0 6px;
+    color: #102d63;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.2;
+
+}
+
+
+/* Project number */
+
+.project-title-section p {
+    margin: 0;
+    color: #58709a;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* =====================================================
+   TOP STATUS BADGE
+   ===================================================== */
+
+.project-detail-status {
+    flex-shrink: 0;
+
+    padding: 8px 18px;
+
+    border-radius: 30px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    line-height: 1;
+}
+
+
+/* Upcoming */
+
+.project-detail-status.status-upcoming {
+    background: #fff2df !important;
+    color: #f59e0b !important;
+}
+
+
+/* Ongoing */
+
+.project-detail-status.status-ongoing {
+    background: #e4efff !important;
+    color: #2563eb !important;
+}
+
+
+/* Completed */
+
+.project-detail-status.status-completed {
+    background: #e4f8e9 !important;
+    color: #16a34a !important;
+}
+
+
+/* =====================================================
+   SUMMARY CARDS
+   ===================================================== */
+
+.project-summary-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 28px;
+}
+
+
+.project-summary-card {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 22px;
+
+    padding: 25px 28px;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe7f5;
+
+    border-radius: 13px;
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   SUMMARY ICONS
+   ===================================================== */
+
+.project-summary-card .summary-icon {
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+}
+
+
+/* Manager */
+
+.manager-icon {
+    background: #f0e5ff !important;
+    color: #7c3aed !important;
+}
+
+
+/* Start date */
+
+.start-date-icon {
+    background: #e5f1ff !important;
+    color: #2563eb !important;
+}
+
+
+/* End date */
+
+.end-date-icon {
+    background: #fff0d9 !important;
+    color: #f59e0b !important;
+}
+
+
+/* Status */
+
+.status-icon {
+    background: #e3f8e8 !important;
+    color: #16a34a !important;
+}
+
+
+/* Lucide */
+
+.project-summary-card .summary-icon svg {
+    color: inherit !important;
+}
+
+
+/* =====================================================
+   SUMMARY CARD TEXT
+   ===================================================== */
+
+.project-summary-card > div:last-child {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.project-summary-card span {
+    color: #58709a;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+.project-summary-card strong {
+    color: #102d63;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    word-break: break-word;
+}
+
+
+/* =====================================================
+   PROJECT INFORMATION CARD
+   ===================================================== */
+
+.project-information-card {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe7f5;
+
+    border-radius: 14px;
+
+    margin-bottom: 24px;
+}
+
+
+/* =====================================================
+   PROJECT DETAILS TITLE
+   ===================================================== */
+
+.section-title {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    margin-bottom: 30px;
+}
+
+
+.section-title svg {
+    width: 22px;
+    height: 22px;
+
+    color: #2563eb;
+}
+
+
+.section-title h2 {
+    margin: 0;
+
+    color: #2563eb;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   INFORMATION GRID
+   ===================================================== */
+
+.project-information-grid {
+    width: 100%;
+}
+
+
+/* =====================================================
+   DESCRIPTION
+   ===================================================== */
+
+.project-description {
+    width: 100%;
+
+    min-height: 170px;
+
+    box-sizing: border-box;
+
+    padding: 30px;
+
+    background: #f7fbff;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 12px;
+}
+
+
+.description-header {
+    display: flex;
+    align-items: center;
+}
+
+
+.description-header h3 {
+    margin: 0;
+
+    color: #102d63;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+.project-description p {
+    margin: 14px 0 0;
+
+    color: #58709a;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   PROJECT TABS
+   ===================================================== */
+
+.project-sections {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 20px;
+
+    padding-top: 32px;
+
+    margin-top: 32px;
+
+    border-top: 1px solid #e4ebf5;
+}
+
+
+/* Every tab */
+
+.project-section-btn {
+    min-height: 48px;
+    padding: 0 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    border: none;
+    border-radius: 25px;
+
+    background: #f5f8fc;
+    color: #58709a;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.project-section-btn svg {
+    width: 18px;
+    height: 18px;
+
+    color: #58709a;
+}
+
+
+/* Active Overview */
+
+.project-section-btn.active {
+    background: #2563eb;
+
+    color: #ffffff;
+
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18);
+}
+
+
+.project-section-btn.active svg {
+    color: #ffffff;
+}
+
+
+/* Hover */
+
+.project-section-btn:not(.active):hover {
+    background: #edf4ff;
+
+    color: #2563eb;
+}
+
+
+.project-section-btn:not(.active):hover svg {
+    color: #2563eb;
+}
+
+
+/* =====================================================
+   LOADING
+   ===================================================== */
+
+.project-details-loading {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #58709a;
+
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   NOT FOUND
+   ===================================================== */
+
+.project-not-found {
+    padding: 40px;
+
+    text-align: center;
+
+    color: #58709a;
+
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 1100px) {
+
+    .project-details-page {
+        padding: 30px;
+    }
+
+    .project-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .project-details-page {
+        padding: 22px 16px 40px;
+    }
+
+    .project-details-header {
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .project-title-section {
+        gap: 16px;
+    }
+
+    .project-details-icon {
+        width: 65px;
+        height: 65px;
+    }
+
+    .project-details-icon svg {
+        width: 34px;
+        height: 34px;
+    }
+
+    .project-title-section h1 {
+        font-size: 24px;
+    }
+
+    .project-title-section p {
+        font-size: 15px;
+    }
+
+    .project-detail-status {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    .project-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .project-sections {
+        flex-wrap: wrap;
+    }
+
+    .project-section-btn {
+        min-height: 50px;
+        padding: 0 20px;
+        font-size: 14px;
+    }
+}
