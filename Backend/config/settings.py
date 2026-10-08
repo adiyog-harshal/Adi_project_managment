@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'milestones',
     'role',
     
+    'sprints',
     
 ]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

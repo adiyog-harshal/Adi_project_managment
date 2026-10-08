@@ -30,7 +30,13 @@ class Task(models.Model):
         on_delete=models.CASCADE,
         related_name='tasks'
     )
-
+    sprint = models.ForeignKey(
+    'sprints.Sprint',
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name='tasks'
+    )
     assigned_to = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,

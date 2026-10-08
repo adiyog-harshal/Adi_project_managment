@@ -13,6 +13,8 @@ const Projects = () => {
 
     const [showForm, setShowForm] = useState(false);
 
+    const [selectedProject, setSelectedProject] = useState(null);
+
     const [projectForm, setProjectForm] = useState({
         project_name: "",
         start_date: "",
@@ -282,7 +284,18 @@ const Projects = () => {
 
                             <div>
 
-                                <strong>
+                                <strong
+                                    className="project-name-link"
+                                    onClick={() =>
+                                        setSelectedProject({
+                                            id: 1,
+                                            project_name: "CRM Project",
+                                            client: "ABC Company",
+                                            start_date: "15 Sep 2026",
+                                            status: "Active"
+                                        })
+                                    }
+                                >
                                     CRM Project
                                 </strong>
 
@@ -315,10 +328,80 @@ const Projects = () => {
 
                     </div>
                 </div>
-            </div>
+
+                </div>
+
+            {/* PROJECT DETAILS */}
+
+            {selectedProject && (
+                <div className="project-details-page">
+
+                    <div className="project-details-header">
+
+                        <div>
+                            <h1>
+                                {selectedProject.project_name}
+                            </h1>
+
+                            <p>
+                                {selectedProject.client}
+                            </p>
+                        </div>
+
+                        <button
+                            className="back-project-btn"
+                            onClick={() => setSelectedProject(null)}
+                        >
+                            Back to Projects
+                        </button>
+
+                    </div>
+
+                    {/* PROJECT TABS */}
+
+                    <div className="project-details-tabs">
+
+                        <button className="project-tab active">
+                            Overview
+                        </button>
+
+                        <button className="project-tab">
+                            Backlog
+                        </button>
+
+                        <button className="project-tab">
+                            Tasks
+                        </button>
+
+                        <button className="project-tab">
+                            Milestones
+                        </button>
+
+                        <button className="project-tab">
+                            Sprints
+                        </button>
+
+                    </div>
+
+                    {/* OVERVIEW */}
+
+                    <div className="project-details-card">
+
+                        <h2>
+                            Project Overview
+                        </h2>
+
+                        <p>
+                            Project details and activities will appear here.
+                        </p>
+
+                    </div>
+
+                </div>
+            )}
+
         </div>
     );
 };
-
 
 export default Projects;
