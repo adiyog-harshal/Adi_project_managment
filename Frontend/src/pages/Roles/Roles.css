@@ -906,6 +906,7 @@
     .roles-add-button {
         align-self: flex-start;
     }
+<<<<<<< HEAD
 }
 
 
@@ -1199,3 +1200,6 @@
 .roles-page .status-dropdown-menu .inactive-option.selected-status {
     background: #fee2e2;
 }
+=======
+}
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)

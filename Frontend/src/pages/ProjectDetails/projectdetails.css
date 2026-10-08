@@ -651,6 +651,7 @@
     }
 }
 
+<<<<<<< HEAD
 
 
 
@@ -658,6 +659,8 @@
 
     
 
+=======
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 .project-section-content {
     margin-top: 24px;
     padding: 22px;
@@ -1290,6 +1293,10 @@
     }
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 @media (max-width: 700px) {
 
     .overview-cards {
@@ -1307,6 +1314,7 @@
     .overview-card-header h3 {
         font-size: 16px;
     }
+<<<<<<< HEAD
 }
 
 
@@ -1783,3 +1791,6 @@
     background: #a9a0ed;
     border-radius: 8px;
 }
+=======
+}
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)

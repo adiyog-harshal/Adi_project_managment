@@ -15,6 +15,10 @@ import api from "../../services/api";
 import "./designations.css";
 import {
     PMSPageHeader,
+<<<<<<< HEAD
+=======
+    PMSSearch,
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     PMSActionButton,
 } from "../../components/Common/Common";
 
@@ -224,6 +228,7 @@ const Designations = () => {
 
     
     const filteredDesignations = designations.filter((designation) => {
+<<<<<<< HEAD
         const query = searchTerm.trim().toLowerCase();
 
         if (!query) {
@@ -234,6 +239,19 @@ const Designations = () => {
             .toLowerCase()
             .includes(query);
     });
+=======
+        const query = searchTerm.toLowerCase();
+
+        return (
+            String(designation.name || "")
+                .toLowerCase()
+                .includes(query) ||
+            String(designation.status || "")
+                .toLowerCase()
+                .includes(query)
+        );
+    });     
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
     const totalPages = Math.ceil(filteredDesignations.length / itemsPerPage);
 
@@ -293,6 +311,7 @@ const Designations = () => {
             </div>
 
             <div className="designations-toolbar">
+<<<<<<< HEAD
                 <label className="designation-search" htmlFor="designation-search-input">
                     <Search size={18} aria-hidden="true" />
                     <input
@@ -301,6 +320,23 @@ const Designations = () => {
                         placeholder="Search designations"
                         value={searchTerm}
                         onChange={(event) => setSearchTerm(event.target.value)}
+=======
+
+                <div className="designation-search-box">
+
+                    <Search 
+                        size={18} 
+                        className="designation-search-icon"
+                    />
+
+                    <PMSSearch
+                        value={Search}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        placeholder="Search designations"
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                     />
                 </label>
             </div>

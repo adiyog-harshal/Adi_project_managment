@@ -5,7 +5,10 @@ import {
     Plus,
     Pencil,
     Trash2,
+<<<<<<< HEAD
     ClipboardList,
+=======
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     X,
 } from "lucide-react";
 
@@ -26,7 +29,10 @@ const Backlog = () => {
     const [project, setProject] = useState(null);
     const [tasks, setTasks] = useState([]);
     const [users, setUsers] = useState([]);
+<<<<<<< HEAD
     const [milestones, setMilestones] = useState([]);
+=======
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -35,9 +41,15 @@ const Backlog = () => {
 
     const [form, setForm] = useState({
         title: "",
+<<<<<<< HEAD
         assignedTo: "",
         priority: "",
         milestone: ""
+=======
+        description: "",
+        assignedTo: "",
+        priority: "",
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     });
 
 
@@ -112,6 +124,7 @@ const Backlog = () => {
         }
     };
 
+<<<<<<< HEAD
     const fetchMilestones = async () => {
         try {
             const response = await api.get("milestones/");
@@ -150,11 +163,17 @@ const Backlog = () => {
         }
     };
 
+=======
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
     useEffect(() => {
 
         fetchBacklog();
+<<<<<<< HEAD
         fetchMilestones();
+=======
+
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     }, [id]);
 
 
@@ -198,14 +217,21 @@ const Backlog = () => {
 
             const payload = {
                 task_name: form.title.trim(),
+<<<<<<< HEAD
+=======
+                description: form.description.trim(),
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                 project: Number(id),
                 assigned_to: form.assignedTo
                     ? Number(form.assignedTo)
                     : null,
                 priority: form.priority,
+<<<<<<< HEAD
                 milestone: form.milestone
                 ? Number(form.milestone)
                 : null,
+=======
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
             };
 
@@ -235,9 +261,15 @@ const Backlog = () => {
             // Clear form
             setForm({
                 title: "",
+<<<<<<< HEAD
                 assignedTo: "",
                 priority: "",
                 milestone: "",
+=======
+                description: "",
+                assignedTo: "",
+                priority: "",
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
             });
 
 
@@ -336,15 +368,22 @@ const Backlog = () => {
 
         setForm({
             title: task.task_name || "",
+<<<<<<< HEAD
+=======
+            description: task.description || "",
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
             assignedTo: task.assigned_to && typeof task.assigned_to === "object"
                 ? task.assigned_to.id
                 : task.assigned_to || "",
             priority: task.priority || "",
+<<<<<<< HEAD
             milestone: 
                 task.milestone && typeof task.milestone === "object"
                 ? task.milestone.id 
                 : task.milestone || "",
             
+=======
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
         });
 
         setShowForm(true);
@@ -409,6 +448,7 @@ const Backlog = () => {
             {/* PAGE HEADER */}
 
             <PMSPageHeader
+<<<<<<< HEAD
                 title={
                     <>
                         <ClipboardList
@@ -427,6 +467,17 @@ const Backlog = () => {
                 "Project Backlog"
                 }
                 buttonText="Add Backlog"
+=======
+                title="Backlog"
+
+                subtitle={
+                    project.project_name ||
+                    "Project Backlog"
+                }
+
+                buttonText="Add Backlog"
+
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                 buttonIcon={
                     <Plus size={16} />
                 }
@@ -436,9 +487,15 @@ const Backlog = () => {
 
                     setForm({
                         title: "",
+<<<<<<< HEAD
                         assignedTo: "",
                         priority: "",
                         milestone: "",
+=======
+                        description: "",
+                        assignedTo: "",
+                        priority: "",
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                     });
 
                     setShowForm(true);
@@ -510,6 +567,7 @@ const Backlog = () => {
                                 />
 
                             </div>
+<<<<<<< HEAD
                             
                             <div className="backlog-form-group">
     <label>Milestone</label>
@@ -528,6 +586,26 @@ const Backlog = () => {
         ))}
     </select>
 </div>
+=======
+
+
+                            {/* DESCRIPTION */}
+                            <div className="backlog-form-group">
+
+                                <label>
+                                    Description
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    value={form.description}
+                                    onChange={handleChange}
+                                    placeholder="Enter description"
+                                    rows={4}
+                                />
+
+                            </div>
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
 
                             {/* ASSIGNED TO */}
@@ -651,7 +729,11 @@ const Backlog = () => {
 
                 <div className="backlog-table-header">
                     <div>Backlog Item</div>
+<<<<<<< HEAD
                     <div>Milestone</div>
+=======
+                    <div>Description</div>
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                     <div>Priority</div>
                     <div>Assigned To</div>
                     <div>Actions</div>
@@ -688,6 +770,7 @@ const Backlog = () => {
                             user?.username ||
                             "Unassigned";
 
+<<<<<<< HEAD
                         
 
                         const milestoneId =
@@ -702,6 +785,9 @@ const Backlog = () => {
                                     (m) => String(m.id) === String(milestoneId)
                                 )?.milestone_name || "-";
         
+=======
+
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                         return (
 
                             <div 
@@ -712,6 +798,7 @@ const Backlog = () => {
                                     {task.task_name || "-"}
                                 </div>
 
+<<<<<<< HEAD
                                 <div className="backlog-milestone">
                                     {milestoneName || "-"}
                                 </div>
@@ -721,6 +808,22 @@ const Backlog = () => {
                                     {task.priority}
                                 </span>
                                 
+=======
+
+                                {/* ITEM */}
+
+                                <div className="backlog-description">
+                                   {task.description || "-"}
+                                </div>
+
+                               {/* PRIORITY */}
+
+                                <div className="backlog-priority">
+                                    {task.priority || "-"}
+                                </div>
+
+
+>>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                                 {/* ASSIGNED */}
 
                                 <div className="backlog-assigned">
