@@ -32,11 +32,11 @@ const Projects = () => {
     const [openAction, setOpenAction] = useState(null);
 
     const navigate = useNavigate();
-    
+
     const [editingProject, setEditingProject] = useState(null);
 
     const [currentPage, setCurrentPage] = useState(1);
-    
+
     const projectsPerPage = 5;
 
     const totalProjectCount = projects.length;
@@ -81,12 +81,14 @@ const Projects = () => {
 
     const [selectedProject, setSelectedProject] = useState(null);
 
+    const [selectedProject, setSelectedProject] = useState(null);
+
     const [projectForm, setProjectForm] = useState({
         project_name: "",
         start_date: "",
         end_date: "",
         project_manager: "",
-        description:""
+        description: ""
     });
 
     const [formError, setFormError] = useState("");
@@ -188,7 +190,7 @@ const Projects = () => {
     const fetchProjects = async () => {
         try {
             const response = await api.get("projects/");
-            
+
             setProjects([...response.data].reverse());
         } catch (error) {
             console.error("Error fetching projects:", error);
@@ -235,7 +237,7 @@ const Projects = () => {
                 `projects/notifications/${notificationId}/read`
             );
 
-            setNotifications((prev) => 
+            setNotifications((prev) =>
                 prev.map((notification) =>
                     notification.id === notificationId
                         ? { ...notification, is_read: true }
@@ -343,7 +345,7 @@ const Projects = () => {
 
     return (
 
-        <div className={`projects-page ${showForm ? "form-open" : "" }`}>
+        <div className={`projects-page ${showForm ? "form-open" : ""}`}>
 
             {/* PAGE HEADER */}
 
@@ -366,8 +368,8 @@ const Projects = () => {
                 <div className="project-header-actions">
 
                     <div className="notification-wrapper">
-                        <button 
-                            className="header-icon-btn" 
+                        <button
+                            className="header-icon-btn"
                             title="Notifications"
                             onClick={() => setShowNotifications(!showNotifications)}
                         >
@@ -376,13 +378,13 @@ const Projects = () => {
                             {notifications.some(
                                 (notification) => !notification.is_read
                             ) && (
-                                <span className="notification-dot"></span>
-                            )}
+                                    <span className="notification-dot"></span>
+                                )}
                         </button>
 
                         {showNotifications && (
                             <div className="notification-dropdown">
-                                
+
                                 <div className="notification-header">
                                     <span>Notifications</span>
                                 </div>
@@ -395,10 +397,9 @@ const Projects = () => {
                                     notifications.map((notification) => (
                                         <div
                                             key={notification.id}
-                                            className={`notification-item ${
-                                                !notification.is_read ? "unread" : ""
-                                            }`}
-                                            onClick={() => 
+                                            className={`notification-item ${!notification.is_read ? "unread" : ""
+                                                }`}
+                                            onClick={() =>
                                                 !notification.is_read &&
                                                 markAsRead(notification.id)
                                             }
@@ -427,7 +428,7 @@ const Projects = () => {
                     </div>
 
 
-                    
+
 
                     <button
                         className="add-project-btn"
@@ -506,150 +507,150 @@ const Projects = () => {
 
                         <div className="project-form-top">
 
-                            
 
-                            <div className="project-form-header">    
+
+                            <div className="project-form-header">
                                 <h2>Add New Project</h2>
 
                                 <p>Enter the project details below</p>
-                            
+
 
                             </div>
-                                
-                                <button
-                                    type="button"
-                                    className="project-close-btn"
-                                    onClick={() => {
-                                        setShowForm(false);
-                                        setFormError("");
-                                    }}
-                                    
-                                >
-                                    x
-                                </button>
+
+                            <button
+                                type="button"
+                                className="project-close-btn"
+                                onClick={() => {
+                                    setShowForm(false);
+                                    setFormError("");
+                                }}
+
+                            >
+                                x
+                            </button>
                         </div>
-                            
-
-                            {formError && (
-                                <div className="project-form-error">
-                                    {formError}
-                                </div>
-                            )}
-
-                            <div className="project-form-grid">
-
-                                {/* Project Name */}
-
-                                
-                                <div className="form-group full-width">
-                                    <label>Project Name</label>
-
-                                    <input
-                                        type="text"
-                                        name="project_name"
-                                        value={projectForm.project_name}
-                                        onChange={handleChange}
-                                        placeholder="Enter project name"
-                                    />
-                                </div>
 
 
-                                {/* project manager dropdown */}
-                                
+                        {formError && (
+                            <div className="project-form-error">
+                                {formError}
+                            </div>
+                        )}
 
-                                <div className="form-group">
-                                    <label>Project Manager</label>
+                        <div className="project-form-grid">
 
-                                    <select
-                                        name="project_manager"
-                                        value={projectForm.project_manager}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="">
-                                            Select Project Manager
+                            {/* Project Name */}
+
+
+                            <div className="form-group full-width">
+                                <label>Project Name</label>
+
+                                <input
+                                    type="text"
+                                    name="project_name"
+                                    value={projectForm.project_name}
+                                    onChange={handleChange}
+                                    placeholder="Enter project name"
+                                />
+                            </div>
+
+
+                            {/* project manager dropdown */}
+
+
+                            <div className="form-group">
+                                <label>Project Manager</label>
+
+                                <select
+                                    name="project_manager"
+                                    value={projectForm.project_manager}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">
+                                        Select Project Manager
+                                    </option>
+
+                                    {users.map((user) => (
+                                        <option key={user.id} value={user.id}>
+                                            {user.username}
                                         </option>
-
-                                        {users.map((user) => (
-                                            <option key={user.id} value={user.id}>
-                                                {user.username}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                                    ))}
+                                </select>
+                            </div>
 
 
-                            
-                                
 
 
-                                {/* Start Date */}
-                                <div className="form-group">
-                                    <label>Start Date</label>
-
-                                    <input
-                                        type="date"
-                                        name="start_date"
-                                        value={projectForm.start_date}
-                                        onChange={handleChange}
-                                        min="2000-01-01"
-                                    
-                                    />
-                                </div>
 
 
-                                {/* End Date */}
-                                <div className="form-group">
-                                    <label>End Date</label>
+                            {/* Start Date */}
+                            <div className="form-group">
+                                <label>Start Date</label>
 
-                                    <input
-                                        type="date"
-                                        name="end_date"
-                                        value={projectForm.end_date}
-                                        onChange={handleChange}
-                                        min="2000-01-01"
-                                        
-                                    />
-                                </div>
+                                <input
+                                    type="date"
+                                    name="start_date"
+                                    value={projectForm.start_date}
+                                    onChange={handleChange}
+                                    min="2000-01-01"
 
-                                <div className="form-group full-width">
-                                    <label>Description</label>
+                                />
+                            </div>
 
-                                    <textarea
-                                        name="description"
-                                        value={projectForm.description}
-                                        onChange={handleChange}
-                                        placeholder="Enter project description"
-                                    />
 
-                                </div>
+                            {/* End Date */}
+                            <div className="form-group">
+                                <label>End Date</label>
 
+                                <input
+                                    type="date"
+                                    name="end_date"
+                                    value={projectForm.end_date}
+                                    onChange={handleChange}
+                                    min="2000-01-01"
+
+                                />
+                            </div>
+
+                            <div className="form-group full-width">
+                                <label>Description</label>
+
+                                <textarea
+                                    name="description"
+                                    value={projectForm.description}
+                                    onChange={handleChange}
+                                    placeholder="Enter project description"
+                                />
 
                             </div>
 
-                            <div className="project-form-actions">
 
-                                <button
-                                    type="button"
-                                    className="cancel-project-btn"
-                                    onClick={() => {
-                                        setShowForm(false);
-                                        setFormError("");
-                                    }}
-                                >
-                                    Cancel
-                                </button>
+                        </div>
 
-                                <button
-                                    type="button"
-                                    className="create-project-btn"
-                                    onClick={handleCreateProject}
-                                >
-                                    Save Project
-                                </button>
+                        <div className="project-form-actions">
 
-                            </div>
+                            <button
+                                type="button"
+                                className="cancel-project-btn"
+                                onClick={() => {
+                                    setShowForm(false);
+                                    setFormError("");
+                                }}
+                            >
+                                Cancel
+                            </button>
 
-                        
+                            <button
+                                type="button"
+                                className="create-project-btn"
+                                onClick={handleCreateProject}
+                            >
+                                Save Project
+                            </button>
+
+                        </div>
+
+
 
                     </div>
                 </div>
@@ -698,125 +699,124 @@ const Projects = () => {
 
                     </div>
 
-                        {/* table rows */}
+                    {/* table rows */}
                     {/* TABLE ROWS */}
-        {currentProjects.length > 0 ? (
-            currentProjects.map((project) => (
-                <div className="table-row" key={project.id}>
+                    {currentProjects.length > 0 ? (
+                        currentProjects.map((project) => (
+                            <div className="table-row" key={project.id}>
 
-                    {/* PROJECT */}
-                    <div className="project-name">
-                        <div className="project-icon">
-                            <FolderKanban size={18} />
-                        </div>
+                                {/* PROJECT */}
+                                <div className="project-name">
+                                    <div className="project-icon">
+                                        <FolderKanban size={18} />
+                                    </div>
 
-                        <div>
-                            <Link
-                                to={`/projects/${project.id}`}
-                                className="project-name-link"
-                            >
-                                {project.project_name}
-                            </Link>
-                        </div>
-                    </div>
-
-
-                    {/* START DATE */}
-                    <span>
-                        {project.start_date || "-"}
-                    </span>
-                    <span>{project.end_date || "_"}</span>
-
-                    {/* PROGRESS */}
-                    <div className="project-progress">
-
-                         <div className="progress-bar">
-                            <div
-                                className={`progress-fill ${
-                                    calculateProgress(project) < 50
-                                        ? "progress-orange"
-                                        : "progress-green"
-                                }`}
-                                style={{
-                                    width: `${calculateProgress(project)}%`
-                                }}
-                            />
-                        </div>
-
-                        <span className="progress-percentage">
-                            {calculateProgress(project)}%
-                        </span>
-
-                    </div>
-
-                    {/* STATUS */}
-                
-
-                    {/* ACTION */}
-                    <div 
-                        className="action-menu"
-                    >
-
-                        
-                        <button 
-                            type="button"
-                            className="action-button"
-                            onClick={() => {
-                                
-
-                                setOpenAction(
-                                    openAction === project.id ? null : project.id
-                                );
-                            }}
-                        >
-                            <MoreVertical size={18} />
-                        </button>
-
-                        {openAction === project.id && (
-                            <div 
-                                className="action-dropdown"
-                                
-                            >
+                                    <div>
+                                        <Link
+                                            to={`/projects/${project.id}`}
+                                            className="project-name-link"
+                                        >
+                                            {project.project_name}
+                                        </Link>
+                                    </div>
+                                </div>
 
 
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setOpenAction(null);
-                                        handleEditProject(project);
-                                    }}                                
+                                {/* START DATE */}
+                                <span>
+                                    {project.start_date || "-"}
+                                </span>
+                                <span>{project.end_date || "_"}</span>
+
+                                {/* PROGRESS */}
+                                <div className="project-progress">
+
+                                    <div className="progress-bar">
+                                        <div
+                                            className={`progress-fill ${calculateProgress(project) < 50
+                                                ? "progress-orange"
+                                                : "progress-green"
+                                                }`}
+                                            style={{
+                                                width: `${calculateProgress(project)}%`
+                                            }}
+                                        />
+                                    </div>
+
+                                    <span className="progress-percentage">
+                                        {calculateProgress(project)}%
+                                    </span>
+
+                                </div>
+
+                                {/* STATUS */}
+
+
+                                {/* ACTION */}
+                                <div
+                                    className="action-menu"
                                 >
-                                    Edit
-                                </button>
 
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setOpenAction(null);
-                                        handleDeleteProject(project.id);
 
-                                    }}
-                                >
-                                    
-                                    Delete
-                                </button>
+                                    <button
+                                        type="button"
+                                        className="action-button"
+                                        onClick={() => {
+
+
+                                            setOpenAction(
+                                                openAction === project.id ? null : project.id
+                                            );
+                                        }}
+                                    >
+                                        <MoreVertical size={18} />
+                                    </button>
+
+                                    {openAction === project.id && (
+                                        <div
+                                            className="action-dropdown"
+
+                                        >
+
+
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setOpenAction(null);
+                                                    handleEditProject(project);
+                                                }}
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setOpenAction(null);
+                                                    handleDeleteProject(project.id);
+
+                                                }}
+                                            >
+
+                                                Delete
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
                             </div>
-                        )}
-                    </div>
-
-                </div>
-            ))
-        ) : (
-            <div className="no-projects">
-                No projects found.
-            </div>
-        )}
+                        ))
+                    ) : (
+                        <div className="no-projects">
+                            No projects found.
+                        </div>
+                    )}
 
                 </div> {/* Close projects-table */}
 
-               
 
- 
+
+
                 {/* PAGINATION - OUTSIDE TABLE */}
                 <div className="project-pagination">
                     <span className="project-pagination-info">
@@ -849,9 +849,83 @@ const Projects = () => {
                             Next
                         </button>
                     </div>
-                                </div>
+                </div>
             </div>
+
         </div>
+
+            {/* PROJECT DETAILS */ }
+
+    {
+        selectedProject && (
+            <div className="project-details-page">
+
+                <div className="project-details-header">
+
+                    <div>
+                        <h1>
+                            {selectedProject.project_name}
+                        </h1>
+
+                        <p>
+                            {selectedProject.client}
+                        </p>
+                    </div>
+
+                    <button
+                        className="back-project-btn"
+                        onClick={() => setSelectedProject(null)}
+                    >
+                        Back to Projects
+                    </button>
+
+                </div>
+
+                {/* PROJECT TABS */}
+
+                <div className="project-details-tabs">
+
+                    <button className="project-tab active">
+                        Overview
+                    </button>
+
+                    <button className="project-tab">
+                        Backlog
+                    </button>
+
+                    <button className="project-tab">
+                        Tasks
+                    </button>
+
+                    <button className="project-tab">
+                        Milestones
+                    </button>
+
+                    <button className="project-tab">
+                        Sprints
+                    </button>
+
+                </div>
+
+                {/* OVERVIEW */}
+
+                <div className="project-details-card">
+
+                    <h2>
+                        Project Overview
+                    </h2>
+
+                    <p>
+                        Project details and activities will appear here.
+                    </p>
+
+                </div>
+
+            </div>
+        )
+    }
+
+        </div >
       
     );
 };

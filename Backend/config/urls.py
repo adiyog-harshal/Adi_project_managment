@@ -15,8 +15,10 @@ from users.views import ProfileView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # Authentication
+    path('api/projects/', include('projects.urls')),
+    path('api/sprints/', include('sprints.urls')),
+    path('api/milestones/',include('milestones.urls')),
+    path('api/tasks/', include('tasks.urls')),
     path('api/login/', TokenObtainPairView.as_view(), name='login'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/milestones/', include('milestones.urls')),

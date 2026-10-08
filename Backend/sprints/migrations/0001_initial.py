@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('milestones', '0002_milestone_start_date'),
         ('projects', '0006_notification_resource'),
+        ('projects', '0005_projectcomment'),
     ]
 
     operations = [

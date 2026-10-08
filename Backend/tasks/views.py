@@ -11,7 +11,6 @@ from helpers import (
     notify_task_reassigned,
 )
 
-
 class TaskListCreateView(generics.ListCreateAPIView):
 
     serializer_class = TaskSerializer
