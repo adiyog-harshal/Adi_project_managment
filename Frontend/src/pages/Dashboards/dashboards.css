@@ -1,7 +1,6 @@
 /* =========================================
    DASHBOARD PAGE
 ========================================= */
-
 .dashboard-page {
     width: 100%;
     min-width: 0;
@@ -9,12 +8,9 @@
     padding: 30px 34px 40px;
     background: #f7f8fa;
 }
-
-
 /* =========================================
    HEADER
 ========================================= */
-
 .dashboard-header {
     width: 100%;
     min-width: 0;
@@ -29,12 +25,9 @@
 
     box-sizing: border-box;
 }
-
-
 .dashboard-heading {
     min-width: 0;
 }
-
 .dashboard-heading h1 {
     margin: 0;
 
@@ -45,7 +38,6 @@
 
     color: #171717;
 }
-
 .dashboard-heading p {
     margin: 5px 0 0;
 
@@ -54,12 +46,9 @@
 
     color: #969696;
 }
-
-
 /* =========================================
    HEADER RIGHT
 ========================================= */
-
 .dashboard-header-right {
     display: flex;
     align-items: center;
@@ -68,10 +57,7 @@
 
     flex-shrink: 0;
 }
-
-
 /* SEARCH */
-
 .dashboard-search {
     width: 280px;
     height: 40px;
@@ -93,7 +79,6 @@
 
     color: #999;
 }
-
 .dashboard-search input {
     width: 100%;
     min-width: 0;
@@ -105,14 +90,10 @@
 
     font-size: 13px;
 }
-
 .dashboard-search input::placeholder {
     color: #999;
 }
-
-
 /* BELL */
-
 .dashboard-notification {
     width: 40px;
     height: 40px;
@@ -133,8 +114,6 @@
 
     cursor: pointer;
 }
-
-
 /* AVATAR */
 
 .dashboard-avatar {
@@ -196,15 +175,9 @@
 
 .dashboard-stats {
     width: 100%;
-
     display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-    gap: 16px;
-
-    min-width: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
 }
 
 
@@ -215,7 +188,7 @@
 .stat-card {
     min-width: 0;
 
-    min-height: 165px;
+    min-height: 105px;
 
     padding: 16px 16px 14px;
 
@@ -225,7 +198,7 @@
 
     border: 1px solid #e5e5ea;
 
-    border-radius: 12px;
+    border-radius: 10px;
 
     box-shadow:
         0 2px 7px rgba(25, 25, 25, 0.035);
@@ -267,6 +240,27 @@
     font-weight: 500;
 
     color: #171717;
+}
+.stat-card h3 {
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.stat-card .stat-value {
+    font-size: 24px;
+    line-height: 1.1;
+}
+
+@media (max-width: 900px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
 }
 
 
@@ -337,77 +331,17 @@
 .pending-icon {
     background: #fff1df;
     color: #e69a35;
+
+}
+.on-time-icon {
+    color: #16a34a;
+    background: #dcfce7;
 }
 
-
-/* =========================================
-   PROJECT ANALYTICS
-========================================= */
-
-.dashboard-analytics {
-    width: 100%;
-    min-width: 0;
-
-    padding: 18px 18px 14px;
-
-    box-sizing: border-box;
-
-    background: #ffffff;
-
-    border: 1px solid #e5e5ea;
-
-    border-radius: 12px;
-
-    box-shadow:
-        0 2px 7px rgba(25, 25, 25, 0.035);
+.delayed-icon {
+    color: #dc2626;
+    background: #fee2e2;
 }
-
-
-.analytics-header {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin-bottom: 12px;
-}
-
-
-.analytics-header h2 {
-    margin: 0;
-
-    font-size: 20px;
-    line-height: 26px;
-
-    font-weight: 500;
-
-    color: #171717;
-}
-
-
-.analytics-menu {
-    width: 30px;
-    height: 30px;
-
-    padding: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: #f1f1f1;
-
-    color: #666;
-
-    cursor: pointer;
-}
-
-
 /* =========================================
    ANALYTICS CHART
 ========================================= */
@@ -496,148 +430,42 @@
 }
 
 
-/* =========================================
-   TEAM COLLABORATION
-========================================= */
-
-.team-card {
-    width: 100%;
-    min-width: 0;
-
-    padding: 18px;
-
-    box-sizing: border-box;
-
+.dashboard-chart-card {
     background: #ffffff;
-
-    border: 1px solid #e5e5ea;
-
-    border-radius: 12px;
-
-    box-shadow:
-        0 2px 7px rgba(25, 25, 25, 0.035);
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-sizing: border-box;
 }
 
 
-.section-header {
+.dashboard-chart-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 
-.section-header h2 {
+.dashboard-chart-header h2 {
     margin: 0;
-
-    font-size: 20px;
-    line-height: 26px;
-
-    font-weight: 500;
-
-    color: #171717;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
 }
 
 
-.circle-action {
-    width: 30px;
-    height: 30px;
-
-    padding: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: #f1f1f1;
-
-    color: #555;
-
-    cursor: pointer;
+.dashboard-chart-header p {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: #6b7280;
 }
 
 
-/* TEAM LIST */
-
-.team-list {
-    display: flex;
-    flex-direction: column;
+.dashboard-line-chart {
+    width: 100%;
+    height: 280px;
 }
-
-
-.team-row {
-    min-height: 55px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 12px;
-
-    border-bottom: 1px solid #f0f0f0;
-}
-
-
-.team-row:last-child {
-    border-bottom: none;
-}
-
-
-.team-avatar {
-    width: 36px;
-    height: 36px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #eee6ff;
-
-    color: #6638df;
-
-    font-size: 14px;
-    font-weight: 600;
-}
-
-
-.team-info {
-    min-width: 0;
-
-    flex: 1;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 2px;
-}
-
-
-.team-info strong {
-    font-size: 13px;
-    font-weight: 500;
-
-    color: #333;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-.team-info span {
-    font-size: 10px;
-
-    color: #999;
-}
-
 
 /* STATUS */
 
@@ -948,10 +776,37 @@
    TABLE
 ========================================= */
 
+.project-table-wrapper::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.project-table-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.project-table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.project-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
 .project-table-wrapper {
     width: 100%;
+    max-height: 320px;
 
     overflow-x: auto;
+    overflow-y: auto;
+}
+.project-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+
+    background: #ffffff;
 }
 
 
@@ -1407,6 +1262,9 @@
     width: 100% !important;
     min-width: 0 !important;
     margin: 0 !important;
+
+    min-height: 400px !important;
+    overflow: hidden !important
 }
 
 
@@ -1492,10 +1350,6 @@
     }
 
 }
-
-
-
-
 /* ================================
    PROJECT PROGRESS - FIX VISIBILITY
 ================================ */

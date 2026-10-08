@@ -102,79 +102,109 @@ function RoutesLayout() {
                 {/* TOP HEADER */}
 
                 <div className="top-header">
-                    <div className="user-menu">
 
-                        <button
-                            type="button"
-                            className="user-menu-button"
-                            onClick={() => setShowUserMenu(!showUserMenu)}
-                        >
-                        <div className="user-avatar">
-                            {user?.first_name || user?.last_name
-                                ? `${user.first_name?.charAt(0) || ""}${user.last_name?.charAt(0) || ""}`.toUpperCase()
-                                : user?.username
-                                    ? user.username.substring(0, 2).toUpperCase()
-                                    : "U"
-                            }
-                        </div>
+                    {/* LEFT SIDE */}
+                    <div className="top-header-left">
+                        <span className="top-header-page-title">
+                            {location.pathname === "/projects"
+                                ? "Projects"
+                                : location.pathname === "/roles"
+                                ? "Roles"
+                                : location.pathname === "/designations"
+                                ? "Designations"
+                                : location.pathname === "/users"
+                                ? "Users"
+                                : location.pathname === "/milestones"
+                                ? "Milestones"
+                                : location.pathname === "/tasks"
+                                ? "Tasks"
+                                : location.pathname === "/"
+                                ? "Dashboard"
+                                : ""}
+                        </span>
+                    </div>
 
-                            <ChevronDown 
-                                size={16}
-                                className={
-                                    showUserMenu
-                                        ? "user-chevron rotate"
-                                        : "user-chevron"
-                                } 
-                            />
-                        </button>
+                    {/* RIGHT SIDE */}
+                    <div className="top-header-right">
 
-                        {showUserMenu && (
-                            <div className="user-dropdown">
+                        {/* USER MENU */}
+                        <div className="user-menu">
 
-                                <div className="dropdown-title">
-                                    My Account
+                            <button
+                                type="button"
+                                className="user-menu-button"
+                                onClick={() => setShowUserMenu(!showUserMenu)}
+                            >
+                                <div className="user-avatar">
+                                    {user?.first_name || user?.last_name
+                                        ? `${user.first_name?.charAt(0) || ""}${user.last_name?.charAt(0) || ""}`.toUpperCase()
+                                        : user?.username
+                                            ? user.username.substring(0, 2).toUpperCase()
+                                            : "U"
+                                    }
                                 </div>
 
+                                <span className="user-name">
+                                    {user?.first_name || user?.last_name
+                                        ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+                                        : user?.username || "User"}
+                                </span>
 
-                                <button
-                                    type="button"
-                                    onClick={handleProfile}
-                                >
-                                    <User size={20} />
-                                    <span>Profile</span>
-                                </button>
+                                <ChevronDown
+                                    size={16}
+                                    className={
+                                        showUserMenu
+                                            ? "user-chevron rotate"
+                                            : "user-chevron"
+                                    }
+                                />
+                            </button>
 
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowUserMenu(false);
-                                        navigate("/settings");
-                                    }}
-                                >
-                                    <Settings size={20} />
-                                    <span>Settings</span>
-                                </button>
+                            {showUserMenu && (
+                                <div className="user-dropdown">
 
-                                <div className="dropdown-devider"></div>
+                                    <div className="dropdown-title">
+                                        My Account
+                                    </div>
 
-                                <button
-                                    type="button"
-                                    className="logout-button"
-                                    onClick={handleLogout}
-                                >
-                                     <LogOut size={20} />
-                                     <span>Logout</span>
-                                </button>
-                                
-                               
-                                
-                            </div>
-                        )}
+                                    <button
+                                        type="button"
+                                        onClick={handleProfile}
+                                    >
+                                        <User size={20} />
+                                        <span>Profile</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowUserMenu(false);
+                                            navigate("/settings");
+                                        }}
+                                    >
+                                        <Settings size={20} />
+                                        <span>Settings</span>
+                                    </button>
+
+                                    <div className="dropdown-divider"></div>
+
+                                    <button
+                                        type="button"
+                                        className="logout-button"
+                                        onClick={handleLogout}
+                                    >
+                                        <LogOut size={20} />
+                                        <span>Logout</span>
+                                    </button>
+
+                                </div>
+                            )}
+
+                        </div>
 
                     </div>
-                    
-                </div>
 
+                </div>
                 {/* PAGE */}
 
                 <AppRoutes />

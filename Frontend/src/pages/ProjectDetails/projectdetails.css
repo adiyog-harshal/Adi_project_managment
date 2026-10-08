@@ -600,3 +600,655 @@
         font-size: 14px;
     }
 }
+
+.project-section-content {
+    margin-top: 24px;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #dbe4f0;
+    border-radius: 10px;
+}
+
+.project-section-content .section-title {
+    margin-bottom: 20px;
+}
+
+.project-section-content .section-title h2 {
+    margin: 0;
+}
+
+.project-members-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.project-member-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f0ff;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.member-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.member-info strong {
+    font-size: 13px;
+    color: #1f2937;
+}
+
+.member-info span {
+    font-size: 12px;
+    color: #667085;
+}
+
+.project-tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project-task-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.task-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.task-info strong {
+    font-size: 13px;
+    color: #1f2937;
+}
+
+.task-info span {
+    font-size: 12px;
+    color: #667085;
+}
+
+.task-status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.empty-section-message {
+    margin: 0;
+    color: #667085;
+    font-size: 13px;
+}
+
+/* TEAM MEMBERS HEADERS */
+
+.team-members-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.add-member-button {
+    height: 36px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-member-button:hover {
+    background: #1d4ed8;
+}
+
+/* TEAM MEMBERS CARD CSS */
+.project-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.project-member-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.member-avatar {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #e8f0ff;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.member-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.member-info strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: #172554;
+}
+
+.member-info span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* MODAL CSS */
+.member-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.member-modal {
+    width: 420px;
+    max-width: calc(100% - 32px);
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.member-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 22px;
+}
+
+.member-modal-header h2 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 600;
+    color: #172554;
+}
+
+.member-modal-header p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.member-modal-close {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.member-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.member-form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #344054;
+}
+
+.member-form-group select {
+    width: 100%;
+    height: 40px;
+    padding: 0 11px;
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    outline: none;
+    background: #ffffff;
+    color: #344054;
+    font-size: 13px;
+}
+
+.member-form-group select:focus {
+    border-color: #2563eb;
+}
+
+/* SELECTED USER INFO */
+.selected-user-info {
+    margin-top: 16px;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+}
+
+.selected-user-info label {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.selected-user-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #172554;
+}
+
+/* ADD MODAL BUTTONS CSS */
+.member-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.member-cancel-button {
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.member-add-button {
+    height: 36px;
+    padding: 0 15px;
+    border: none;
+    border-radius: 5px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.member-add-button:hover {
+    background: #1d4ed8;
+}
+
+/* =========================================================
+   PROJECT OVERVIEW
+   ========================================================= */
+
+.project-overview {
+    width: 100%;
+}
+
+
+/* ---------------------------------------------------------
+   OVERVIEW CARDS GRID
+   --------------------------------------------------------- */
+
+.overview-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 22px;
+}
+
+
+/* ---------------------------------------------------------
+   INDIVIDUAL OVERVIEW CARD
+   --------------------------------------------------------- */
+
+.overview-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+
+    min-width: 0;
+}
+
+.overview-card:hover {
+    transform: translateY(-2px);
+    border-color: #d9d2ff;
+    box-shadow: 0 8px 20px rgba(108, 85, 232, 0.08);
+}
+
+
+/* ---------------------------------------------------------
+   CARD HEADER
+   --------------------------------------------------------- */
+
+.overview-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f1f4;
+}
+
+.overview-card-header > div {
+    min-width: 0;
+}
+
+.overview-card-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 17px;
+    font-weight: 650;
+    line-height: 1.3;
+}
+
+.overview-card-header p {
+    margin: 5px 0 0;
+    color: #8a94a6;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.overview-card-header > svg {
+    width: 38px;
+    height: 38px;
+    padding: 9px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background: #f3f0ff;
+    color: #6c55e8;
+    flex-shrink: 0;
+}
+
+
+/* ---------------------------------------------------------
+   OVERVIEW LIST
+   --------------------------------------------------------- */
+
+.overview-list {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.overview-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 11px 12px;
+    background: #f8fafc;
+    border: 1px solid #eef0f3;
+    border-radius: 9px;
+}
+
+.overview-list-item > div {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.overview-list-item strong {
+    color: #273142;
+    font-size: 13px;
+    font-weight: 600;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.overview-list-item span {
+    color: #8a94a6;
+    font-size: 12px;
+}
+
+
+/* ---------------------------------------------------------
+   MILESTONE STATUS
+   --------------------------------------------------------- */
+
+.overview-milestone-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    background: #fff7df;
+    color: #b27b00 !important;
+
+    font-size: 11px !important;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* ---------------------------------------------------------
+   EMPTY STATE
+   --------------------------------------------------------- */
+
+.overview-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 90px;
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+    color: #9aa3b2;
+    background: #f8fafc;
+    border: 1px dashed #dfe3e8;
+    border-radius: 9px;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* ---------------------------------------------------------
+   VIEW BUTTON
+   --------------------------------------------------------- */
+
+.overview-view-button {
+    width: 100%;
+    margin-top: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 38px;
+
+    border: 1px solid #ded8ff;
+    border-radius: 8px;
+
+    background: #faf9ff;
+    color: #6c55e8;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.overview-view-button:hover {
+    background: #6c55e8;
+    border-color: #6c55e8;
+    color: #ffffff;
+}
+
+
+/* ---------------------------------------------------------
+   PROJECT OVERVIEW SUMMARY / STAT CARDS
+   --------------------------------------------------------- */
+
+.overview-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.overview-summary-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 11px;
+    padding: 17px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    box-shadow: 0 2px 7px rgba(15, 23, 42, 0.035);
+}
+
+.overview-summary-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    flex-shrink: 0;
+}
+
+.overview-summary-icon.purple {
+    background: #f1eeff;
+    color: #6c55e8;
+}
+
+.overview-summary-icon.blue {
+    background: #edf6ff;
+    color: #3b82f6;
+}
+
+.overview-summary-icon.green {
+    background: #ecfdf3;
+    color: #16a34a;
+}
+
+.overview-summary-icon.orange {
+    background: #fff7e8;
+    color: #d97706;
+}
+
+.overview-summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.overview-summary-content span {
+    color: #8a94a6;
+    font-size: 12px;
+}
+
+.overview-summary-content strong {
+    color: #1f2937;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+
+/* ---------------------------------------------------------
+   OVERVIEW RESPONSIVE
+   --------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+
+    .overview-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .overview-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .overview-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .overview-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .overview-card {
+        padding: 17px;
+    }
+
+    .overview-card-header h3 {
+        font-size: 16px;
+    }
+}

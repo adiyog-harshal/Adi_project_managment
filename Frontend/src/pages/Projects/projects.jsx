@@ -14,9 +14,9 @@ import {
     CheckCircle2,
     X
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import "./Projects.css";
+import "./projects.css";
 
 
 const Projects = () => {
@@ -697,7 +697,7 @@ const Projects = () => {
                         <div>
                             <Link
                                 to={`/projects/${project.id}`}
-                                className="project-id-link"
+                                className="project-name-link"
                             >
                                 {project.project_name}
                             </Link>

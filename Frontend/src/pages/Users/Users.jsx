@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
-import api from "../services/api";
 import './Users.css';
+import {
+    PMSPageHeader,
+    PMSSearch,
+    PMSActionButton,
+} from "../../components/Common/Common";
+
+import api from "../../services/api";
 
 function Users() {
     const [users, setUsers] = useState([]);
+    const [designations, setDesignations] = useState([]);
+    const [roles, setRoles] = useState([]);
 
     const [search, setSearch] = useState('');
-    const [roles, setRoles] = useState([]);
-    const [designations, setDesignations] = useState([]);
-
     const [showForm, setShowForm] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
 
@@ -107,41 +112,46 @@ function Users() {
             previousUsers.filter((user) => user.id !== id)
         );
     };
-    const fetchUsers = async () => {
+
+    useEffect(() => {
+        fetchDesignations();
+        fetchRoles();
+    }, []);
+
+    const fetchDesignations = async () => {
         try {
-            const response = await api.get("users/");
-            console.log("USERS:", response.data);
-            setUsers(response.data);
+            const response = await api.get("designations/");
+
+            const data = Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+
+            setDesignations(data);
+
         } catch (error) {
-            console.error("Failed to fetch users:", error);
+            console.error(
+                "Failed to fetch designations:",
+                error.response?.data || error
+            );
         }
     };
 
     const fetchRoles = async () => {
         try {
             const response = await api.get("roles/");
-            console.log("ROLES:", response.data);
-            setRoles(response.data);
+
+            const data = Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+
+            setRoles(data);
         } catch (error) {
-            console.error("Failed to fetch roles:", error);
+            console.error(
+                "Failed to fetch roles:",
+                error.response?.data || error
+            );
         }
     };
-
-    const fetchDesignations = async () => {
-        try {
-            const response = await api.get("designations/");
-            console.log("DESIGNATIONS:", response.data);
-            setDesignations(response.data);
-        } catch (error) {
-            console.error("Failed to fetch designations:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchUsers();
-        fetchRoles();
-        fetchDesignations();
-    }, []);
 
     return (
         <div className="users-page">
@@ -165,16 +175,14 @@ function Users() {
             </div>
 
             {/* Search */}
-            <div className="users-toolbar">
-                <div className="users-search-box">
-                    <input
-                        type="text"
-                        placeholder="Search users..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </div>
-            </div>
+            <PMSSearch
+                value={search}
+                onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                }}
+                placeholder='Search users'
+            />
 
             {/* Users Table */}
             <div className="users-card">
@@ -195,7 +203,7 @@ function Users() {
                             filteredUsers.map((user) => (
                                 <tr key={user.id}>
                                     <td className="user-name">
-                                        {user.username}
+                                        {user.name}
                                     </td>
 
                                     <td>
@@ -212,9 +220,9 @@ function Users() {
 
                                     <td>
                                         <span
-                                           className={`user-status ${(user.status || "Active").toLowerCase()}`}
+                                            className={`user-status ${user.status.toLowerCase()}`}
                                         >
-                                            {user.status || "Active"}
+                                            {user.status}
                                         </span>
                                     </td>
 
@@ -311,37 +319,30 @@ function Users() {
                             </div>
 
                             {/* Role */}
-                            
-                                
+                            <div>
+                                <label>Role:</label>
 
-                                    {/* Role */}
-                                    <div>
-                                        <label>Role:</label>
+                                <select
+                                    name="role"
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="">Select Role</option>
 
-                                        <select
-                                            name="role"
-                                            value={formData.role}
-                                            onChange={handleChange}
-                                            required
-                                        >
-                                            <option value="">
-                                                Select Role
+                                    {roles
+                                        .filter((role) => role.status)
+                                        .map((role) => (
+                                            <option
+                                                key={role.id}
+                                                value={role.id}
+                                            >
+                                                {role.name}
                                             </option>
+                                        ))}
+                                </select>
+                            </div>
 
-                                            {roles.map((role) => (
-                                                <option key={role.id} value={role.id}>
-                                                    {role.role_name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    
-                                
-                            
-
-                            {/* Designation */}
-                            
                             {/* Designation */}
                             <div>
                                 <label>Designation:</label>
@@ -356,16 +357,19 @@ function Users() {
                                         Select Designation
                                     </option>
 
-                                    {designations.map((designation) => (
-                                        <option
-                                            key={designation.id}
-                                            value={designation.id}
-                                        >
-                                            {designation.name}
-                                        </option>
-                                    ))}
+                                    {designations
+                                        .filter((designation) => designation.status)
+                                        .map((designation) => (
+                                            <option
+                                                key={designation.id}
+                                                value={designation.id}
+                                            >
+                                                {designation.name}
+                                            </option>
+                                        ))}
                                 </select>
                             </div>
+
                             {/* Status */}
                             <div>
                                 <label>Status:</label>
@@ -416,4 +420,4 @@ function Users() {
     );
 }
 
-export default Users
+export default Users;

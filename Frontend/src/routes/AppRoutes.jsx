@@ -1,23 +1,26 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-
 import ProtectedRoute from "./ProtectedRoute";
 
 import Login from "../pages/Login/login";
 import Dashboard from "../pages/Dashboards/dashboards";
 import Projects from "../pages/Projects/projects";
 import ProjectDetails from "../pages/ProjectDetails/projectdetails";
-import Roles from "../pages/Roles";
-import Users from "../pages/Users";
+import Roles from "../pages/Roles/Roles";
+import Users from "../pages/Users/Users";
+import Milestones from "../pages/Milestones/Milestones";
 import Designations from "../pages/Designations/designations";
+import Backlog from "../pages/Backlog/Backlog";
+
+
 
 function AppRoutes() {
     return (
         <Routes>
 
-            {/* Login */}
+            {/* PUBLIC PAGE */}
             <Route path="/login" element={<Login />} />
 
-            {/* Main pages */}
+            {/* PROTECTED PAGES */}
             <Route 
                 path="/" 
                 element={
@@ -70,6 +73,24 @@ function AppRoutes() {
                         <Users />
                     </ProtectedRoute>
                 } 
+            />
+
+            <Route
+                path="/projects/:id/milestones"
+                element={
+                    <ProtectedRoute>
+                        <Milestones />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/projects/:id/backlog"
+                element={
+                    <ProtectedRoute>
+                        <Backlog />
+                    </ProtectedRoute>
+                }
             />
 
         </Routes>

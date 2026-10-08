@@ -21,23 +21,6 @@ body {
 }
 
 
-/* Top Header */
-
-.top-header {
-    height: 75px;
-
-    background: #ffffff;
-
-    border-bottom: 1px solid #e5e7eb;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 30px;
-
-    box-sizing: border-box;
-}
-
 
 .top-header h1 {
     margin: 0;
@@ -89,20 +72,27 @@ body {
 
     display: flex;
     align-items: center;
-    justify-content: flex-end;
 
     padding: 0 30px;
-
     box-sizing: border-box;
 
     background: #ffffff;
-
     border-bottom: 1px solid #e5e7eb;
 
     position: relative;
     z-index: 100;
 }
 
+.top-header-left {
+    display: none;
+}
+
+.top-header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+}
 
 /* ============================= */
 /* USER MENU */

@@ -19,9 +19,19 @@ import {
     Download,
     ChevronDown
 } from "lucide-react";
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+} from "recharts";
 
 const Dashboard = () => {
-
+    console.log("================= Dashboard Render ==============");
+    
     const [projects, setProjects] = useState([]);
     const [teamMembers, setTeamMembers] = useState([]);
 
@@ -49,6 +59,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         const fetchProjectTasks = async () => {
+
             if (!selectedProgressProject?.id) {
                 setProjectTasks([]);
                 return;
@@ -57,7 +68,7 @@ const Dashboard = () => {
             try {
                 const response = await api.get("tasks/");
 
-                console.log("========== TASK DEBUG ==========");
+                console.log("========== PROJECT TASK DEBUG ==========");
                 console.log("SELECTED PROJECT:", selectedProgressProject);
                 console.log("SELECTED PROJECT ID:", selectedProgressProject.id);
                 console.log("RAW TASK RESPONSE:", response.data);
@@ -120,12 +131,14 @@ const Dashboard = () => {
 
                 console.log(
                     "SELECTED PROJECT TASKS:",
-                    selectedTasks
                 );
+
+                console.log(selectedTasks);
 
                 setProjectTasks(selectedTasks);
 
             } catch (error) {
+                
                 console.error(
                     "FAILED TO FETCH TASKS:",
                     error.response?.data || error
@@ -261,31 +274,93 @@ const Dashboard = () => {
         }
     };
 
-    /* =========================
-       PROJECT COUNTS
-    ========================= */
-
     const totalProjects = projects.length;
 
+    // ===============================
+    // PROJECT STATUS COUNTS
+    // ===============================
+
+    const getProjectStatus = (project) => {
+        return String(project.status || "")
+            .toLowerCase()
+            .replace(/[-_]/g, " ")
+            .trim();
+    };
+
     const completedProjects = projects.filter(
-        (project) =>
-            project.status?.toLowerCase() === "completed"
-    ).length;
+        (project) => getProjectStatus(project) === "completed"
+    );
 
-    const runningProjects = projects.filter(
-        (project) =>
-            project.status?.toLowerCase() === "in progress" ||
-            project.status?.toLowerCase() === "running"
-    ).length;
+    const completedProjectCount = completedProjects.length;
 
-    const pendingProjects = projects.filter(
-        (project) =>
-            project.status?.toLowerCase() === "pending" ||
-            project.status?.toLowerCase() === "not started"
-    ).length;
+    const runningProjects = projects.filter((project) => {
+        const status = getProjectStatus(project);
 
+        return (
+            status === "in progress" ||
+            status === "running"
+        );
+    }).length;
+
+    const pendingProjects = projects.filter((project) => {
+        const status = getProjectStatus(project);
+
+        return (
+            status === "pending" ||
+            status === "not started" ||
+            status === "stopped"
+        );
+    }).length;
+
+
+    // ===============================
+    // ON TIME / DELAYED PROJECTS
+    // ===============================
+
+    const onTimeProjects = completedProjects.filter((project) => {
+        if (!project.end_date || !project.completed_at) {
+            return false;
+        }
+
+        const completedDate = new Date(project.completed_at);
+        const deadlineDate = new Date(project.end_date);
+
+        if (
+            Number.isNaN(completedDate.getTime()) ||
+            Number.isNaN(deadlineDate.getTime())
+        ) {
+            return false;
+        }
+
+        return completedDate <= deadlineDate;
+    });
+
+    const delayedProjects = completedProjects.filter((project) => {
+        if (!project.end_date || !project.completed_at) {
+            return false;
+        }
+
+        const completedDate = new Date(project.completed_at);
+        const deadlineDate = new Date(project.end_date);
+
+        if (
+            Number.isNaN(completedDate.getTime()) ||
+            Number.isNaN(deadlineDate.getTime())
+        ) {
+            return false;
+        }
+
+        return completedDate > deadlineDate;
+    });
+
+    const onTimeProjectCount = onTimeProjects.length;
+    const delayedProjectCount = delayedProjects.length;
+
+
+    // ===============================
     // PROJECT PROGRESS CALCULATION
-    
+    // ===============================
+
     const getTaskStatus = (task) => {
         return String(task.status || "")
             .toLowerCase()
@@ -325,6 +400,15 @@ const Dashboard = () => {
             )
             : 0;
 
+    console.log("DASHBOARD PROJECT COUNTS:", {
+        totalProjects,
+        completedProjectCount,
+        runningProjects,
+        pendingProjects,
+        onTimeProjectCount,
+        delayedProjectCount
+    });
+
     console.log("PROJECT PROGRESS:", {
         totalTasks,
         completedTasks,
@@ -333,28 +417,32 @@ const Dashboard = () => {
         actualProjectProgress
     });
 
-
     const filteredProjects = projects.filter((project) => {
-
         if (filterStatus === "all") {
             return true;
         }
-        const status = project.status?.toLowerCase();
 
-        if (filterStatus === "completed"){
+        const status = String(project.status || "")
+            .toLowerCase()
+            .replace(/[-_]/g, " ")
+            .trim();
+
+        if (filterStatus === "completed") {
             return status === "completed";
         }
+
         if (filterStatus === "running") {
             return (
-                status === "running" || 
+                status === "running" ||
                 status === "in progress"
             );
         }
 
         if (filterStatus === "pending") {
             return (
-                status === "pending" || 
-                status === "not started"
+                status === "pending" ||
+                status === "not started" ||
+                status === "stopped"
             );
         }
 
@@ -387,6 +475,63 @@ const Dashboard = () => {
         }
         return 0;
     });
+
+    // PROJECTS CUMULATIVE
+
+    const getCompletedProjectsCumulative = (projects) => {
+        const currentYear = new Date().getFullYear();
+
+        const monthlyCounts = Array(12).fill(0);
+
+        projects.forEach((project) => {
+            if (!project.end_date) {
+                return;
+            }
+
+            const completionDate = new Date(project.end_date);
+
+            if (Number.isNaN(completionDate.getTime())) {
+                return;
+            }
+
+            // Only completed projects
+            if (completionDate > new Date()) {
+                return;
+            }
+
+            // Only current year
+            if (completionDate.getFullYear() !== currentYear) {
+                return;
+            }
+
+            const month = completionDate.getMonth();
+
+            monthlyCounts[month] += 1;
+        });
+
+
+        let cumulative = 0;
+
+        return monthlyCounts.map((count, index) => {
+
+            cumulative += count;
+
+            return {
+                month: new Date(
+                    currentYear,
+                    index,
+                    1
+                ).toLocaleString("en-US", {
+                    month: "short",
+                }),
+
+                completed: cumulative,
+            };
+        });
+    };
+
+    const completedProjectsData = 
+        getCompletedProjectsCumulative(projects);
 
     /* =========================
        MONTH DATA FOR ANALYTICS
@@ -488,6 +633,8 @@ const Dashboard = () => {
 
     URL.revokeObjectURL(url);
 };
+
+    console.log("=====================BEFORE DASHBOARD RETURN");
 
     return (
 
@@ -660,7 +807,7 @@ const Dashboard = () => {
 
                             <div className="stat-card-top">
 
-                                <p>Pending projects</p>
+                                <p>Pending Projects</p>
 
                                 <button className="card-more">
                                     <MoreHorizontal size={17} />
@@ -680,6 +827,48 @@ const Dashboard = () => {
 
                         </div>
 
+                        {/* ON TIME  */}
+                        <div className="stat-card">
+
+                            <div className="stat-card-top">
+                                <p>On Time Projects</p>
+
+                                <button className="card-more">
+                                    <MoreHorizontal size={17} />
+                                </button>                                                   
+                            </div>
+
+                            <h2>{onTimeProjectCount}</h2>
+
+                            <div className="stat-bottom">
+
+                                <span className="stat-icon on-time-icon">
+                                    <CircleCheck size={20} />
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="stat-card">
+
+                            <div className="stat-card-top">
+
+                                <p>Delayed Projects</p>
+
+                                <button className="card-more">
+                                    <MoreHorizontal size={17} />
+                                </button>
+                            </div>
+
+                            <h2>{delayedProjectCount}</h2>
+
+                            <div className="stat-bottom">
+
+                                <span className="stat-icon delayed-icon">
+                                    <CircleAlert size={20} />
+                                </span>
+                            </div>
+                        </div>
+
                     </div>
 
 
@@ -687,58 +876,76 @@ const Dashboard = () => {
                         PROJECT ANALYTICS
                     ============================= */}
 
-                    <div className="dashboard-analytics">
+                    <div className="dashboard-chart-card">
 
-                        <div className="analytics-header">
-
-                            <h2>Project Analytics</h2>
-
-                            <button className="analytics-menu">
-                                <MoreHorizontal size={19} />
-                            </button>
-
+                        <div className="dashboard-chart-header">
+                            <div>
+                                <h2>Completed Projects - Cumulative</h2>
+                                <p>
+                                    Cumulative number of projects completed
+                                </p>
+                            </div>
                         </div>
 
 
-                        <div className="analytics-chart">
+                        <div className="dashboard-line-chart">
 
-                            <div className="chart-bars">
+                            <ResponsiveContainer
+                                width="100%"
+                                height={280}
+                            >
 
-                                {months.map((month, index) => {
+                                <LineChart
+                                    data={completedProjectsData}
+                                    margin={{
+                                        top: 10,
+                                        right: 20,
+                                        left: 0,
+                                        bottom: 5,
+                                    }}
+                                >
 
-                                    const count = monthCounts[index];
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                    />
 
-                                    const height =
-                                        count === 0
-                                            ? 8
-                                            : Math.max(
-                                                (count / maxMonthCount) * 100,
-                                                18
-                                            );
+                                    <XAxis
+                                        dataKey="month"
+                                        tick={{
+                                            fontSize: 10,
+                                            fill: "#6b7280",
+                                        }}
+                                    />
 
-                                    return (
+                                    <YAxis
+                                        allowDecimals={false}
+                                        tickCount={10}
+                                        tick={{
+                                            fontSize: 10,
+                                            fill: "#6b7280",
+                                        }}
 
-                                        <div
-                                            className="chart-bar-item"
-                                            key={month}
-                                        >
+                                    />
 
-                                            <div
-                                                className="chart-bar"
-                                                style={{
-                                                    height: `${height}%`
-                                                }}
-                                            ></div>
+                                    <Tooltip />
 
-                                            <span>{month}</span>
+                                    <Line
+                                        type="monotone"
+                                        dataKey="completed"
+                                        name="Completed Projects"
+                                        stroke="#6c55e8"
+                                        strokeWidth={3}
+                                        dot={{
+                                            r: 4,
+                                        }}
+                                        activeDot={{
+                                            r: 6,
+                                        }}
+                                    />
 
-                                        </div>
+                                </LineChart>
 
-                                    );
-
-                                })}
-
-                            </div>
+                            </ResponsiveContainer>
 
                         </div>
 
@@ -752,373 +959,197 @@ const Dashboard = () => {
                 ================================= */}
 
                 {/* =================================
-    PROJECTS + PROJECT PROGRESS
-================================= */}
+                    PROJECTS + PROJECT PROGRESS
+                ================================= */}
 
-<div className="dashboard-project-section">
+                <div className="dashboard-project-section">
 
-    {/* =================================
-        PROJECT LIST
-    ================================= */}
+                    {/* =================================
+                        PROJECT LIST
+                    ================================= */}
 
-    <div className="dashboard-table-card dashboard-project-list-card">
+                    <div className="dashboard-table-card dashboard-project-list-card">
 
-        <div className="table-header">
+                        <div className="table-header">
 
-            <div className="table-title">
-                <div className="table-icon">
-                    <FolderKanban size={18} />
-                </div>
+                            <div className="table-title">
+                                <div className="table-icon">
+                                    <FolderKanban size={18} />
+                                </div>
 
-                <strong>
-                    Total Projects: {totalProjects}
-                </strong>
-            </div>
+                                <strong>
+                                    Total Projects: {totalProjects}
+                                </strong>
+                            </div>
 
-        </div>
+                        </div>
 
-        <div className="project-table-wrapper">
+                        <div className="project-table-wrapper">
 
-            <table className="project-table">
+                            <table className="project-table">
 
-                <thead>
-                    <tr>
-                    
-                        <th>Project Name</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
+                                <thead>
+                                    <tr>
+                                    
+                                        <th>Project Name</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
 
-                <tbody>
+                                <tbody>
 
-                    {displayedProjects.length > 0 ? (
+                                    {displayedProjects.length > 0 ? (
 
-                        displayedProjects.map((project, index) => (
+                                        displayedProjects.map((project, index) => (
 
-                            <tr
-                                key={project.id || index}
-                                className={
-                                    selectedProgressProject?.id === project.id
-                                        ? "selected-project-row"
-                                        : ""
-                                }
-                                onClick={() =>
-                                    setSelectedProgressProject(project)
-                                }
-                            >
+                                            <tr
+                                                key={project.id || index}
+                                                className={
+                                                    selectedProgressProject?.id === project.id
+                                                        ? "selected-project-row"
+                                                        : ""
+                                                }
+                                                onClick={() =>
+                                                    setSelectedProgressProject(project)
+                                                }
+                                            >
 
 
-                                <td>
-                                    {project.project_name || "-"}
-                                </td>
+                                                <td>
+                                                    {project.project_name || "-"}
+                                                </td>
 
-                                <td>
-                                    {project.start_date || "-"}
-                                </td>
+                                                <td>
+                                                    {project.start_date || "-"}
+                                                </td>
 
-                                <td>
-                                    {project.end_date || "-"}
-                                </td>
+                                                <td>
+                                                    {project.end_date || "-"}
+                                                </td>
 
-                                <td>
-                                    <span
-                                        className={`table-status ${
-                                            project.status
-                                                ?.toLowerCase()
-                                                .replace(/\s+/g, "-")
-                                        }`}
-                                    >
-                                        {project.status || "-"}
-                                    </span>
-                                </td>
+                                                <td>
+                                                    <span
+                                                        className={`table-status ${
+                                                            project.status
+                                                                ?.toLowerCase()
+                                                                .replace(/\s+/g, "-")
+                                                        }`}
+                                                    >
+                                                        {project.status || "-"}
+                                                    </span>
+                                                </td>
 
-                            </tr>
+                                            </tr>
 
-                        ))
+                                        ))
 
-                    ) : (
+                                    ) : (
 
-                        <tr>
-                            <td
-                                colSpan="5"
-                                className="no-projects"
-                            >
-                                No projects available
-                            </td>
-                        </tr>
+                                        <tr>
+                                            <td
+                                                colSpan="5"
+                                                className="no-projects"
+                                            >
+                                                No projects available
+                                            </td>
+                                        </tr>
 
-                    )}
+                                    )}
 
-                </tbody>
+                                </tbody>
 
-            </table>
+                            </table>
 
-        </div>
-
-    </div>
-
-
-    {/* =================================
-        PROJECT PROGRESS
-    ================================= */}
-
-    <div className="project-progress-card dashboard-project-progress-card">
-
-        <div className="section-header">
-
-            <div>
-                <h2>Project Progress</h2>
-
-                <span className="selected-project-name">
-                    {selectedProgressProject
-                        ? selectedProgressProject.project_name
-                        : "Select a project"}
-                </span>
-            </div>
-
-        </div>
-
-
-        <div className="project-progress-content">
-
-            <div
-                className="progress-circle"
-                style={{
-                    background: 
-                        totalTasks > 0 
-                        ? `conic-gradient(
-                            #12b76a 0% ${
-                                (completedTasks / totalTasks) * 100
-                            }%,
-
-                            #f79009 ${
-                                (completedTasks / totalTasks) * 100
-
-                            }% ${
-                                ((completedTasks + inProgressTasks) / totalTasks) * 100
-                            }%,
-
-                            #d0d5dd ${
-                                ((completedTasks + inProgressTasks) / totalTasks) * 100
-                            }% 100%
-                           
-                        )`
-                        : "#e4e7ec"                    
-                }}
-            >
-                <div className="progress-circle-inner">
-                    <span>{actualProjectProgress}%</span>
-
-                    <small>Progress</small>
-                </div>
-            </div>
-
-
-            <div className="progress-details">
-
-                <p>
-                    <span className="progress-dot completed-dot"></span>
-                    <span>Complete</span>
-                    <strong>{completedTasks}</strong>
-                </p>
-
-                <p>
-                    <span className="progress-dot running-dot"></span>
-                    <span>In Progress</span>
-                    <strong>{inProgressTasks}</strong>
-                </p>
-
-                <p>
-                    <span className="progress-dot pending-dot"></span>
-                    <span>Incomplete</span>
-                    <strong>{pendingTasks}</strong>
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-{/* =================================
-    TEAM COLLABORATION
-================================= */}
-
-<div className="team-card dashboard-team-card">
-
-    <div className="section-header">
-
-        <h2>Team Collaboration</h2>
-
-        <button
-            type="button"
-            className="circle-action"
-            onClick={() => setShowAddMember(!showAddMember)}
-        >
-            <Plus size={18} />
-        </button>
-
-    </div>
-
-
-    <div className="team-list">
-
-        {teamMembers.length > 0 ? (
-
-            teamMembers.slice(0, 5).map((member, index) => (
-
-                <div
-                    className="team-row"
-                    key={member.id || index}
-                >
-
-                    <div className="team-avatar">
-                        {member.username
-                            ?.charAt(0)
-                            ?.toUpperCase() || "U"}
-                    </div>
-
-                    <div className="team-info">
-
-                        <strong>
-                            {member.username || "User"}
-                        </strong>
-
-                        <span>
-                            {member.project_name || "Project"}
-                        </span>
+                        </div>
 
                     </div>
 
-                    <span className="team-status">
-                        Joined
-                    </span>
+
+                    {/* =================================
+                        PROJECT PROGRESS
+                    ================================= */}
+
+                    <div className="project-progress-card dashboard-project-progress-card">
+
+                        <div className="section-header">
+
+                            <div>
+                                <h2>Project Progress</h2>
+
+                                <span className="selected-project-name">
+                                    {selectedProgressProject
+                                        ? selectedProgressProject.project_name
+                                        : "Select a project"}
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div className="project-progress-content">
+
+                            <div
+                                className="progress-circle"
+                                style={{
+                                    background: 
+                                        totalTasks > 0 
+                                        ? `conic-gradient(
+                                            #12b76a 0% ${
+                                                (completedTasks / totalTasks) * 100
+                                            }%,
+
+                                            #f79009 ${
+                                                (completedTasks / totalTasks) * 100
+
+                                            }% ${
+                                                ((completedTasks + inProgressTasks) / totalTasks) * 100
+                                            }%,
+
+                                            #d0d5dd ${
+                                                ((completedTasks + inProgressTasks) / totalTasks) * 100
+                                            }% 100%
+                                        
+                                        )`
+                                        : "#e4e7ec"                    
+                                }}
+                            >
+                                <div className="progress-circle-inner">
+                                    <span>{actualProjectProgress}%</span>
+
+                                    <small>Progress</small>
+                                </div>
+                            </div>
+
+
+                            <div className="progress-details">
+
+                                <p>
+                                    <span className="progress-dot completed-dot"></span>
+                                    <span>Complete</span>
+                                    <strong>{completedTasks}</strong>
+                                </p>
+
+                                <p>
+                                    <span className="progress-dot running-dot"></span>
+                                    <span>In Progress</span>
+                                    <strong>{inProgressTasks}</strong>
+                                </p>
+
+                                <p>
+                                    <span className="progress-dot pending-dot"></span>
+                                    <span>Incomplete</span>
+                                    <strong>{pendingTasks}</strong>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
-
-            ))
-
-        ) : (
-
-            <div className="empty-team">
-
-                <Users size={24} />
-
-                <span>
-                    No team members assigned
-                </span>
-
-            </div>
-
-        )}
-
-    </div>
-
-
-    {/* ADD MEMBER FORM */}
-
-    {showAddMember && (
-
-        <div className="add-member-form">
-
-            <h3>Add Team Member</h3>
-
-            <div className="form-group">
-
-                <label>Project</label>
-
-                <select
-                    value={selectedProject}
-                    onChange={(e) =>
-                        setSelectedProject(e.target.value)
-                    }
-                >
-
-                    <option value="">
-                        Select Project
-                    </option>
-
-                    {projects.map((project) => (
-                        <option
-                            key={project.id}
-                            value={project.id}
-                        >
-                            {project.project_name}
-                        </option>
-                    ))}
-
-                </select>
-
-            </div>
-
-
-            <div className="form-group">
-
-                <label>User</label>
-
-                <select
-                    value={selectedUser}
-                    onChange={(e) =>
-                        setSelectedUser(e.target.value)
-                    }
-                >
-
-                    <option value="">
-                        Select User
-                    </option>
-
-                    {users.map((user) => (
-                        <option
-                            key={user.id}
-                            value={user.id}
-                        >
-                            {user.username}
-                        </option>
-                    ))}
-
-                </select>
-
-            </div>
-
-
-            <div className="add-member-actions">
-
-                <button
-                    type="button"
-                    className="cancel-member-btn"
-                    onClick={() => {
-                        setShowAddMember(false);
-                        setSelectedProject("");
-                        setSelectedUser("");
-                    }}
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="button"
-                    className="save-member-btn"
-                    onClick={handleAddMember}
-                    disabled={savingMember}
-                >
-                    {savingMember
-                        ? "Adding..."
-                        : "Add Member"}
-                </button>
-
-            </div>
-
-        </div>
-
-    )}
-
-</div>
-
                 
             </div>
 

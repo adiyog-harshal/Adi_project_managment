@@ -11,6 +11,7 @@ import {
     Settings,
     ShieldCheck,
     ChevronRight,
+    ClipboardList,
     LogOut
 } from "lucide-react";
 
@@ -126,7 +127,7 @@ const Sidebar = () => {
                                     }`
                                 }
                             >
-                                <ShieldCheck size={17} />
+                                <ShieldCheck size={18} />
                                 <span>Roles</span>
                             </NavLink>
 
@@ -139,7 +140,7 @@ const Sidebar = () => {
                                     }`
                                 }
                             >
-                                <BriefcaseBusiness size={17} />
+                                <BriefcaseBusiness size={18} />
                                 <span>Designations</span>
                             </NavLink>
 

@@ -13,6 +13,11 @@ import {
 import api from "../../services/api";
 
 import "./designations.css";
+import {
+    PMSPageHeader,
+    PMSSearch,
+    PMSActionButton,
+} from "../../components/Common/Common";
 
 const Designations = () => {
 
@@ -218,11 +223,19 @@ const Designations = () => {
         }
     };
 
-    const filteredDesignations = designations.filter((designation) =>
-        designation.name
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase())
-    );
+    
+    const filteredDesignations = designations.filter((designation) => {
+        const query = searchTerm.toLowerCase();
+
+        return (
+            String(designation.name || "")
+                .toLowerCase()
+                .includes(query) ||
+            String(designation.status || "")
+                .toLowerCase()
+                .includes(query)
+        );
+    });     
 
     const totalPages = Math.ceil(filteredDesignations.length / itemsPerPage);
 
@@ -292,11 +305,13 @@ const Designations = () => {
                         className="designation-search-icon"
                     />
 
-                    <input
-                        type="text"
-                        placeholder="Search designations..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                    <PMSSearch
+                        value={Search}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        placeholder="Search designations"
                     />
                 </div>
 

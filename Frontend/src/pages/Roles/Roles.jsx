@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
-
-import api from "../services/api";
+import { useState } from "react";
 
 import {
     Plus,
@@ -10,7 +8,15 @@ import {
     Search,
 } from "lucide-react";
 
+import {
+    PMSPageHeader,
+    PMSSearch,
+    PMSActionButton,
+} from "../../components/Common/Common";
+
 import RoleModal from "./RoleModal";
+import "./Roles.css";
+
 
 function Roles() {
 
@@ -33,8 +39,8 @@ function Roles() {
         setIsModalOpen(true);
     };
 
-    // DELETE ROLE
-    const handleDeleteRole = async (id) => {
+
+    const handleDeleteRole = (id) => {
 
         const confirmed = window.confirm(
             "Are you sure you want to delete this role?"
@@ -44,73 +50,56 @@ function Roles() {
             return;
         }
 
-        try {
-
-            await api.delete(`roles/${id}/`);
-
-            await fetchRoles();
-
-        } catch (error) {
-
-            console.error("Failed to delete role:", error);
-
-            alert("Failed to delete role.");
-
-        }
+        setRoles((previousRoles) =>
+            previousRoles.filter((role) => role.id !== id)
+        );
     };
 
     // Save role
-    const handleSaveRole = async (roleData) => {
-        try {
-            console.log("ROLE DATA:", roleData);
+    const handleSaveRole = (roleData) => {
 
-            if (selectedRole) {
-                await api.put(`roles/${selectedRole.id}/`, roleData);
-            } else {
-                await api.post("roles/", roleData);
-            }
+        if (selectedRole) {
 
-            await fetchRoles();
 
-            // Close form after successful save
-            setIsModalOpen(false);
-            setSelectedRole(null);
-
-        } catch (error) {
-            console.error("Failed to save role:", error);
-            console.error("Backend response:", error.response?.data);
-
-            alert(
-                error.response?.data
-                    ? JSON.stringify(error.response.data)
-                    : "Failed to save role."
+            setRoles((previousRoles) =>
+                previousRoles.map((role) =>
+                    role.id === selectedRole.id
+                        ? {
+                            ...role,
+                            ...roleData,
+                        }
+                        : role
+                )
             );
+
+        } else {
+
+            // Create new role
+            const newRole = {
+                id: Date.now(),
+                ...roleData,
+            };
+
+            setRoles((previousRoles) => [
+                ...previousRoles,
+                newRole,
+            ]);
         }
+
+        setIsModalOpen(false);
+        setSelectedRole(null);
     };
+
     // Search
     const filteredRoles = roles.filter((role) => {
 
         const searchText = search.toLowerCase();
 
         return (
-            (role.role_name || "").toLowerCase().includes(searchText) ||
-            (role.description || "").toLowerCase().includes(searchText)
+            role.name.toLowerCase().includes(searchText) ||
+            role.description.toLowerCase().includes(searchText)
         );
     });
-    const fetchRoles = async () => {
-        try {
-            const response = await api.get("roles/");
-            console.log("ROLES DATA:", response.data);
-
-            setRoles(response.data);
-        } catch (error) {
-            console.error("Failed to fetch roles:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchRoles();
-    }, []);
 
     return (
         <div className="roles-page">
@@ -124,7 +113,7 @@ function Roles() {
                     <div className="page-title-wrapper">
 
                         <ShieldCheck
-                            size={22}
+                            size={27}
                             className="page-title-icon"
                         />
 
@@ -173,20 +162,19 @@ function Roles() {
 
                         <Search size={18} />
 
-                        <input
-                            type="text"
-                            placeholder="Search roles..."
+                        <PMSSearch
                             value={search}
-                            onChange={(e) =>
-                                setSearch(e.target.value)
-                            }
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            placeholder="Search roles..."
+                                   
                         />
 
                     </div>
 
                 </div>
-
-                {/* Table */}
 
                 {/* Table */}
 
@@ -197,6 +185,10 @@ function Roles() {
                         <thead>
 
                             <tr>
+
+                                <th>
+                                    #
+                                </th>
 
                                 <th>
                                     Role Name
@@ -225,7 +217,7 @@ function Roles() {
                                 <tr>
 
                                     <td
-                                        colSpan="4"
+                                        colSpan="5"
                                         className="empty-state"
                                     >
                                         No roles found
@@ -235,9 +227,13 @@ function Roles() {
 
                             ) : (
 
-                                filteredRoles.map((role) => (
+                                filteredRoles.map((role, index) => (
 
                                     <tr key={role.id}>
+
+                                        <td>
+                                            {index + 1}
+                                        </td>
 
                                         <td>
 
@@ -247,7 +243,7 @@ function Roles() {
                                                     <ShieldCheck size={17} />
                                                 </div>
 
-                                                {role.role_name}
+                                                {role.name}
 
                                             </div>
 
@@ -261,12 +257,12 @@ function Roles() {
 
                                             <span
                                                 className={
-                                                    role.is_active
+                                                    role.status === "Active"
                                                         ? "status active-status"
                                                         : "status inactive-status"
                                                 }
                                             >
-                                                {role.is_status ? "Active" : "Inactive"}
+                                                {role.status}
                                             </span>
 
                                         </td>
