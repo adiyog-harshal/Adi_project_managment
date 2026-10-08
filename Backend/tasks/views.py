@@ -10,12 +10,38 @@ from helpers import (
     notify_task_reassigned,
 )
 
-
 class TaskListCreateView(generics.ListCreateAPIView):
 
-    queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+
+        queryset = Task.objects.select_related(
+            'project',
+            'sprint',
+            'assigned_to'
+        ).all().order_by('-created_at')
+
+        project_id = self.request.query_params.get('project')
+        sprint_id = self.request.query_params.get('sprint')
+
+        if project_id:
+            queryset = queryset.filter(
+                project_id=project_id
+            )
+
+        if sprint_id:
+            queryset = queryset.filter(
+                sprint_id=sprint_id
+            )
+
+        elif sprint_id == 'null':
+            queryset = queryset.filter(
+                sprint__isnull=True
+            )
+
+        return queryset
 
     def perform_create(self, serializer):
 
@@ -23,7 +49,6 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
         if task.assigned_to:
             notify_task_assigned(task)
-
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
