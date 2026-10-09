@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from projects.models import Project
+from sprints.models import Sprint
 
 
 # Create your models here.
@@ -67,6 +68,16 @@ class Task(models.Model):
 
     def __str__(self):
         return self.task_name
+
+    sprint = models.ForeignKey(
+        'sprints.Sprint',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tasks'
+    )
+
+    
 
 class TaskComment(models.Model):
 
