@@ -10,6 +10,7 @@ import Users from "../pages/Users/Users";
 import Milestones from "../pages/Milestones/Milestones";
 import Designations from "../pages/Designations/designations";
 import Backlog from "../pages/Backlog/Backlog";
+import Sprints from "../pages/Sprints/sprints";
 
 
 
@@ -89,6 +90,15 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <Backlog />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/projects/:id/sprints"
+                element={
+                    <ProtectedRoute>
+                        <Sprints />
                     </ProtectedRoute>
                 }
             />

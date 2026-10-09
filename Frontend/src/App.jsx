@@ -128,36 +128,16 @@ function RoutesLayout() {
                     <div className="top-header-right">
 
                         {/* USER MENU */}
-                        <div className="user-menu">
+                        <div className="user-menu-wrapper">
 
                             <button
                                 type="button"
                                 className="user-menu-button"
                                 onClick={() => setShowUserMenu(!showUserMenu)}
                             >
-                                <div className="user-avatar">
-                                    {user?.first_name || user?.last_name
-                                        ? `${user.first_name?.charAt(0) || ""}${user.last_name?.charAt(0) || ""}`.toUpperCase()
-                                        : user?.username
-                                            ? user.username.substring(0, 2).toUpperCase()
-                                            : "U"
-                                    }
+                                <div className="user-avatar" title="Admin">
+                                    AD
                                 </div>
-
-                                <span className="user-name">
-                                    {user?.first_name || user?.last_name
-                                        ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
-                                        : user?.username || "User"}
-                                </span>
-
-                                <ChevronDown
-                                    size={16}
-                                    className={
-                                        showUserMenu
-                                            ? "user-chevron rotate"
-                                            : "user-chevron"
-                                    }
-                                />
                             </button>
 
                             {showUserMenu && (
