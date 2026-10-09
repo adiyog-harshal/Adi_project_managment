@@ -10,12 +10,18 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    project_name = serializers.CharField(
+        source="project.project_name",
+        read_only=True
+    )
+
     class Meta:
         model = ProjectMember
 
         fields = [
             "id",
             "project",
+            "project_name",
             "user",
             "username",
             "joined_at",
@@ -23,6 +29,7 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
 
         read_only_fields = [
             "id",
+            "project_name",
             "username",
             "joined_at",
         ]
