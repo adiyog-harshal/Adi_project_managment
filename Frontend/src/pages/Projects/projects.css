@@ -1,98 +1,206 @@
+/* =========================
+   PROJECT PAGE
+========================= */
+
 .projects-page {
-    padding: 30px;
+    width: 100%;
+    min-height: 100vh;
+    padding: 28px 32px;
+    box-sizing: border-box;
 }
 
 
-/* Header */
+/* =========================
+   HEADER
+========================= */
 
 .projects-header {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    box-sizing: border-box;
+}
+
+.project-title {
+    margin: 0;
+    padding: 0;
+}
+
+.project-title h1 {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
 
-    margin-bottom: 25px;
-}
-
-
-.projects-header h1 {
     margin: 0;
+    padding: 0;
 
     font-size: 24px;
-    font-weight: 600;
-
-    color: #202124;
+    line-height: 30px;
+    font-weight: 700;
+    color: #1f2937;
 }
 
+.project-title h1 svg {
+    flex-shrink: 0;
+}
 
-.projects-header p {
-    margin: 6px 0 0;
+.project-title p {
+    margin: 5px 0 0 34px;
+    padding: 0;
 
-    font-size: 14px;
-
+    font-size: 13px;
+    line-height: 18px;
     color: #6b7280;
 }
 
 
-/* Add Project Button */
+/* =========================
+   HEADER BUTTONS
+========================= */
+
+.project-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-icon-btn {
+    position: relative;
+
+    width: 38px;
+    height: 38px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #64748b;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+}
+
+.header-icon-btn:hover {
+    background: #f8f7ff;
+    border-color: #d9d3ff;
+    color: #6c55e8;
+}
+
+.notification-dot {
+    position: absolute;
+
+    top: 6px;
+    right: 6px;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #ef4444;
+
+    border: 2px solid #ffffff;
+
+    box-sizing: content-box;
+}
+
+
+/* =========================
+   ADD PROJECT BUTTON
+========================= */
 
 .add-project-btn {
-    height: 42px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
 
     padding: 0 16px;
 
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
     border: none;
-    border-radius: 8px;
+    border-radius: 7px;
 
-    background: #6c5ce7;
+    background: #6c55e8;
+    color: #ffffff;
 
-    color: white;
-
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
 
     cursor: pointer;
-}
 
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
 
 .add-project-btn:hover {
-    background: #5b4bd6;
+    background: #5b45d1;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 10px rgba(108, 85, 232, 0.20);
+}
+
+.add-project-btn:active {
+    transform: translateY(0);
 }
 
 
-/* Toolbar */
+/* =========================
+   SEARCH
+========================= */
 
 .projects-toolbar {
-    margin-bottom: 20px;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
 }
 
-
 .search-box {
-    width: 320px;
-    height: 42px;
+    width: 300px;
+    height: 38px;
 
     display: flex;
     align-items: center;
 
-    gap: 10px;
+    gap: 9px;
 
-    padding: 0 13px;
-
-    background: white;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 8px;
+    padding: 0 12px;
 
     box-sizing: border-box;
 
-    color: #9ca3af;
+    background: #ffffff;
+
+    border: 1px solid #dfe3e8;
+    border-radius: 7px;
+
+    color: #64748b;
 }
 
+.search-box:focus-within {
+    border-color: #6c55e8;
+
+    box-shadow: 0 0 0 3px rgba(108, 85, 232, 0.08);
+}
 
 .search-box input {
     width: 100%;
@@ -100,181 +208,265 @@
     border: none;
     outline: none;
 
-    font-size: 14px;
-
-    color: #202124;
-
     background: transparent;
-}
 
+    font-size: 13px;
+    color: #374151;
+}
 
 .search-box input::placeholder {
     color: #9ca3af;
 }
 
 
-/* Project Card */
+
+/* ============================= */
+/* PROJECT TABLE */
+/* ============================= */
 
 .projects-card {
-    background: white;
-
+    width: 100%;
+    background: #ffffff;
     border: 1px solid #e5e7eb;
-
     border-radius: 10px;
-
     overflow: hidden;
 }
 
-
-/* Table */
-
-.table-header,
-.table-row {
-    display: grid;
-
-    grid-template-columns:
-        2fr
-        1.3fr
-        1.2fr
-        1fr
-        0.5fr;
-
-    align-items: center;
+.projects-table {
+    width: 100%;
+    overflow-x: auto;
 }
 
+/* Header and rows must use EXACTLY the same columns */
 
+/* Heading */
 .table-header {
     min-height: 52px;
-
-    padding: 0 20px;
-
-    background: #f9fafb;
-
+    background: #f8fafc;
     border-bottom: 1px solid #e5e7eb;
-
+    color: #64748b;
     font-size: 12px;
-
     font-weight: 600;
-
-    color: #6b7280;
 }
 
-
+/* Rows */
 .table-row {
     min-height: 72px;
-
-    padding: 0 20px;
-
-    border-bottom: 1px solid #f0f0f0;
-
-    font-size: 14px;
-
-    color: #4b5563;
+    border-bottom: 1px solid #eef0f3;
+    color: #374151;
+    font-size: 13px;
 }
 
+.table-row:last-child {
+    border-bottom: none;
+}
 
-/* Project Name */
-
+/* Project column */
 .project-name {
     display: flex;
-
     align-items: center;
-
     gap: 12px;
+    min-width: 0;
+    font-size: 18px;
+    font-weight: 600;
 }
 
+.project-id-link {
+    font-size: 18px;
+    font-weight: 600;
+}
 
 .project-icon {
     width: 38px;
     height: 38px;
-
+    min-width: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
-
+    background: #fff7df;
+    color: #d9a21b;
     border-radius: 8px;
-
-    background: #eeeafd;
-
-    color: #6c5ce7;
 }
 
+.project-name > div:last-child {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 
 .project-name strong {
-    display: block;
-
     font-size: 14px;
-
-    color: #202124;
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-
 
 .project-name small {
-    display: block;
-
-    margin-top: 3px;
-
     font-size: 11px;
-
-    color: #9ca3af;
+    color: #94a3b8;
 }
-
 
 /* Status */
-
 .status-badge {
     display: inline-flex;
-
     align-items: center;
-
+    justify-content: center;
     padding: 5px 10px;
-
     border-radius: 20px;
-
-    font-size: 12px;
-
-    font-weight: 500;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
 }
-
 
 .active-status {
-    background: #eaf8ef;
+    background: #dcfce7;
+    color: #15803d;
+}
 
-    color: #2e8b57;
+.completed-status {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.progress-status {
+    background: #fef3c7;
+    color: #b45309;
 }
 
 
-/* Action */
 
-.action-menu button {
-    width: 32px;
-    height: 32px;
-
+.action-button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
 
+.action-button:hover {
+    background: #f1f5f9;
+    border-radius: 6px;
+}
+
+.action-dropdown {
+    position: absolute;
+    right: 50%;
+    top: 32px;
+    transform: translateX(50%);
+
+    width: 120px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+    z-index: 999;
+    padding: 5px;
+}
+
+.action-dropdown button {
+    width: 100%;
     border: none;
-
     background: transparent;
 
-    color: #6b7280;
+     display: flex;
+    align-items: center;
 
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+
+    text-align: left;
+    font-size: 14px;
+}
+
+.action-dropdown button:hover {
+    background: #f1f5f9;
+}
+
+/* No projects */
+.no-projects {
+    min-width: 800px;
+    padding: 45px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* Pagination */
+.project-pagination {
+    min-height: 60px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #eef0f3;
+    box-sizing: border-box;
+}
+
+.project-pagination-info {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.project-pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.project-page-btn,
+.project-page-number {
+    height: 32px;
+    min-width: 32px;
+    padding: 0 10px;
+    border: 1px solid #dfe3e8;
     border-radius: 6px;
-
+    background: #ffffff;
+    color: #475569;
+    font-size: 12px;
     cursor: pointer;
 }
 
+.project-page-btn:hover:not(:disabled),
+.project-page-number:hover {
+    background: #f8fafc;
+}
 
-.action-menu button:hover {
-    background: #f3f4f6;
+.project-page-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.project-page-number.active {
+    background: #d9a21b;
+    border-color: #d9a21b;
+    color: #ffffff;
 }
 
 
-/* Empty */
+
+
+
+
+
+
+.table-row:hover {
+    background: #fafbff;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
 
 .empty-projects {
-    padding: 20px;
+    padding: 40px 20px;
 
     text-align: center;
 
@@ -283,87 +475,251 @@
     font-size: 13px;
 }
 
-/* ============================= */
-/* CREATE PROJECT FORM */
-/* ============================= */
 
-/* ============================= */
-/* CREATE PROJECT FORM */
-/* ============================= */
+.project-page-btn {
+    height: 34px !important;
+
+    min-width: 72px !important;
+
+    padding: 0 12px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    border: 1px solid #d9dde5 !important;
+
+    border-radius: 6px !important;
+
+    background: #ffffff !important;
+
+    color: #64748b !important;
+
+    font-size: 12px !important;
+
+    font-family: inherit !important;
+
+    cursor: pointer;
+}
+
+.project-page-btn:disabled {
+    background: #f8fafc !important;
+
+    border-color: #e5e7eb !important;
+
+    color: #b8bec7 !important;
+
+    cursor: not-allowed;
+}
+
+.project-page-number {
+    width: 34px !important;
+    height: 34px !important;
+
+    padding: 0 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    border: 1px solid #6c55e8 !important;
+
+    border-radius: 6px !important;
+
+    background: #6c55e8 !important;
+
+    color: #ffffff !important;
+
+    font-size: 12px !important;
+
+    font-weight: 600 !important;
+
+    cursor: pointer;
+}
 
 
-/* ============================= */
-/* CREATE PROJECT FORM */
-/* ============================= */
 
-/* ================================= */
-/* ADD PROJECT FORM */
-/* ================================= */
 
-/* ========================================= */
-/* ADD PROJECT FORM */
-/* ========================================= */
 
-/* ========================================= */
-/* ADD PROJECT MODAL */
-/* ========================================= */
 
-.project-form-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
 
-    width: 100vw;
-    height: 100vh;
 
-    background: rgba(0, 0, 0, 0.35);
+
+
+
+
+/* EACH FIELD */
+
+.project-form-grid .form-group {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    gap: 7px !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* FULL WIDTH */
+
+.project-form-grid .full-width {
+    grid-column: 1 / -1 !important;
+}
+
+
+/* LABEL */
+
+.project-form-grid .form-group label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+
+    margin: 0 !important;
+}
+
+
+/* INPUT + SELECT */
+
+.project-form-grid .form-group input,
+.project-form-grid .form-group select {
+    width: 100% !important;
+    height: 40px !important;
+
+    padding: 0 12px !important;
+
+    box-sizing: border-box !important;
+
+    border: 1px solid #cfd6df !important;
+    border-radius: 6px !important;
+
+    background: #ffffff !important;
+
+    color: #1f2937 !important;
+
+    font-size: 13px !important;
+
+    outline: none !important;
+}
+
+
+/* INPUT + SELECT WHEN CLICKED */
+
+.project-form-grid .form-group input:focus,
+.project-form-grid .form-group select:focus {
+    border-color: #6c55e8 !important;
+    box-shadow: 0 0 0 2px rgba(108, 85, 232, 0.10) !important;
+}
+
+
+/* DESCRIPTION */
+
+.project-form-grid .form-group textarea {
+    width: 100% !important;
+
+    height: 90px !important;
+    min-height: 90px !important;
+    max-height: 90px !important;
+
+    padding: 10px 12px !important;
+
+    box-sizing: border-box !important;
+
+    border: 1px solid #cfd6df !important;
+    border-radius: 6px !important;
+
+    background: #ffffff !important;
+
+    color: #1f2937 !important;
+
+    font-size: 13px !important;
+
+    outline: none !important;
+
+    resize: none !important;
+}
+
+
+/* DESCRIPTION WHEN CLICKED */
+
+.project-form-grid .form-group textarea:focus {
+    border-color: #6c55e8 !important;
+    box-shadow: 0 0 0 2px rgba(108, 85, 232, 0.10) !important;
+}
+
+
+/* BUTTON AREA */
+
+.project-form-actions {
+    width: 100% !important;
+
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+
+    gap: 10px !important;
+
+    margin-top: 24px !important;
+    padding-top: 16px !important;
+
+    border-top: 1px solid #e5e7eb !important;
+}
+
+
+/* CANCEL */
+
+.project-form-actions button {
+    height: 36px !important;
+    padding: 0 16px !important;
+
+    border-radius: 6px !important;
+
+    font-size: 13px !important;
+    cursor: pointer !important;
+}
+
+ .project-form-grid {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+    box-sizing: border-box !important;
+}
+/* =========================
+   FORM HEADER + X
+========================= */
+
+.project-form-top {
+    width: 100%;
 
     display: flex;
-    align-items: center;
-    justify-content: center;
 
-    z-index: 1000;
+    align-items: flex-start;
 
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-
-/* ========================================= */
-/* FORM CARD */
-/* ========================================= */
-
-.project-form-card {
-    width: 100%;
-    max-width: 650px;
-
-    max-height: 90vh;
-    overflow-y: auto;
+    justify-content: space-between;
 
     box-sizing: border-box;
 
-    background: #ffffff;
-
-    border-radius: 12px;
-
-    padding: 28px 32px;
-
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    margin-bottom: 24px;
 }
-
-
-/* ========================================= */
-/* FORM HEADER */
-/* ========================================= */
 
 .project-form-header {
-    margin-bottom: 24px;
+    margin: 0;
+
+    padding: 0;
 }
 
 .project-form-header h2 {
     margin: 0;
 
     font-size: 20px;
+
+    line-height: 26px;
+
     font-weight: 600;
 
     color: #202124;
@@ -374,13 +730,55 @@
 
     font-size: 13px;
 
+    line-height: 18px;
+
     color: #6b7280;
 }
 
 
-/* ========================================= */
-/* ERROR */
-/* ========================================= */
+/* =========================
+   CLOSE X BUTTON
+========================= */
+
+.project-close-btn {
+    flex-shrink: 0;
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: #64748b;
+
+    font-size: 24px;
+
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.project-close-btn:hover {
+    background: #f5f3ff;
+
+    color: #6c55e8;
+}
+
+
+/* =========================
+   FORM ERROR
+========================= */
 
 .project-form-error {
     width: 100%;
@@ -403,117 +801,84 @@
 }
 
 
-/* ========================================= */
-/* FORM GRID */
-/* ========================================= */
+/* =========================
+   FORM GRID
+========================= */
 
-.project-form-grid {
-    width: 100%;
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    column-gap: 22px;
-
-    row-gap: 18px;
+.project-form-grid input,
+.project-form-grid select {
+    width: 100% !important;
+    height: 40px !important;
+    box-sizing: border-box !important;
+    padding: 0 12px !important;
+    border: 1px solid #d8dee8 !important;
+    border-radius: 6px !important;
+    background: #ffffff !important;
+    font-size: 13px !important;
+    color: #1f2937 !important;
 }
-
-
-/* ========================================= */
-/* FORM FIELD */
-/* ========================================= */
 
 .form-group {
     width: 100%;
-
+    min-width: 0;
     display: flex;
-
     flex-direction: column;
-
     gap: 7px;
+    box-sizing: border-box;
 }
 
 .form-group label {
-    margin: 0;
-
     font-size: 13px;
-
-    font-weight: 500;
-
-    color: #374151;
+    font-weight: 600;
+    color: #1f2937;
 }
 
-
-/* ========================================= */
-/* INPUTS */
-/* ========================================= */
-
 .form-group input,
-.form-group select {
+.form-group select 
+.form-group-textarea {
     width: 100%;
-
-    height: 42px;
-
-    box-sizing: border-box;
-
+    height: 40px;
     padding: 0 12px;
-
-    border: 1px solid #d9dee7;
-
-    border-radius: 7px;
-
+    border: 1px solid #d8dee8;
+    border-radius: 6px;
     background: #ffffff;
-
-    color: #202124;
-
-    font-size: 14px;
-
+    color: #1f2937;
+    font-size: 13px;
+    box-sizing: border-box;
     outline: none;
+}
+.form-group textarea {
+    height: 90px;
+    padding: 10px 12px;
+    resize: vertical;
 }
 
 .form-group input::placeholder {
     color: #9ca3af;
 }
 
-
-/* ========================================= */
-/* FOCUS */
-/* ========================================= */
-
 .form-group input:focus,
 .form-group select:focus {
     border-color: #6c5ce7;
 
-    box-shadow:
-        0 0 0 2px rgba(108, 92, 231, 0.08);
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.08);
 }
 
 
-/* ========================================= */
-/* BUTTONS */
-/* ========================================= */
+/* =========================
+   FORM BUTTONS
+========================= */
 
 .project-form-actions {
     width: 100%;
-
     display: flex;
-
     justify-content: flex-end;
-
     align-items: center;
-
     gap: 10px;
-
     margin-top: 24px;
-
-    padding-top: 18px;
-
-    border-top: 1px solid #eeeeee;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
 }
-
-
-/* CANCEL */
 
 .cancel-project-btn {
     height: 40px;
@@ -538,9 +903,6 @@
 .cancel-project-btn:hover {
     background: #f9fafb;
 }
-
-
-/* SAVE */
 
 .create-project-btn {
     height: 40px;
@@ -567,14 +929,57 @@
 }
 
 
-/* ========================================= */
-/* MOBILE */
-/* ========================================= */
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .projects-page {
+        padding: 22px;
+    }
+
+    .projects-header {
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .project-header-actions {
+        width: 100%;
+    }
+
+    .projects-toolbar {
+        width: 100%;
+    }
+
+    .search-box {
+        width: 100%;
+
+        max-width: 320px;
+    }
+
+    .table-header,
+    .table-row {
+        grid-template-columns:
+            1.8fr
+            1.2fr
+            1fr
+            0.8fr
+            0.4fr;
+
+        column-gap: 12px;
+
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+}
+
 
 @media (max-width: 768px) {
 
     .project-form-wrapper {
-        padding: 15px;
+        padding: 15px !important;
     }
 
     .project-form-card {
@@ -588,8 +993,9 @@
 
         row-gap: 16px;
     }
-
 }
+
+
 /* ========================================= */
 /* PROJECT DETAILS */
 /* ========================================= */
@@ -707,10 +1113,160 @@
     padding: 24px;
 
     background: white;
+}  
+
+/* =========================================
+   FIX ADD PROJECT MODAL POSITION
+========================================= */
+
+.projects-page .project-form-wrapper {
+    position: fixed !important;
+
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 20px !important;
+
+    box-sizing: border-box !important;
+
+    /* Covers the project page behind the form */
+    background: #f5f6fa !important;
+    
+
+    z-index: 99999 !important;
+}
+
+.projects-page .project-form-card {
+    position: relative !important;
+
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+
+    margin: 0 auto !important;
+
+    transform: none !important;
+
+    width: 650px !important;
+    max-width: calc(100vw - 40px) !important;
+
+    box-sizing: border-box !important;
+}
+
+
+
+/* =========================================
+   KEEP PROJECT PAGE BEHIND MODAL
+========================================= */
+
+.projects-page .projects-header,
+.projects-page .projects-toolbar,
+.projects-page .projects-card {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* Modal must always stay above project content */
+
+.projects-page .project-form-wrapper {
+    position: fixed !important;
+
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 20px !important;
+
+    box-sizing: border-box !important;
+
+    background: rgba(245, 246, 250, 0.96) !important;
+
+    z-index: 999999 !important;
+}
+
+.projects-page .project-form-card {
+    position: relative !important;
+
+    z-index: 1000000 !important;
+
+    width: 650px !important;
+    max-width: calc(100vw - 40px) !important;
+
+    margin: 0 auto !important;
+
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+
+    box-sizing: border-box !important;
+}
+
+/* =========================================
+   HIDE PROJECT PAGE WHEN ADD FORM IS OPEN
+========================================= */
+
+
+/* =========================================
+   PROJECT SUMMARY CARDS
+========================================= */
+
+.project-summary-cards {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 16px;
+
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    min-height: 110px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
 
     border: 1px solid #e5e7eb;
 
     border-radius: 10px;
+
 }
 
 .project-details-card h2 {
@@ -723,8 +1279,1342 @@
 
 .project-details-card p {
     margin: 0;
-
     font-size: 14px;
-
     color: #6b7280;
+}
+
+.summary-card {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.summary-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.summary-icon svg {
+    color: inherit !important;
+
+}
+
+.total-icon {
+    color: #2563eb !important;
+    background: #eff6ff !important;
+}
+
+.upcoming-icon {
+    color: #d97706 !important;
+    background: #fffbeb !important;
+}
+
+.ongoing-icon {
+    color: #7c3aed !important;
+    background: #f5f3ff !important;
+}
+
+.completed-icon {
+    color: #16a34a !important;
+    background: #f0fdf4 !important;
+}
+
+.summary-content {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.summary-content span {
+    font-size: 13px;
+
+    color: #64748b;
+
+    font-weight: 500;
+}
+
+.summary-content strong {
+    font-size: 25px;
+
+    line-height: 30px;
+
+    color: #1f2937;
+
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+
+    .project-summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .project-summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+}
+.project-form-grid .full-width {
+    grid-column: 1 / -1 !important;
+}
+
+.project-form-grid .form-group {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    box-sizing: border-box !important;
+}
+.project-form-grid textarea {
+    width: 100% !important;
+    min-height: 90px !important;
+    box-sizing: border-box !important;
+    padding: 10px 12px !important;
+    border: 1px solid #d8dee8 !important;
+    border-radius: 6px !important;
+    background: #ffffff !important;
+    font-size: 13px !important;
+    color: #1f2937 !important;
+    resize: vertical !important;
+}
+.project-form-grid label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+}
+
+
+/* =====================================================
+   FINAL PROJECT FORM FIX
+===================================================== */
+
+.projects-page {
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+}
+
+
+/* MODAL BACKDROP */
+
+.project-form-wrapper {
+    position: fixed !important;
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 24px !important;
+    box-sizing: border-box !important;
+
+    background: rgba(15, 23, 42, 0.35) !important;
+
+    z-index: 99999 !important;
+
+    overflow-y: auto !important;
+}
+
+
+/* FORM */
+
+.project-form-card {
+    width: 650px !important;
+    max-width: 100% !important;
+
+    max-height: calc(100vh - 48px) !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #e1e5eb !important;
+    border-radius: 12px !important;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+
+    padding: 28px !important;
+
+    box-sizing: border-box !important;
+
+    overflow-y: auto !important;
+
+    position: relative !important;
+}
+
+
+/* HEADER */
+
+.project-form-top {
+    width: 100% !important;
+
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+
+    margin-bottom: 24px !important;
+}
+
+
+/* GRID */
+
+.project-form-grid {
+    width: 100% !important;
+
+    display: grid !important;
+
+    grid-template-columns: 1fr 1fr !important;
+
+    column-gap: 20px !important;
+    row-gap: 18px !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* FIELD */
+
+.project-form-grid .form-group {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    gap: 7px !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* FULL WIDTH */
+
+.project-form-grid .full-width {
+    grid-column: 1 / -1 !important;
+}
+
+
+/* LABEL */
+
+.project-form-grid label {
+    margin: 0 !important;
+
+    font-size: 13px !important;
+    font-weight: 600 !important;
+
+    color: #1f2937 !important;
+}
+
+
+/* INPUT + SELECT */
+
+.project-form-grid input,
+.project-form-grid select {
+    width: 100% !important;
+    height: 40px !important;
+
+    padding: 0 12px !important;
+
+    border: 1px solid #cfd6df !important;
+    border-radius: 6px !important;
+
+    background: #ffffff !important;
+
+    color: #1f2937 !important;
+
+    font-size: 13px !important;
+
+    outline: none !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* TEXTAREA */
+
+.project-form-grid textarea {
+    width: 100% !important;
+
+    height: 90px !important;
+    min-height: 90px !important;
+    max-height: 90px !important;
+
+    padding: 10px 12px !important;
+
+    border: 1px solid #cfd6df !important;
+    border-radius: 6px !important;
+
+    background: #ffffff !important;
+
+    color: #1f2937 !important;
+
+    font-size: 13px !important;
+
+    outline: none !important;
+
+    box-sizing: border-box !important;
+
+    resize: none !important;
+}
+
+
+/* FOCUS */
+
+.project-form-grid input:focus,
+.project-form-grid select:focus,
+.project-form-grid textarea:focus {
+    border-color: #6c55e8 !important;
+
+    box-shadow: 0 0 0 2px rgba(108, 85, 232, 0.10) !important;
+}
+
+
+/* BUTTON AREA */
+
+.project-form-actions {
+    width: 100% !important;
+
+    display: flex !important;
+
+    justify-content: flex-end !important;
+
+    align-items: center !important;
+
+    gap: 10px !important;
+
+    margin-top: 24px !important;
+
+    padding-top: 16px !important;
+
+    border-top: 1px solid #e5e7eb !important;
+
+    box-sizing: border-box !important;
+}
+/* ================================
+   PROJECT TABLE ALIGNMENT FIX
+   ================================ */
+
+.projects-table table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.projects-table th,
+.projects-table td {
+    box-sizing: border-box;
+}
+
+.projects-table th:last-child,
+.projects-table td:last-child {
+    width: 80px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.projects-table td:last-child {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Action three-dot button */
+.projects-table td:last-child button {
+    margin: 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =====================================================
+   FINAL POPUP OVERLAY
+===================================================== */
+
+.project-form-wrapper {
+    position: fixed !important;
+
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 24px !important;
+    margin: 0 !important;
+
+    box-sizing: border-box !important;
+
+    background: rgba(15, 23, 42, 0.40) !important;
+
+    z-index: 2147483647 !important;
+
+    overflow-y: auto !important;
+}
+
+
+/* =====================================================
+   POPUP BOX
+===================================================== */
+
+.project-form-card {
+    position: relative !important;
+
+    width: 650px !important;
+    max-width: calc(100vw - 48px) !important;
+
+    max-height: calc(100vh - 48px) !important;
+
+    margin: 0 !important;
+
+    padding: 28px !important;
+
+    box-sizing: border-box !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #e1e5eb !important;
+
+    border-radius: 12px !important;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20) !important;
+
+    overflow-y: auto !important;
+
+    z-index: 2147483647 !important;
+}
+
+
+/* =====================================================
+   DO NOT HIDE PROJECT CONTENT
+===================================================== */
+
+.projects-page {
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+}
+
+
+.projects-page {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+
+/* =====================================================
+   ADD PROJECT MODAL
+===================================================== */
+
+.project-form-wrapper {
+    position: fixed !important;
+
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 24px !important;
+
+    margin: 0 !important;
+
+    box-sizing: border-box !important;
+
+    background: rgba(15, 23, 42, 0.40) !important;
+
+    z-index: 999999 !important;
+
+    overflow-y: auto !important;
+}
+
+
+/* =====================================================
+   POPUP CARD
+===================================================== */
+
+.project-form-card {
+    position: relative !important;
+
+    width: 650px !important;
+
+    max-width: calc(100vw - 48px) !important;
+
+    max-height: calc(100vh - 48px) !important;
+
+    margin: 0 !important;
+
+    padding: 28px !important;
+
+    box-sizing: border-box !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #e1e5eb !important;
+
+    border-radius: 12px !important;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20) !important;
+
+    overflow-y: auto !important;
+
+    z-index: 1000000 !important;
+}
+
+
+/* =====================================================
+   FORM HEADER
+===================================================== */
+
+.project-form-top {
+    width: 100% !important;
+
+    display: flex !important;
+
+    align-items: flex-start !important;
+
+    justify-content: space-between !important;
+
+    margin-bottom: 24px !important;
+
+    box-sizing: border-box !important;
+}
+
+
+.project-form-header {
+    margin: 0 !important;
+
+    padding: 0 !important;
+}
+
+
+.project-form-header h2 {
+    margin: 0 !important;
+
+    font-size: 20px !important;
+
+    line-height: 26px !important;
+
+    font-weight: 600 !important;
+
+    color: #202124 !important;
+}
+
+
+.project-form-header p {
+    margin: 6px 0 0 !important;
+
+    font-size: 13px !important;
+
+    line-height: 18px !important;
+
+    color: #6b7280 !important;
+}
+
+
+/* =====================================================
+   CLOSE BUTTON
+===================================================== */
+
+.project-close-btn {
+    flex-shrink: 0 !important;
+
+    width: 32px !important;
+
+    height: 32px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    border: none !important;
+
+    border-radius: 6px !important;
+
+    background: transparent !important;
+
+    color: #64748b !important;
+
+    cursor: pointer !important;
+}
+
+
+.project-close-btn:hover {
+    background: #f5f3ff !important;
+
+    color: #6c55e8 !important;
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.project-form-error {
+    width: 100% !important;
+
+    box-sizing: border-box !important;
+
+    margin-bottom: 18px !important;
+
+    padding: 10px 12px !important;
+
+    border: 1px solid #f3c4c4 !important;
+
+    border-radius: 7px !important;
+
+    background: #fdeaea !important;
+
+    color: #d64545 !important;
+
+    font-size: 13px !important;
+}
+
+
+/* =====================================================
+   FORM GRID
+===================================================== */
+
+.project-form-grid {
+    width: 100% !important;
+
+    display: grid !important;
+
+    grid-template-columns: 1fr 1fr !important;
+
+    column-gap: 20px !important;
+
+    row-gap: 18px !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* =====================================================
+   FORM GROUP
+===================================================== */
+
+.project-form-grid .form-group {
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    gap: 7px !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* FULL WIDTH */
+
+.project-form-grid .full-width {
+    grid-column: 1 / -1 !important;
+}
+
+
+/* =====================================================
+   LABEL
+===================================================== */
+
+.project-form-grid .form-group label {
+    margin: 0 !important;
+
+    font-size: 13px !important;
+
+    font-weight: 600 !important;
+
+    color: #1f2937 !important;
+}
+
+
+/* =====================================================
+   INPUT + SELECT
+===================================================== */
+
+.project-form-grid .form-group input,
+.project-form-grid .form-group select {
+    width: 100% !important;
+
+    height: 40px !important;
+
+    padding: 0 12px !important;
+
+    box-sizing: border-box !important;
+
+    border: 1px solid #cfd6df !important;
+
+    border-radius: 6px !important;
+
+    background: #ffffff !important;
+
+    color: #1f2937 !important;
+
+    font-size: 13px !important;
+
+    outline: none !important;
+}
+
+
+/* =====================================================
+   TEXTAREA
+===================================================== */
+
+.project-form-grid .form-group textarea {
+    width: 100% !important;
+
+    height: 90px !important;
+
+    min-height: 90px !important;
+
+    max-height: 90px !important;
+
+    padding: 10px 12px !important;
+
+    box-sizing: border-box !important;
+
+    border: 1px solid #cfd6df !important;
+
+    border-radius: 6px !important;
+
+    background: #ffffff !important;
+
+    color: #1f2937 !important;
+
+    font-size: 13px !important;
+
+    outline: none !important;
+
+    resize: none !important;
+}
+
+
+/* =====================================================
+   FOCUS
+===================================================== */
+
+.project-form-grid .form-group input:focus,
+.project-form-grid .form-group select:focus,
+.project-form-grid .form-group textarea:focus {
+    border-color: #6c55e8 !important;
+
+    box-shadow:
+        0 0 0 2px rgba(108, 85, 232, 0.10) !important;
+}
+
+
+/* =====================================================
+   FORM BUTTONS
+===================================================== */
+
+.project-form-actions {
+    width: 100% !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: flex-end !important;
+
+    gap: 10px !important;
+
+    margin-top: 24px !important;
+
+    padding-top: 16px !important;
+
+    border-top: 1px solid #e5e7eb !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* CANCEL */
+
+.cancel-project-btn {
+    height: 40px !important;
+
+    padding: 0 18px !important;
+
+    border: 1px solid #d9dee7 !important;
+
+    border-radius: 7px !important;
+
+    background: #ffffff !important;
+
+    color: #4b5563 !important;
+
+    font-size: 14px !important;
+
+    font-weight: 500 !important;
+
+    cursor: pointer !important;
+}
+
+
+.cancel-project-btn:hover {
+    background: #f9fafb !important;
+}
+
+
+/* SAVE */
+
+.create-project-btn {
+    height: 40px !important;
+
+    padding: 0 20px !important;
+
+    border: none !important;
+
+    border-radius: 7px !important;
+
+    background: #6c55e8 !important;
+
+    color: #ffffff !important;
+
+    font-size: 14px !important;
+
+    font-weight: 500 !important;
+
+    cursor: pointer !important;
+}
+
+
+.create-project-btn:hover {
+    background: #5b45d1 !important;
+}
+
+
+/* =====================================================
+   RESPONSIVE MODAL
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .project-form-wrapper {
+        padding: 15px !important;
+    }
+
+    .project-form-card {
+        width: 100% !important;
+
+        max-width: 100% !important;
+
+        max-height: 92vh !important;
+
+        padding: 22px !important;
+    }
+
+    .project-form-grid {
+        grid-template-columns: 1fr !important;
+
+        row-gap: 16px !important;
+    }
+}
+
+
+.project-name-link {
+    display: block;
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.project-name-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.project-id-link {
+    display: block;
+    margin-top: 4px;
+    color: #2563eb;
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.project-id-link:hover {
+    text-decoration: underline;
+}
+
+
+
+
+/* FINAL PROJECT TABLE FIX */
+
+.table-header,
+.table-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 2.5fr) 1.2fr 1.2fr 80px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    column-gap: 20px;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+.action-menu {
+    position: relative;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end !important;
+    width: 100% !important;
+    justify-self: end !important;
+}
+
+.action-button {
+    margin-left: auto !important;
+}
+
+/* NOTIFICATIONS    */
+
+.notification-wrapper {
+    position: relative;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    width: 340px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+}
+
+.notification-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.notification-item {
+    padding: 13px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    background: #f8fafc;
+}
+
+.notification-item.unread {
+    background: #fffaf0;
+}
+
+.notification-message {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.4;
+}
+
+.notification-time {
+    margin-top: 5px;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.no-notifications {
+    padding: 25px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* PROJECT PROGRESS BAR */
+.project-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 140px;
+}
+
+.progress-bar {
+    width: 100px;
+    height: 7px;
+    background: #e9edf2;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #12b76a;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.progress-percentage {
+    font-size: 13px;
+    font-weight: 600;
+    color: #344054;
+    min-width: 35px;
+}
+
+
+/* =====================================================
+   FINAL PROJECT TABLE ALIGNMENT
+===================================================== */
+
+.table-header,
+.table-row {
+    display: grid !important;
+
+    /*
+       Projects | Start | End | Progress | Actions
+    */
+    grid-template-columns:
+        minmax(260px, 2.5fr)
+        minmax(110px, 1.2fr)
+        minmax(110px, 1.2fr)
+        minmax(160px, 1.5fr)
+        70px !important;
+
+    width: 100% !important;
+
+    min-width: 850px !important;
+
+    column-gap: 20px !important;
+
+    padding: 0 24px !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* HEADER */
+
+.table-header {
+    min-height: 52px !important;
+
+    align-items: center !important;
+
+    background: #f8fafc !important;
+
+    border-bottom: 1px solid #e5e7eb !important;
+
+    color: #64748b !important;
+
+    font-size: 12px !important;
+
+    font-weight: 600 !important;
+}
+
+
+/* ROW */
+
+.table-row {
+    min-height: 72px !important;
+
+    align-items: center !important;
+
+    border-bottom: 1px solid #eef0f3 !important;
+}
+
+
+/* =====================================================
+   PROJECT COLUMN
+===================================================== */
+
+.project-name {
+    min-width: 0 !important;
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+.project-progress {
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    gap: 10px !important;
+}
+
+.progress-bar {
+    width: 100px !important;
+
+    height: 7px !important;
+
+    flex: 1 !important;
+
+    max-width: 110px !important;
+
+    background: #e9edf2 !important;
+
+    border-radius: 10px !important;
+
+    overflow: hidden !important;
+}
+
+.progress-fill {
+    height: 100% !important;
+
+    background: #12b76a !important;
+
+    border-radius: 10px !important;
+
+    transition: width 0.3s ease !important;
+}
+
+.progress-percentage {
+    min-width: 35px !important;
+
+    font-size: 13px !important;
+
+    font-weight: 600 !important;
+
+    color: #344054 !important;
+}
+
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.action-menu {
+    position: relative !important;
+
+    width: 100% !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    justify-self: stretch !important;
+}
+
+.action-button {
+    width: 32px !important;
+
+    height: 32px !important;
+
+    margin: 0 !important;
+
+    padding: 6px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+}
+
+
+/* Dropdown */
+
+.action-dropdown {
+    position: absolute !important;
+
+    top: 36px !important;
+
+    right: 0 !important;
+
+    transform: none !important;
+
+    width: 120px !important;
+
+    z-index: 9999 !important;
+}
+
+/* =========================================================
+   FINAL FIX - PROJECT TABLE 5 COLUMNS
+   ========================================================= */
+
+.projects-table .table-header,
+.projects-table .table-row {
+    display: grid !important;
+
+    grid-template-columns:
+        minmax(260px, 2.5fr)
+        minmax(120px, 1.2fr)
+        minmax(120px, 1.2fr)
+        minmax(180px, 1.5fr)
+        70px !important;
+
+    align-items: center !important;
+
+    width: 100% !important;
+    min-width: 950px !important;
+
+    column-gap: 20px !important;
+
+    padding: 0 24px !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* HEADER */
+.projects-table .table-header {
+    min-height: 50px !important;
+}
+
+
+/* ROW */
+.projects-table .table-row {
+    min-height: 70px !important;
+}
+
+
+/* PROJECT COLUMN */
+.projects-table .project-name {
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+}
+
+
+/* PROGRESS COLUMN */
+.projects-table .project-progress {
+    display: flex !important;
+    align-items: center !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    gap: 10px !important;
+}
+
+
+/* PROGRESS BAR BACKGROUND */
+.projects-table .progress-bar {
+    display: block !important;
+
+    width: 110px !important;
+    min-width: 110px !important;
+    height: 7px !important;
+
+    background: #e9edf2 !important;
+
+    border-radius: 10px !important;
+
+    overflow: hidden !important;
+
+    flex-shrink: 0 !important;
+}
+
+
+/* GREEN PROGRESS */
+.projects-table .progress-fill {
+    display: block !important;
+
+    height: 100% !important;
+
+    background: #12b76a !important;
+
+    border-radius: 10px !important;
+
+    transition: width 0.3s ease !important;
+}
+
+
+/* PERCENTAGE */
+.projects-table .progress-percentage {
+    display: inline-block !important;
+
+    min-width: 40px !important;
+
+    font-size: 13px !important;
+    font-weight: 600 !important;
+
+    color: #344054 !important;
+}
+
+
+/* ACTION COLUMN */
+.projects-table .action-menu {
+    position: relative !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 100% !important;
+}
+
+
+/* ACTION BUTTON */
+.projects-table .action-button {
+    width: 32px !important;
+    height: 32px !important;
+
+    margin: 0 !important;
+    padding: 6px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+
+/* ACTION DROPDOWN */
+.projects-table .action-dropdown {
+    position: absolute !important;
+
+    top: 38px !important;
+    right: 0 !important;
+
+    z-index: 9999 !important;
+}
+
+/* PROGRESS COLORS */
+
+.projects-table .progress-fill {
+    height: 100% !important;
+    border-radius: 10px !important;
+    transition: width 0.3s ease, background-color 0.3s ease !important;
+}
+
+/* Below 50% = Orange */
+.projects-table .progress-orange {
+    background: #f79009 !important;
+}
+
+/* 50% and above = Green */
+.projects-table .progress-green {
+    background: #12b76a !important;
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
 
@@ -25,31 +25,23 @@ const Login = () => {
             setLoading(true);
             setError("");
 
-            const response = await axios.post(
-                "http://127.0.0.1:8000/api/login/",
-                {
-
-                    username: username,
-                    password: password
-                }
-            );
+            const response = await api.post("login/", {
+                username,
+                password
+            });
+                
+            
 
             console.log("LOGIN RESPONSE:", response.data);
 
             // SAVE JWT TOKENS
-            localStorage.setItem(
-                "access_token",
-                response.data.access
-            );
+            localStorage.setItem("token", response.data.access);
 
-            localStorage.setItem(
-                "refresh_token",
-                response.data.refresh
-            );
+            localStorage.setItem("refresh_token", response.data.refresh);
 
             console.log(
                 "SAVED TOKEN:",
-                localStorage.getItem("access_token")
+                localStorage.getItem("token")
             );
 
 

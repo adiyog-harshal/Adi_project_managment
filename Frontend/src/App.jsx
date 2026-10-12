@@ -1,112 +1,202 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import {
+    ChevronDown,
+    User,
+    Settings,
+    LogOut
+} from "lucide-react";
 
 import {
     BrowserRouter,
-    Routes,
-    Route
+    useLocation,
+    useNavigate
 } from "react-router-dom";
 
 import Sidebar from "./components/Sidebar/Sidebar";
-
-import Projects from "./pages/Projects/projects";
-import Designations from "./pages/Designations/designations";
-import Roles from "./pages/Roles";
-import Login from "./pages/Login/login";
-import Users from "./pages/Users";
+import AppRoutes from "./routes/AppRoutes";
+import api from "./services/api";
 
 import "./App.css";
 
-
-const Dashboard = () => {
-
-    return (
-        <div className="dashboard-page">
-
-            <h1>
-                Dashboard
-            </h1>
-
-            <p>
-                Welcome to Project Management System
-            </p>
-
-        </div>
-    );
-
-};
-
-
 function App() {
-
     return (
-
         <BrowserRouter>
-
-            <Routes>
-
-                {/* LOGIN */}
-
-                <Route
-                    path="/login"
-                    element={<Login />}
-                />
-
-                {/* MAIN PMS */}
-
-                <Route
-                    path="/*"
-                    element={
-
-                        <>
-
-                            <Sidebar />
-
-                            <main className="main-content">
-
-                                <Routes>
-
-                                    <Route
-                                        path="/"
-                                        element={<Dashboard />}
-                                    />
-
-                                    <Route
-                                        path="/projects"
-                                        element={<Projects />}
-
-                                    />
-
-                                    <Route
-                                         path="/users"
-                                         element={<Users />}
-                                    />
-
-                                    <Route
-                                        path="/designations"
-                                        element={<Designations />}
-                                    />
-
-                                    <Route
-                                        path="/roles"
-                                        element={<Roles />}
-                                    />
-
-                                </Routes>
-
-                            </main>
-
-                        </>
-
-                    }
-                />
-
-            </Routes>
-
+            <RoutesLayout />
         </BrowserRouter>
-
     );
-
 }
 
+function RoutesLayout() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const [user, setUser] = useState(null);
+
+    const isLoginPage = location.pathname === "/login";
+
+    // GET CURRENT LOGGED-IN USER
+    useEffect(() => {
+        if (isLoginPage) {
+            return;
+        }
+
+        const fetchUser = async () => {
+            try {
+                const response = await api.get("profile/");
+                console.log("CURRENT USER:", response.data);
+                setUser(response.data);
+            } catch (error) {
+                console.error(
+                    "Unable to fetch current user:",
+                    error
+                );
+                console.log(
+                    "PROFILE ERROR RESPONSE:",
+                    error.response?.data
+                );
+                console.log(
+                    "PROFILE STATUS:",
+                    error.response?.status
+                );
+            }
+        };
+
+        fetchUser();
+    }, [isLoginPage]);
+
+    // LOGOUT
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refresh_token");
+
+        setUser(null);
+        setShowUserMenu(false);
+
+        navigate("/login");
+    };
+
+    // PROFILE
+    const handleProfile = () => {
+        setShowUserMenu(false);
+        navigate("/profile");
+    };
+
+    // LOGIN PAGE
+    if (isLoginPage) {
+        return <AppRoutes />;
+    }
+
+    // PAGE TITLE
+    const pageTitles = {
+        "/": "Dashboard",
+        "/projects": "Projects",
+        "/users": "Users",
+        "/roles": "Roles",
+        "/designations": "Designations",
+        "/milestones": "Milestones",
+        "/tasks": "Tasks",
+        "/profile": "Profile",
+        "/settings": "Settings"
+    };
+
+    const pageTitle = pageTitles[location.pathname] || "";
+
+    return (
+        <>
+            <Sidebar />
+
+            <main className="main-content">
+                {/* TOP HEADER */}
+                <div className="top-header">
+                    <div className="top-header-left">
+                        <span className="top-header-page-title">
+                            {pageTitle}
+                        </span>
+                    </div>
+
+                    <div className="top-header-right">
+                        {/* USER MENU */}
+                        <div className="user-menu">
+                            <button
+                                type="button"
+                                className="user-menu-button"
+                                onClick={() =>
+                                    setShowUserMenu(!showUserMenu)
+                                }
+                            >
+                                <div className="user-avatar">
+                                    {user?.first_name || user?.last_name
+                                        ? `${user.first_name?.charAt(0) || ""}${user.last_name?.charAt(0) || ""}`.toUpperCase()
+                                        : user?.username
+                                            ? user.username
+                                                .substring(0, 2)
+                                                .toUpperCase()
+                                            : "U"}
+                                </div>
+
+                                <span className="user-name">
+                                    {user?.first_name || user?.last_name
+                                        ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+                                        : user?.username || "User"}
+                                </span>
+
+                                <ChevronDown
+                                    size={16}
+                                    className={
+                                        showUserMenu
+                                            ? "user-chevron rotate"
+                                            : "user-chevron"
+                                    }
+                                />
+                            </button>
+
+                            {showUserMenu && (
+                                <div className="user-dropdown">
+                                    <div className="dropdown-title">
+                                        My Account
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleProfile}
+                                    >
+                                        <User size={20} />
+                                        <span>Profile</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowUserMenu(false);
+                                            navigate("/settings");
+                                        }}
+                                    >
+                                        <Settings size={20} />
+                                        <span>Settings</span>
+                                    </button>
+
+                                    <div className="dropdown-divider" />
+
+                                    <button
+                                        type="button"
+                                        className="logout-button"
+                                        onClick={handleLogout}
+                                    >
+                                        <LogOut size={20} />
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* APPLICATION PAGES */}
+                <AppRoutes />
+            </main>
+        </>
+    );
+}
 
 export default App;

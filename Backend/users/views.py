@@ -16,6 +16,8 @@ class ProfileView(APIView):
         return Response({
             "id": request.user.id,
             "username": request.user.username,
+            "first_name": request.user.first_name,
+            "last_name": request.user.last_name,
             "email": request.user.email
         })
 
@@ -51,7 +53,8 @@ class UserListCreateView(APIView):
             )
 
         return Response(
-            serializer.error,
+            serializer.errors,
+            status=400
         )
 
 

@@ -1,0 +1,655 @@
+.backlog-page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 28px 32px;
+    box-sizing: border-box;
+    background: #ffffff;
+}
+
+.backlog-back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 18px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #667085;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.backlog-back-button:hover {
+    color: #6c55e8;
+}
+
+.backlog-card {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.backlog-table-header,
+.backlog-table-row {
+    min-width: 1000px;
+    display: grid;
+    grid-template-columns: 2fr 2.5fr 1fr 1.5fr 0.8fr;
+    column-gap: 18px;
+    align-items: center;
+    padding: 0 22px;
+    box-sizing: border-box;
+}
+
+.backlog-description {
+    color: #667085;
+    font-size: 13px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.backlog-priority {
+    color: #344054;
+    font-size: 13px;
+}
+
+.backlog-assigned {
+    color: #344054;
+    font-size: 13px;
+}
+
+.backlog-table-header {
+    min-height: 52px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.backlog-table-row {
+    min-height: 68px;
+    border-bottom: 1px solid #eef2f6;
+    font-size: 13px;
+    color: #344054;
+}
+
+.backlog-table-row:last-child {
+    border-bottom: none;
+}
+
+.backlog-item-name {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.backlog-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.backlog-status.pending {
+    background: #fff7e6;
+    color: #b54708;
+}
+
+.backlog-status.in-progress {
+    background: #eef4ff;
+    color: #175cd3;
+}
+
+.backlog-status.completed {
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+.backlog-status.on-hold {
+    background: #f2f4f7;
+    color: #475467;
+}
+
+.backlog-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.backlog-actions button {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #667085;
+    cursor: pointer;
+}
+
+.backlog-actions button:hover {
+    color: #6c55e8;
+}
+
+.backlog-empty {
+    padding: 45px 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #667085;
+}
+
+.backlog-form-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.backlog-form-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.backlog-form-header p {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.backlog-close-button {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    color: #667085;
+    cursor: pointer;
+}
+
+.backlog-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.backlog-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.backlog-form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #344054;
+}
+
+.backlog-form-group input,
+.backlog-form-group select {
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    padding: 0 11px;
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    outline: none;
+    background: #ffffff;
+    color: #344054;
+    font-size: 13px;
+}
+
+.backlog-form-group input:focus,
+.backlog-form-group select:focus {
+    border-color: #6c55e8;
+}
+
+.backlog-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.backlog-cancel-button {
+    height: 38px;
+    padding: 0 16px;
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.backlog-save-button {
+    height: 38px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 5px;
+    background: #6c55e8;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.backlog-save-button:hover {
+    background: #5b45d1;
+}
+
+@media (max-width: 768px) {
+    .backlog-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.backlog-description-group {
+    grid-column: 1 / -1;
+}
+
+.backlog-form-group textarea {
+    width: 100%;
+    min-height: 100px;
+
+    padding: 10px 12px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    color: #344054;
+
+    font-size: 13px;
+
+    resize: vertical;
+
+    outline: none;
+}
+
+.backlog-form-group textarea:focus {
+    border-color: #6c55e8;
+}
+
+/* =========================================
+   BACKLOG MODAL OVERLAY
+========================================= */
+
+.backlog-modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: rgba(15, 23, 42, 0.45);
+
+    backdrop-filter: blur(2px);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+.backlog-modal {
+    width: 100%;
+    max-width: 560px;
+
+    max-height: calc(100vh - 48px);
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 20px 40px rgba(15, 23, 42, 0.18),
+        0 4px 12px rgba(15, 23, 42, 0.08);
+
+    animation: backlogModalOpen 0.18s ease-out;
+}
+
+
+@keyframes backlogModalOpen {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* =========================================
+   MODAL HEADER
+========================================= */
+
+.backlog-modal-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    padding: 22px 24px;
+
+    border-bottom: 1px solid #eaecf0;
+}
+
+
+.backlog-modal-header h2 {
+    margin: 0;
+
+    font-size: 18px;
+    line-height: 26px;
+
+    font-weight: 600;
+
+    color: #101828;
+}
+
+
+.backlog-modal-header p {
+    margin: 5px 0 0;
+
+    font-size: 13px;
+    line-height: 20px;
+
+    color: #667085;
+}
+
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.backlog-modal-close {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: #667085;
+
+    cursor: pointer;
+}
+
+
+.backlog-modal-close:hover {
+    background: #f2f4f7;
+
+    color: #344054;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.backlog-modal-form {
+    padding: 24px;
+}
+
+
+/* =========================================
+   FORM GROUP
+========================================= */
+
+.backlog-form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-bottom: 18px;
+}
+
+
+.backlog-form-group label {
+    font-size: 13px;
+
+    line-height: 20px;
+
+    font-weight: 500;
+
+    color: #344054;
+}
+
+
+/* =========================================
+   INPUT + SELECT
+========================================= */
+
+.backlog-form-group input,
+.backlog-form-group select {
+    width: 100%;
+
+    height: 42px;
+
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #344054;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.backlog-form-group input::placeholder,
+.backlog-form-group textarea::placeholder {
+    color: #98a2b3;
+}
+
+
+.backlog-form-group input:focus,
+.backlog-form-group select:focus,
+.backlog-form-group textarea:focus {
+    border-color: #6c55e8;
+
+    box-shadow:
+        0 0 0 3px rgba(108, 85, 232, 0.10);
+}
+
+
+/* =========================================
+   TEXTAREA
+========================================= */
+
+.backlog-form-group textarea {
+    width: 100%;
+
+    min-height: 105px;
+
+    padding: 10px 12px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #344054;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    line-height: 20px;
+
+    resize: vertical;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.backlog-modal-footer {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 24px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #eaecf0;
+}
+
+
+/* =========================================
+   CANCEL BUTTON
+========================================= */
+
+.backlog-cancel-button {
+    height: 38px;
+
+    padding: 0 16px;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #344054;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+.backlog-cancel-button:hover {
+    background: #f9fafb;
+}
+
+
+/* =========================================
+   SAVE BUTTON
+========================================= */
+
+.backlog-save-button {
+    height: 38px;
+
+    padding: 0 18px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #6c55e8;
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+.backlog-save-button:hover {
+    background: #5b45d1;
+}
+
+
+.backlog-save-button:disabled,
+.backlog-cancel-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .backlog-modal-overlay {
+        padding: 14px;
+    }
+
+    .backlog-modal {
+        max-height: calc(100vh - 28px);
+    }
+
+    .backlog-modal-header {
+        padding: 18px;
+    }
+
+    .backlog-modal-form {
+        padding: 18px;
+    }
+
+    .backlog-modal-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .backlog-cancel-button,
+    .backlog-save-button {
+        width: 100%;
+    }
+}

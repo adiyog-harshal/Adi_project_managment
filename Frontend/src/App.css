@@ -21,23 +21,6 @@ body {
 }
 
 
-/* Top Header */
-
-.top-header {
-    height: 75px;
-
-    background: #ffffff;
-
-    border-bottom: 1px solid #e5e7eb;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 30px;
-
-    box-sizing: border-box;
-}
-
 
 .top-header h1 {
     margin: 0;
@@ -74,4 +57,270 @@ body {
     font-size: 14px;
 
     color: #6b7280;
+}
+
+
+
+
+/* ============================= */
+/* TOP HEADER */
+/* ============================= */
+
+.top-header {
+    width: 100%;
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 30px;
+    box-sizing: border-box;
+
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+
+    position: relative;
+    z-index: 100;
+}
+
+.top-header-left {
+    display: none;
+}
+
+.top-header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+/* ============================= */
+/* USER MENU */
+/* ============================= */
+
+.user-menu {
+    position: relative;
+}
+
+
+/* ============================= */
+/* USER BUTTON */
+/* ============================= */
+
+.user-menu-button {
+    height: 54px;
+
+    min-width: 220px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 7px 14px;
+
+    background: #ffffff;
+
+    border: 1px solid #e1e5eb;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+
+.user-menu-button:hover {
+    border-color: #cfd5dd;
+
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+
+/* ============================= */
+/* ORANGE AVATAR */
+/* ============================= */
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #f59e0b;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* ============================= */
+/* USER NAME */
+/* ============================= */
+
+.user-name {
+    flex: 1;
+
+    text-align: left;
+
+    color: #172033;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* ============================= */
+/* CHEVRON */
+/* ============================= */
+
+.user-chevron {
+    color: #64748b;
+
+    flex-shrink: 0;
+
+    transition: transform 0.2s ease;
+}
+
+
+.user-chevron.rotate {
+    transform: rotate(180deg);
+}
+
+
+/* ============================= */
+/* DROPDOWN */
+/* ============================= */
+
+.user-dropdown {
+    position: absolute;
+
+    top: calc(100% + 8px);
+
+    right: 0;
+
+    width: 260px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e5e9;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 12px 30px rgba(15, 23, 42, 0.12);
+
+    overflow: hidden;
+
+    z-index: 1000;
+}
+
+
+/* ============================= */
+/* DROPDOWN TITLE */
+/* ============================= */
+
+.dropdown-title {
+    padding: 20px 20px 16px;
+
+    color: #111827;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    border-bottom: 1px solid #eef0f2;
+}
+
+
+/* ============================= */
+/* DROPDOWN BUTTONS */
+/* ============================= */
+
+.user-dropdown button {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 14px 20px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #1f2937;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+
+.user-dropdown button:hover {
+    background: #f4f6f9;
+}
+
+
+.user-dropdown button svg {
+    flex-shrink: 0;
+
+    color: #374151;
+}
+
+
+/* ============================= */
+/* DIVIDER */
+/* ============================= */
+
+.dropdown-divider {
+    height: 1px;
+
+    background: #e5e7eb;
+
+    margin: 2px 0;
+}
+
+
+/* ============================= */
+/* LOGOUT */
+/* ============================= */
+
+.user-dropdown .logout-button {
+    color: #dc5b5b;
+}
+
+
+.user-dropdown .logout-button svg {
+    color: #dc5b5b;
+}
+
+
+.user-dropdown .logout-button:hover {
+    background: #fff5f5;
 }

@@ -1,21 +1,33 @@
 
-import React from "react";
+import React, { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 
 import {
     LayoutDashboard,
     FolderKanban,
-    ListTodo,
+    BriefcaseBusiness,
     Users,
-    Badge,
     Settings,
     ShieldCheck,
+    ChevronRight,
+    ClipboardList,
     LogOut
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
+
+
 
 const Sidebar = () => {
+    const [masterOpen, setMasterOpen] = useState(false);
+
+    const location = useLocation();
+
+    const masterActive =
+        location.pathname === "/roles" ||
+        location.pathname === "/designations";
+
+
 
     return (
 
@@ -30,7 +42,7 @@ const Sidebar = () => {
                 </div>
 
                 <span>
-                    Project Manager
+                    Project Management
                 </span>
 
             </div>
@@ -76,24 +88,76 @@ const Sidebar = () => {
                 </NavLink>
 
                 <NavLink
-                    to="/designations"
+                    to="/users"
                     className={({ isActive }) =>
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
                 >
-                    <Badge size={20} />
-                    <span>Designations</span>
+                    <Users size={20} />
+                    <span>Users</span>
                 </NavLink>
 
-                <NavLink
-                    to="/roles"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <ShieldCheck size={20} />
-                    <span>Roles</span>
-                </NavLink>
+                {/* MASTER MENU */}
+
+                <div className="master-menu">
+
+                    <button
+                        type="button"
+                        className={`sidebar-link master-button ${
+                            masterActive ? "active" : ""
+                        }`}
+                        onClick={() => setMasterOpen(!masterOpen)}
+                    >
+
+                        <div className="master-left">
+                            <ShieldCheck size={20} />
+                            <span>Master</span>
+                        </div>
+
+                        <ChevronRight
+                            size={18}
+                            className={`master-arrow ${
+                                masterOpen ? "master-arrow-open" : ""
+                            }`}
+                        />
+
+                    </button>
+
+
+                    {masterOpen && (
+
+                        <div className="master-submenu">
+
+                            <NavLink
+                                to="/roles"
+                                className={({ isActive }) =>
+                                    `master-submenu-link ${
+                                        isActive ? "active" : ""
+                                    }`
+                                }
+                            >
+                                <ShieldCheck size={18} />
+                                <span>Roles</span>
+                            </NavLink>
+
+
+                            <NavLink
+                                to="/designations"
+                                className={({ isActive }) =>
+                                    `master-submenu-link ${
+                                        isActive ? "active" : ""
+                                    }`
+                                }
+                            >
+                                <BriefcaseBusiness size={18} />
+                                <span>Designations</span>
+                            </NavLink>
+
+                        </div>
+
+                    )}
+
+                </div>
 
                 <a href="#" className="sidebar-link">
 

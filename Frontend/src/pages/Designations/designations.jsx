@@ -4,27 +4,41 @@ import {
     Plus,
     Search,
     MoreVertical,
-    Badge
+    Badge,
+    Pencil,
+    Trash2,
+    BriefcaseBusiness
 } from "lucide-react";
 
 import api from "../../services/api";
 
 import "./designations.css";
+import {
+    PMSPageHeader,
+    PMSSearch,
+    PMSActionButton,
+} from "../../components/Common/Common";
 
 const Designations = () => {
 
     const [designations, setDesignations] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [searchTerm, setSearchTerm] = useState("");
+
     const [error, setError] = useState("");
     const [formError, setFormError] = useState("");
+    const [openAction, setOpenAction] = useState(null);
+    const [selectedDesignation, setSelectedDesignation] = useState(null);
 
     const [showForm, setShowForm] = useState(false);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
+
     const [designationForm, setDesignationForm] = useState({
         name: "",
-        description: "",
-        status: true
+        status: ""
     });
 
     const [saving, setSaving] = useState(false);
@@ -68,65 +82,173 @@ const Designations = () => {
     };
 
     const handleChange = (e) => {
-
         const { name, value } = e.target;
 
         setDesignationForm({
             ...designationForm,
-            [name]: name === "status"
-                ? value === "true"
-                : value
+            [name]: name === "status" ? value === "true" : value
         });
+
+        if (name === "name" && value.trim()) {
+            setFormError("");
+        }
     };
 
     const handleCreateDesignation = async () => {
 
         if (!designationForm.name.trim()) {
-
-            setError("Designation name is required.");
-
+            setFormError("Designation name is required.");
+            return;
+        }
+        
+        if (designationForm.status === "") {
+            setFormError("Status is required.");
             return;
         }
 
+        setFormError("");
+
         try {
-
             setSaving(true);
-
             setError("");
 
-            await api.post(
-                "designations/",
-                designationForm
-            );
+            if (selectedDesignation) {
+
+                // UPDATE
+                await api.put(
+                    `designations/${selectedDesignation.id}/`,
+                    designationForm
+                );
+
+            } else {
+
+                // CREATE
+                await api.post(
+                    "designations/",
+                    designationForm
+                );
+            }
 
             setDesignationForm({
                 name: "",
-                description: "",
                 status: true
             });
 
+            setSelectedDesignation(null);
             setShowForm(false);
 
-            fetchDesignations();
+            await fetchDesignations();
 
         } catch (error) {
 
             console.error(
-                "Create Designation API Error:",
+                "Designation API Error:",
                 error
             );
 
             setError(
                 error.response?.data?.name?.[0] ||
                 error.response?.data?.detail ||
-                "Unable to create designation."
+                "Unable to save designation."
             );
 
         } finally {
-
             setSaving(false);
         }
     };
+
+    // EDIT DESIGNATION
+    const handleEditDesignation = (designation) => {
+        console.log("EDIT CLICKED:", designation);
+
+        setSelectedDesignation(designation);
+
+        setDesignationForm({
+            name: designation.name || "",
+            status:
+             designation.status === true
+             ? "true"
+             :designation.status === false
+             ? "false"
+             : ""
+        });
+
+        setShowForm(true);
+    };
+
+    // DELETE 
+
+    const handleDeleteDesignation = async (id) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this designation?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            await api.delete(`designations/${id}/`);
+
+            await fetchDesignations();
+
+        } catch (error) {
+            console.error(
+                "Failed to delete designation:",
+                error
+            );
+
+            alert("Failed to delete designation.");
+        }
+    };
+
+    const handleToggleStatus = async (designation, newStatus) => {
+        try {
+            setError("");
+
+            await api.put(`designations/${designation.id}/`, {
+                name: designation.name,
+                status: newStatus,
+            });
+
+            await fetchDesignations();
+        } catch (error) {
+            console.error("Failed to update designation status:", error);
+
+            setError(
+                error.response?.data?.detail ||
+                error.response?.data?.status?.[0] ||
+                "Unable to update designation status."
+            );
+        }
+    };
+
+    
+    const filteredDesignations = designations.filter((designation) => {
+        const query = searchTerm.toLowerCase();
+
+        return (
+            String(designation.name || "")
+                .toLowerCase()
+                .includes(query) ||
+            String(designation.status || "")
+                .toLowerCase()
+                .includes(query)
+        );
+    });     
+
+    const totalPages = Math.ceil(filteredDesignations.length / itemsPerPage);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+
+    const currentDesignations = filteredDesignations.slice(
+        startIndex,
+        startIndex + itemsPerPage
+    );
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
 
     return (
 
@@ -136,19 +258,31 @@ const Designations = () => {
 
             <div className="designations-header">
 
-                <div>
-                    <h1>
-                        Designations
-                    </h1>
+                <div className="designation-title-section">
 
-                    <p>
-                        Manage employee designations
-                    </p>
+                    <div className="designation-title-icon">
+                        <BriefcaseBusiness size={22} />
+                    </div>
+                    <div>
+                        <h1>Designations</h1>
+
+                        <p>Manage employee designations</p>
+                    </div>
                 </div>
+
 
                 <button
                     className="add-designation-btn"
-                    onClick={() => setShowForm(true)}
+                    onClick={() => {
+                        setSelectedDesignation(null);
+
+                        setDesignationForm({
+                            name: "",
+                            status: true
+                        });
+
+                        setShowForm(true);
+                    }}
                 
                 >
                     <Plus size={18} />
@@ -171,15 +305,17 @@ const Designations = () => {
                         className="designation-search-icon"
                     />
 
-                    <input
-                        type="text"
-                        placeholder="Search designations..."
+                    <PMSSearch
+                        value={Search}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        placeholder="Search designations"
                     />
                 </div>
 
             </div>
-
-            {/* ADD DESIGNATIONS MODAL */}
 
             {/* ADD DESIGNATIONS MODAL */}
 
@@ -194,7 +330,7 @@ const Designations = () => {
                         <div className="designation-modal-header">
 
                             <h2>
-                                Add Designation
+                                Add New Designation
                             </h2>
 
                             <button
@@ -229,26 +365,16 @@ const Designations = () => {
                                     placeholder="Enter designation name"
                                 />
 
-                            </div>
-
-
-                            {/* DESCRIPTION */}
-
-                            <div className="designation-form-group">
-
-                                <label>
-                                    Description
-                                </label>
-
-                                <textarea
-                                    name="description"
-                                    value={designationForm.description}
-                                    onChange={handleChange}
-                                    placeholder="Enter designation description"
-                                    rows="4"
-                                />
+                                {
+                                    formError && (
+                                        <p className="designation-form-error">
+                                            {formError}
+                                        </p>
+                                    )
+                                }
 
                             </div>
+
 
 
                             {/* STATUS */}
@@ -259,7 +385,14 @@ const Designations = () => {
                                     Status
                                 </label>
 
-                                <select>
+                                <select
+                                    name="status"
+                                    value={designationForm.status}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">
+                                        Select Status
+                                    </option>
 
                                     <option value="true">
                                         Active
@@ -292,7 +425,10 @@ const Designations = () => {
                                     onClick={handleCreateDesignation}
                                     disabled={saving}
                                 >
-                                    {saving ? "Creating..." : "Create Designation"}
+                                    {saving 
+                                        ? (selectedDesignation ? "Updating..." : "Creating....")
+                                        : (selectedDesignation ? "Update Designation" : "Create Designation") 
+                                    }                       
                                     
                                 </button>
 
@@ -332,10 +468,6 @@ const Designations = () => {
                         </span>
 
                         <span>
-                            Description
-                        </span>
-
-                        <span>
                             Status
                         </span>
 
@@ -364,7 +496,7 @@ const Designations = () => {
                     {/* DATA */}
 
                     {!loading &&
-                        designations.map((designation) => (
+                        currentDesignations.map((designation) => (
 
                             <div
                                 className="designation-table-row"
@@ -374,7 +506,7 @@ const Designations = () => {
 
                                     <div className="designation-icon">
 
-                                        <Badge size={18} />
+                                        <BriefcaseBusiness size={18} />
 
                                     </div>
 
@@ -384,39 +516,52 @@ const Designations = () => {
                                             {designation.name}
                                         </strong>
 
-                                        <small>
-                                            Designation #{designation.id}
-                                        </small>
-
                                     </div>
 
                                 </div>
 
-                                <span className="designation-description">
+                               
 
-                                    {designation.description || "_"}
+                                <div className="designation-status-menu">
+    <button
+        type="button"
+        className={`designation-status-trigger ${
+            designation.status ? "active" : "inactive"
+        }`}
+        onClick={() =>
+            setOpenAction(
+                openAction === `status-${designation.id}`
+                    ? null
+                    : `status-${designation.id}`
+            )
+        }
+    >
+        <span>
+            {designation.status ? "Active" : "Inactive"}
+        </span>
 
-                                </span>
+        <span className="status-chevron">⌄</span>
+    </button>
 
-                                <span>
+    {openAction === `status-${designation.id}` && (
+        <div className="designation-status-dropdown">
+            <button
+                type="button"
+                onClick={() => {
+                    handleToggleStatus(
+                        designation,
+                        !designation.status
+                    );
+                    setOpenAction(null);
+                }}
+            >
+                {designation.status ? "Inactive" : "Active"}
+            </button>
+        </div>
+    )}
+</div>
 
-                                    <span 
-                                        className={
-                                            designation.status
-                                            ? "designation-status active"
-                                            : "designation-status inactive"
-                                        }
-                                    >
-
-                                        {designation.status
-                                            ? "Active"
-                                            : "Inactive"
-                                        
-                                        }
-
-                                    </span>
-
-                                </span>
+                                
 
                                 <span>
 
@@ -447,9 +592,45 @@ const Designations = () => {
 
                                 <div className="designation-action-menu">
                                     
-                                    <button>
+                                    <button
+                                        type="button"
+                                        className="designation-action-button"
+                                        onClick={() => {
+                                            setOpenAction(
+                                                openAction === designation.id
+                                                    ? null
+                                                    : designation.id
+
+                                            );
+                                        }}
+                                    >
                                         <MoreVertical size={18} />
                                     </button>
+
+                                    {openAction === designation.id && (
+                                        <div className="designation-action-dropdown">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    console.log("EDIT BUTTON CLICKED");
+                                                    setOpenAction(null);
+                                                    handleEditDesignation(designation);
+                                                }}
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setOpenAction(null);
+                                                    handleDeleteDesignation(designation.id);
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    )}
 
                                 </div>
 
@@ -471,6 +652,57 @@ const Designations = () => {
                             </div>
                         )}
                 </div>
+
+                {!loading && filteredDesignations.length > 0 && (
+                    <div className="designation-pagination">
+                        <div className="pagination-info">
+                            Showing{" "}
+                            <strong>{startIndex + 1}</strong>
+                            {" - "}
+                            <strong>
+                                {Math.min(startIndex + itemsPerPage, filteredDesignations.length)}
+                            </strong>
+                            {" of "}
+                            <strong>{filteredDesignations.length}</strong>
+                        </div>
+
+                        <div className="pagination-buttons">
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage((prev) => prev - 1)}
+                            >
+                                Previous
+                            </button>
+
+                            {Array.from({ length: totalPages}, (_, index) => index + 1).map(
+                                (page) => (
+                                    <button
+                                        type="button"
+                                        key={page}
+                                        className={`pagination-number ${
+                                            currentPage === page ? "active" : ""
+                                        }`}
+                                        onClick={() => setCurrentPage(page)}
+                                    >
+                                        {page}
+                                    </button>
+                                )
+                            )}
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage((prev) => prev + 1)}
+                            >
+                                Next
+                            </button>
+                        </div>
+
+                    </div>
+                )}
             </div>
         </div>    
 

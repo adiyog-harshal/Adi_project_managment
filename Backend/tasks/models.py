@@ -45,7 +45,10 @@ class Task(models.Model):
         related_name='assigned_tasks'
     )
 
-    start_date = models.DateField()
+    start_date = models.DateField(
+        null=True,
+        blank=True
+    )
 
     due_date = models.DateField(
         null=True,
@@ -61,7 +64,7 @@ class Task(models.Model):
     priority = models.CharField(
         max_length=50,
         choices=PRIORITY_CHOICES,
-        default='Medium'
+        
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

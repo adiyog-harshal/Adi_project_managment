@@ -8,20 +8,19 @@ import {
     Search,
 } from "lucide-react";
 
+import {
+    PMSPageHeader,
+    PMSSearch,
+    PMSActionButton,
+} from "../../components/Common/Common";
+
 import RoleModal from "./RoleModal";
+import "./Roles.css";
+
 
 function Roles() {
 
-    const [roles, setRoles] = useState([
-        {
-            id: 1,
-            name: "Super Admin",
-            description: "Full access to the PMS system",
-            status: "Active",
-        },
-        
-        
-    ]);
+    const [roles, setRoles] = useState([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -163,13 +162,14 @@ function Roles() {
 
                         <Search size={18} />
 
-                        <input
-                            type="text"
-                            placeholder="Search roles..."
+                        <PMSSearch
                             value={search}
-                            onChange={(e) =>
-                                setSearch(e.target.value)
-                            }
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            placeholder="Search roles..."
+                                   
                         />
 
                     </div>
