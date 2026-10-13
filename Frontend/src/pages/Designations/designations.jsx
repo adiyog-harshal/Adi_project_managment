@@ -104,7 +104,6 @@ const Designations = () => {
                 description: "",
                 status: true
             });
-
             setShowForm(false);
 
             fetchDesignations();
