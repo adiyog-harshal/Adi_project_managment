@@ -11,12 +11,35 @@ class TaskSerializer(serializers.ModelSerializer):
             'task_name',
             'description',
             'project',
-            'milestone',
             'assigned_to',
             'priority',
             'status',
             'sprint',
         ]
+
+    def validate(self, attrs):
+
+        project = attrs.get('project')
+
+        # During update, use existing project if project
+        # was not included in the request.
+        if project is None and self.instance:
+            project = self.instance.project
+
+        sprint = attrs.get('sprint')
+
+        # During update, use existing sprint if sprint
+        # was not included in the request.
+        if 'sprint' not in attrs and self.instance:
+            sprint = self.instance.sprint
+
+        if sprint and project:
+            if sprint.project_id != project.id:
+                raise serializers.ValidationError({
+                    'sprint': 'The selected sprint does not belong to the specified project.'
+                })
+
+        return attrs
 
 
 class TaskCommentSerializer(serializers.ModelSerializer):

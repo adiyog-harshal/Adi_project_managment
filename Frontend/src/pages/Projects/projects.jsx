@@ -79,6 +79,8 @@ const Projects = () => {
         return endDate < today;
     }).length;
 
+    const [selectedProject, setSelectedProject] = useState(null);
+
     const [projectForm, setProjectForm] = useState({
         project_name: "",
         start_date: "",
@@ -810,30 +812,26 @@ const Projects = () => {
             </div>
         )}
 
-    </div>
+                </div> {/* Close projects-table */}
 
+               
 
+ 
                 {/* PAGINATION - OUTSIDE TABLE */}
-
                 <div className="project-pagination">
-
                     <span className="project-pagination-info">
                         Showing 1 to 1 of 1 projects
                     </span>
 
                     <div className="project-pagination-buttons">
-
                         <button
                             type="button"
                             className="project-page-btn"
                             disabled={currentPage === 1}
-                            onClick={() =>
-                                setCurrentPage(currentPage - 1)
-                            }
+                            onClick={() => setCurrentPage(currentPage - 1)}
                         >
                             Previous
                         </button>
-
 
                         <button
                             type="button"
@@ -846,21 +844,16 @@ const Projects = () => {
                             type="button"
                             className="project-page-btn"
                             disabled={currentPage === totalPages}
-                            onClick={() =>
-                                setCurrentPage(currentPage + 1)
-                            }
+                            onClick={() => setCurrentPage(currentPage + 1)}
                         >
                             Next
                         </button>
-
                     </div>
-
-                </div>
-
+                                </div>
             </div>
         </div>
+      
     );
 };
-
 
 export default Projects;

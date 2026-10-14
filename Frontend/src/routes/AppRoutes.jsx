@@ -12,68 +12,83 @@ import Designations from "../pages/Designations/designations";
 import Backlog from "../pages/Backlog/Backlog";
 import Sprints from "../pages/Sprints/sprints";
 
-
-
 function AppRoutes() {
     return (
         <Routes>
-
             {/* PUBLIC PAGE */}
             <Route path="/login" element={<Login />} />
 
             {/* PROTECTED PAGES */}
-            <Route 
-                path="/" 
+            <Route
+                path="/"
                 element={
                     <ProtectedRoute>
                         <Dashboard />
                     </ProtectedRoute>
-                } 
+                }
             />
 
-            <Route 
-                path="/projects" 
+            <Route
+                path="/dashboard"
                 element={
                     <ProtectedRoute>
-                        <Projects /> 
+                        <Dashboard />
                     </ProtectedRoute>
                 }
-            /> 
+            />
 
-            <Route 
-                path="/projects/:id" 
+            <Route
+                path="/projects"
+                element={
+                    <ProtectedRoute>
+                        <Projects />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/projects/:id"
                 element={
                     <ProtectedRoute>
                         <ProjectDetails />
                     </ProtectedRoute>
-                } 
+                }
             />
 
-            <Route 
-                path="/designations" 
+            <Route
+                path="/designations"
                 element={
                     <ProtectedRoute>
                         <Designations />
                     </ProtectedRoute>
-                } 
+                }
             />
 
-            <Route 
-                path="/roles" 
+            <Route
+                path="/roles"
                 element={
                     <ProtectedRoute>
                         <Roles />
                     </ProtectedRoute>
-                } 
+                }
             />
 
-            <Route 
-                path="/users" 
+            <Route
+                path="/users"
                 element={
                     <ProtectedRoute>
                         <Users />
                     </ProtectedRoute>
-                } 
+                }
+            />
+
+            <Route
+                path="/milestones"
+                element={
+                    <ProtectedRoute>
+                        <Milestones />
+                    </ProtectedRoute>
+                }
             />
 
             <Route
@@ -103,8 +118,65 @@ function AppRoutes() {
                 }
             />
 
+            <Route
+                path="/teams"
+                element={
+                    <ProtectedRoute>
+                        <h1>Teams</h1>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/notifications"
+                element={
+                    <ProtectedRoute>
+                        <h1>Notifications</h1>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/activity"
+                element={
+                    <ProtectedRoute>
+                        <h1>Activity</h1>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/reports"
+                element={
+                    <ProtectedRoute>
+                        <h1>Reports</h1>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/profile"
+                element={
+                    <ProtectedRoute>
+                        <h1>Profile</h1>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/settings"
+                element={
+                    <ProtectedRoute>
+                        <h1>Settings</h1>
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* UNKNOWN ROUTES */}
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 }
 
 export default AppRoutes;
+
