@@ -962,3 +962,68 @@ text-align: center;
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.sprint-task-count {
+    display: inline-block;
+    padding: 0;
+    margin-top: 12px;
+    border: none;
+    background: transparent;
+    color: #5145e5;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sprint-task-count:hover {
+    color: #3730a3;
+    text-decoration: underline;
+}
+/* move to backlog */
+.move-to-backlog-button {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border: 1px solid #e0d7ff;
+    border-radius: 7px;
+    background: #f5f2ff;
+    color: #6554f0;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.move-to-backlog-button:hover {
+    background: #eae4ff;
+    border-color: #6554f0;
+}
+
+.carryover-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.carryover-sprint-select {
+    flex: 1;
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid #e0d7ff;
+    border-radius: 7px;
+    background: #fff;
+}
+
+.carryover-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 7px;
+    background: #6554f0;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.carryover-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

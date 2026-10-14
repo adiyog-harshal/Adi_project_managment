@@ -17,8 +17,15 @@ const [showForm, setShowForm] = useState(false);
 const [saving, setSaving] = useState(false);
 const [showAddTasks, setShowAddTasks] = useState(false);
 const [selectedTaskIds, setSelectedTaskIds] = useState([]);
+const [carryOverTargets, setCarryOverTargets] = useState({});
+
+const [formTaskIds, setFormTaskIds] = useState([]);
 const [assigningTasks, setAssigningTasks] = useState(false);
 const [editingSprintId, setEditingSprintId] = useState(null);
+
+const [duration, setDuration] = useState("7");
+const [startDate, setStartDate] = useState("");
+const [endDate, setEndDate] = useState("");
 
 const [error, setError] = useState("");
 
@@ -30,6 +37,93 @@ const [sprintForm, setSprintForm] = useState({
     end_date: "",
     status: "Planned"
 });
+
+const calculateEndDate = (start, days) => {
+    if (!start || !days) return "";
+
+    const date = new Date(start + "T12:00:00");
+    date.setDate(date.getDate() + Number(days) - 1);
+
+    return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+    ].join("-");
+};
+
+const handleStartDateChange = (value) => {
+    setStartDate(value);
+    setEndDate(calculateEndDate(value, duration));
+};
+
+const handleDurationChange = (value) => {
+    setDuration(value);
+    setEndDate(calculateEndDate(startDate, value));
+};
+
+
+const getNextSprintSuggestion = (sprints) => {
+    // Find the highest numbered sprint
+    const getNumber = (name) => {
+        const match = name?.match(/Sprint\s+(\d+)/i);
+        return match ? Number(match[1]) : 0;
+    };
+
+    const nextNumber =
+        sprints.reduce(
+            (max, sprint) =>
+                Math.max(max, getNumber(sprint.sprint_name)),
+            0
+        ) + 1;
+
+    // Find the latest sprint end date
+    const latestSprint = [...sprints]
+        .filter((sprint) => sprint.end_date)
+        .sort(
+            (a, b) =>
+                new Date(b.end_date) - new Date(a.end_date)
+        )[0];
+
+    const start = latestSprint
+        ? new Date(latestSprint.end_date + "T12:00:00")
+        : new Date();
+
+    if (latestSprint) {
+        start.setDate(start.getDate() + 1);
+    }
+
+    const formatDate = (date) =>
+        `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+        ).padStart(2, "0")}-${String(
+            date.getDate()
+        ).padStart(2, "0")}`;
+
+    // Reuse the latest sprint's duration, or default to 15 days
+    const duration = latestSprint
+        ? Math.max(
+              1,
+              Math.round(
+                  (new Date(latestSprint.end_date + "T12:00:00") -
+                      new Date(latestSprint.start_date + "T12:00:00")) /
+                      86400000
+              ) + 1
+          )
+        : 15;
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + duration - 1);
+
+    return {
+        sprint_name: `Sprint ${nextNumber}`,
+        start_date: formatDate(start),
+        end_date: formatDate(end),
+        duration,
+    };
+};
+
+
+
 
 const loadData = async () => {
     try {
@@ -203,6 +297,8 @@ const handleAssignTasks = async () => {
     }
 };
 
+
+
 const sprintTasks = tasks.filter(task =>
     String(
         typeof task.sprint === "object"
@@ -238,6 +334,53 @@ const handleStartSprint = async (sprintId) => {
     }
 };
 
+const handleMoveToBacklog = async (task) => {
+    try {
+        setError("");
+
+        await api.patch(`tasks/${task.id}/`, {
+            sprint: null
+        });
+
+        // REFRESH SPRINT AND TASK DATA
+        await loadData();
+    } catch (err) {
+        console.error(
+            "Failed to move task to backlog:",
+            err.response?.data || err
+        );
+
+        setError("Failed to move task to backlog.");
+    }
+};
+
+const handleCarryOver = async (TaskSignal, targetSprintId) => {
+    if (!targetSprintId) {
+        alert("Please select the next sprint.");
+        return;
+    }
+
+    try {
+        await api.post(`task/${task.id}/carry-over/`,{
+            target_sprint_id: Number(targetSprintId),
+            reason: "Task carried over because it was not completed"
+        });
+
+        await loadData();
+        alert("Task carried over successfully.");
+    } catch (error) {
+        console.error(
+            "Carryover failed:",
+            error.response?.data || error
+        );
+
+        alert(
+            error.response?.data?.detail || 
+            "Unable to carry over this task."
+        );
+    }
+};
+
 return (
     <div className="sprints-page">
         <button
@@ -262,11 +405,17 @@ return (
                     setShowAddTasks(false);
                     setEditingSprintId(null);
 
+                    const suggestion = getNextSprintSuggestion(sprints);
+
+                    setDuration(String(suggestion.duration));
+                    setStartDate(suggestion.start_date);
+                    setEndDate(suggestion.end_date);
+
                     setSprintForm({
-                        sprint_name: "",
+                        sprint_name: suggestion.sprint_name,
                         goal: "",
-                        start_date: "",
-                        end_date: "",
+                        start_date: suggestion.start_date,
+                        end_date: suggestion.end_date,
                         status: "Planned",
                     });
                     setShowForm(true);
@@ -291,6 +440,30 @@ return (
                 </h2>
 
                 <div className="sprint-form-grid">
+                    <label>Sprint Duration</label>
+                    <select
+                        value={duration}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setDuration(value);
+
+                            const newEndDate = calculateEndDate(
+                                sprintForm.start_date,
+                                value
+                            );
+
+                            setEndDate(newEndDate);
+                            setSprintForm((prev) => ({
+                                ...prev,
+                                end_date: newEndDate,
+                            }));
+                        }}
+                    >
+                        <option value="7">7 Days</option>
+                        <option value="15">15 Days</option>
+                        <option value="30">30 Days</option>
+                    </select>
+                    
                     <label>
                         Sprint Name *
                         <input
@@ -326,10 +499,19 @@ return (
                             required
                             type="date"
                             value={sprintForm.start_date}
-                            onChange={(e) => setSprintForm({
-                                ...sprintForm,
-                                start_date: e.target.value
-                            })}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                const newEndDate = calculateEndDate(value, duration);
+
+                                setStartDate(value);
+                                setEndDate(newEndDate);
+
+                                setSprintForm((prev) => ({
+                                    ...prev,
+                                    start_date: value,
+                                    end_date: newEndDate,
+                                }));
+                            }}
                         />
                     </label>
 
@@ -421,20 +603,6 @@ return (
                                 </span>
 
                                 {/* Start sprint Button */}
-                                {sprint.status === "Planned" && (
-                                    <button
-                                        type="button"
-                                        className="start-sprint-button"
-                                        title="Start Sprint"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleStartSprint(sprint.id);
-                                        }}
-                                        
-                                    >
-                                        Start Sprint
-                                    </button>
-                                )}
                                 
                                 <button
                                     type="button"
@@ -475,9 +643,16 @@ return (
                             {sprint.start_date} – {sprint.end_date}
                         </div>
 
-                        <span className="sprint-task-count">
+                        <button
+                            type="button"
+                            className="sprint-task-count"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedSprint(sprint);
+                            }}
+                        >
                             {(sprint.task_ids || []).length} assigned tasks
-                        </span>
+                        </button>
 
                         
                     </div>
@@ -495,18 +670,18 @@ return (
                     </div>
 
                     <button
-                type="button"
-                className="sprints-create-button"
-                onClick={() => {
-                    setError("");
-                    setShowForm(false);
-                    setSelectedTaskIds([]);
-                    setShowAddTasks(true);
-                }}
-            >
-                <Plus size={18} />
-                 Add Tasks
-            </button>
+                        type="button"
+                        className="sprints-create-button"
+                        onClick={() => {
+                            setError("");
+                            setShowForm(false);
+                            setSelectedTaskIds([]);
+                            setShowAddTasks(true);
+                        }}
+                    >
+                        <Plus size={18} />
+                        Add Tasks
+                    </button>
 
                     
                 </div>
@@ -624,6 +799,76 @@ return (
                                             <span>{task.priority || "Normal"} priority</span>
                                             <span>{getTaskStatus(task)}</span>
                                         </div>
+
+                                      {/* CARRY OVER TO NEXT SPRINT  */}
+                                        <div
+                                            className="carryover-controls"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <select
+                                                className="carryover-sprint-select"
+                                                value={carryOverTargets?.[task.id] || ""}
+                                                
+                                                onChange={(e) =>
+                                                setCarryOverTargets((prev) => ({
+                                                    ...prev,
+                                                    [task.id]: e.target.value,
+                                                }))
+                                            }
+                                            >
+                                            <option value="">Select next sprint...</option>
+
+                                            {sprints
+                                                .filter((sprint) => {
+                                                    const currentSprintId =
+                                                        typeof task.sprint === "object"
+                                                            ? task.sprint?.id
+                                                            : task.sprint;
+
+                                                    const taskProjectId =
+                                                        typeof task.project === "object"
+                                                            ? task.project?.id
+                                                            : task.project;
+
+                                                    const sprintProjectId =
+                                                        typeof sprint.project === "object"
+                                                            ? sprint.project?.id
+                                                            : sprint.project;
+
+                                                    return (
+                                                        String(sprintProjectId) === String(taskProjectId) &&
+                                                        String(sprint.id) !== String(currentSprintId) &&
+                                                        sprint.status !== "Completed" &&
+                                                        sprint.status !== "Cancelled"
+                                                    );
+                                                })
+                                                .map((sprint) => (
+                                                    <option key={sprint.id} value={sprint.id}>
+                                                        {sprint.sprint_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+
+                                            <button
+                                                type="button"
+                                                className="carryover-button"
+                                                disabled={!carryOverTargets?.[task.id]}
+                                                onClick={() => 
+                                                    handleCarryOver(task, carryOverTargets[task.id])
+                                                }
+                                            >
+                                                Carry Over
+                                            </button>
+                                        </div>
+
+                                        {/* NEW BUTTON : MOVE TO BACK TO BACKLOG */}
+                                        <button
+                                            type="button"
+                                            className="move-to-backlog-button"
+                                            onClick={() => handleMoveToBacklog(task)}
+                                        >
+                                            Move to Backlog
+                                        </button>
                                     </article>
                                 ))}
                             </div>
