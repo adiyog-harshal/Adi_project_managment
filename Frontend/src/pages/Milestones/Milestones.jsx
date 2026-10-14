@@ -334,7 +334,6 @@ function Milestones() {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Project</th>
                             <th>Description</th>
                             <th>Start Date</th>
                             <th>End Date</th>
@@ -463,7 +462,6 @@ function Milestones() {
 
             </div>
 
-
             {/* Add / Edit Milestone Modal */}
             {showForm && (
                 <div className="milestone-form-overlay">
@@ -510,60 +508,49 @@ function Milestones() {
                                     value={formData.description}
                                     onChange={handleChange}
                                     placeholder="Enter milestone description"
+                                    rows={3}
                                 />
                             </div>
 
-                            {/* Start Date */}
-                            <div>
-                                <label>Start Date:</label>
+                            {/* Dates */}
+                            <div className="milestone-form-date-row">
+                                <div className="milestone-form-group">
+                                    <label>Start Date</label>
+                                    <input
+                                        type="date"
+                                        name="startDate"
+                                        value={formData.startDate || ""}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-                                <input
-                                    type="date"
-                                    name="startDate"
-                                    value={formData.startDate || ""}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
-                            {/* End Date */}
-                            <div>
-                                <label>End Date:</label>
-
-                                <input
-                                    type="date"
-                                    name="endDate"
-                                    value={formData.endDate}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                <div className="milestone-form-group">
+                                    <label>End Date</label>
+                                    <input
+                                        type="date"
+                                        name="endDate"
+                                        value={formData.endDate || ""}
+                                        onChange={handleChange}
+                                        min={formData.startDate || undefined}
+                                        required
+                                    />
+                                </div>
                             </div>
 
                             {/* Status */}
-                            <div>
-                                <label>Status:</label>
-
+                            <div className="milestone-form-group">
+                                <label>Status</label>
                                 <select
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
                                     required
                                 >
-                                    <option value="Not Started">
-                                        Not Started
-                                    </option>
-
-                                    <option value="In Progress">
-                                        In Progress
-                                    </option>
-
-                                    <option value="Completed">
-                                        Completed
-                                    </option>
-
-                                    <option value="On Hold">
-                                        On Hold
-                                    </option>
+                                    <option value="Not Started">Not Started</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="On Hold">On Hold</option>
                                 </select>
                             </div>
 
@@ -577,21 +564,21 @@ function Milestones() {
                                     Cancel
                                 </button>
 
-                                <button type="submit">
+                                <button
+                                    type="submit"
+                                    className="milestone-save-button"
+                                >
                                     {editingMilestone
-                                        ? 'Update Milestone'
-                                        : 'Create Milestone'}
+                                        ? "Update Milestone"
+                                        : "Create Milestone"}
                                 </button>
-
                             </div>
 
                         </form>
-
                     </div>
-
                 </div>
-
             )}
+
 
         </div>
     );

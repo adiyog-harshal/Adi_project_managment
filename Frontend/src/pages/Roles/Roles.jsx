@@ -82,7 +82,6 @@ function Roles() {
     };
 
 
-
     const handleDeleteRole = async (id) => {
 
         const confirmed = window.confirm(
@@ -100,7 +99,7 @@ function Roles() {
 
             alert("Role deleted successfully.");
 
-        } catch (errorf) {
+        } catch (error) {
             console.error(
                 "Failed to delete role:",
                 error.response?.data || error
@@ -140,6 +139,32 @@ function Roles() {
         setSelectedRole(null);
     };
 
+
+    // Save role
+    const handleSaveRole = async (roleData) => {
+        const payload = {
+            role_name: roleData.name.trim(),
+            is_active: roleData.status === "Active",
+        };
+
+        try {
+            if (selectedRole) {
+                await api.put(`roles/${selectedRole.id}/`, payload);
+            } else {
+                await api.post("roles/", payload);
+            }
+
+            await fetchRoles();
+            setIsModalOpen(false);
+            setSelectedRole(null);
+
+        } catch (error) {
+            console.error("Failed to save role:", error.response?.data || error);
+            alert(
+                "Failed to save role. Check the browser console for the error."
+            );
+        }
+    };
     // Search
     const filteredRoles = roles.filter((role) => {
 
@@ -149,7 +174,6 @@ function Roles() {
             role.name.toLowerCase().includes(searchText)
         );
     });
-
 
 
     return (
@@ -238,10 +262,6 @@ function Roles() {
                             <tr>
 
                                 <th>
-                                    #
-                                </th>
-
-                                <th>
                                     Role Name
                                 </th>
                                 <th>
@@ -277,10 +297,6 @@ function Roles() {
 
                                     <tr key={role.id}>
                                         <td>
-                                            {index + 1}
-                                        </td>
-
-                                        <td>
 
                                             <div className="role-name">
 
@@ -315,8 +331,7 @@ function Roles() {
                                                     <div className="status-dropdown-menu">
                                                         <button
                                                             type="button"
-                                                            className={`status-option active-option ${role.is_active ? "selected-status" : ""
-                                                                }`}
+                                                            className={role.is_active ? "selected-status" : ""}
                                                             onClick={() => handleSelectStatus(role, true)}
                                                         >
                                                             Active {role.is_active ? "✓" : ""}
@@ -324,8 +339,7 @@ function Roles() {
 
                                                         <button
                                                             type="button"
-                                                            className={`status-option inactive-option ${!role.is_active ? "selected-status" : ""
-                                                                }`}
+                                                            className={!role.is_active ? "selected-status" : ""}
                                                             onClick={() => handleSelectStatus(role, false)}
                                                         >
                                                             Inactive {!role.is_active ? "✓" : ""}
@@ -334,6 +348,7 @@ function Roles() {
                                                 )}
                                             </div>
                                         </td>
+
 
 
                                         <td>

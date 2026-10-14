@@ -115,7 +115,6 @@ function Users() {
         }
     };
 
-
     const handleDelete = async (id) => {
         const confirmed = window.confirm(
             "Are you sure you want to delete this user?"
@@ -138,7 +137,6 @@ function Users() {
             alert("Failed to delete user.");
         }
     };
-    233
 
     useEffect(() => {
         fetchDesignations();
@@ -186,7 +184,6 @@ function Users() {
             );
         }
     };
-
 
     const fetchUsers = async () => {
         try {

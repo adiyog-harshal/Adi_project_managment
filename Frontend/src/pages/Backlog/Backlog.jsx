@@ -198,7 +198,6 @@ const Backlog = () => {
 
             const payload = {
                 task_name: form.title.trim(),
-                description: form.description.trim(),
                 project: Number(id),
                 assigned_to: form.assignedTo
                     ? Number(form.assignedTo)
@@ -337,7 +336,6 @@ const Backlog = () => {
 
         setForm({
             title: task.task_name || "",
-            description: task.description || "",
             assignedTo: task.assigned_to && typeof task.assigned_to === "object"
                 ? task.assigned_to.id
                 : task.assigned_to || "",
@@ -701,7 +699,6 @@ const Backlog = () => {
                                 : milestones.find(
                                     (m) => String(m.id) === String(milestoneId)
                                 )?.milestone_name || "-";
-
                         return (
 
                             <div

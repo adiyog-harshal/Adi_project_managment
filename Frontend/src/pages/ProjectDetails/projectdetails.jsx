@@ -616,7 +616,7 @@ const ProjectDetails = () => {
                                 <div>
                                     <h3>Backlog</h3>
                                     <p>
-                                        {tasks.length} backlog items
+                                        {tasks.length} total tasks
                                     </p>
                                 </div>
 
@@ -627,31 +627,34 @@ const ProjectDetails = () => {
 
                             <div className="overview-list">
 
-                                {tasks.slice(0, 5).map((task) => (
-                                    <div
-                                        className="overview-list-item"
-                                        key={task.id}
-                                    >
-                                        <div>
-                                            <strong>
-                                                {task.task_name || "-"}
-                                            </strong>
 
-                                            <span>
-                                                {task.description || "No description"}
+                                <div className="overview-list backlog-scroll-list">
+                                    {tasks.map((task) => (
+                                        <div
+                                            className="overview-list-item"
+                                            key={task.id}
+                                        >
+                                            <div>
+                                                <strong>
+                                                    {task.task_name || "-"}
+                                                </strong>
+
+                                                <span>
+                                                    {task.description || "No description"}
+                                                </span>
+                                            </div>
+
+                                            <span
+                                                className={`overview-priority ${task.priority
+                                                        ?.toLowerCase()
+                                                        .replace(/\s+/g, "-")
+                                                    }`}
+                                            >
+                                                {task.priority || "-"}
                                             </span>
                                         </div>
-
-                                        <span
-                                            className={`overview-priority ${task.priority
-                                                    ?.toLowerCase()
-                                                    .replace(/\s+/g, "-")
-                                                }`}
-                                        >
-                                            {task.priority || "-"}
-                                        </span>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
 
                                 {tasks.length === 0 && (
                                     <div className="overview-empty">
