@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
     Plus,
@@ -16,17 +16,60 @@ import {
 
 import RoleModal from "./RoleModal";
 import "./Roles.css";
+import api from "../../services/api";
 
 
 function Roles() {
 
     const [roles, setRoles] = useState([]);
+    const [openStatusId, setOpenStatusId] = useState(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [selectedRole, setSelectedRole] = useState(null);
 
     const [search, setSearch] = useState("");
+
+    const fetchRoles = async () => {
+        try {
+            const response = await api.get("roles/");
+
+            setRoles(response.data.map((role) => ({
+                id: role.id,
+                name: role.role_name,
+                is_active: role.is_active,
+                status: role.is_active ? "Active" : "Inactive"
+            })));
+        } catch (error) {
+            console.error("Failed to fetch roles:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRoles();
+    }, []);
+
+    
+    const handleToggleRoleStatus = async (role) => {
+        const newStatus = !role.is_active;
+
+        try {
+            await api.patch(`roles/${role.id}/`, {
+                is_active: newStatus
+            });
+
+            await fetchRoles();
+
+        } catch (error) {
+            console.error(
+                "Failed to update role status:",
+                error.response?.data || error
+            );
+
+            alert("Failed to update role status.");
+        }
+    };
+
 
     // Open Add Role modal
     const handleAddRole = () => {
@@ -40,7 +83,8 @@ function Roles() {
     };
 
 
-    const handleDeleteRole = (id) => {
+    
+    const handleDeleteRole = async (id) => {
 
         const confirmed = window.confirm(
             "Are you sure you want to delete this role?"
@@ -50,56 +94,60 @@ function Roles() {
             return;
         }
 
-        setRoles((previousRoles) =>
-            previousRoles.filter((role) => role.id !== id)
-        );
-    };
+        try {
+            await api.delete(`roles/${id}/`);
 
-    // Save role
-    const handleSaveRole = (roleData) => {
+            await fetchRoles();
 
-        if (selectedRole) {
+            alert("Role deleted successfully.");
 
-
-            setRoles((previousRoles) =>
-                previousRoles.map((role) =>
-                    role.id === selectedRole.id
-                        ? {
-                            ...role,
-                            ...roleData,
-                        }
-                        : role
-                )
+        } catch (error) {
+            console.error(
+                "Failed to delete role:",
+                error.response?.data || error
             );
 
-        } else {
-
-            // Create new role
-            const newRole = {
-                id: Date.now(),
-                ...roleData,
-            };
-
-            setRoles((previousRoles) => [
-                ...previousRoles,
-                newRole,
-            ]);
+            alert("Failed to delete role.");
         }
-
-        setIsModalOpen(false);
-        setSelectedRole(null);
     };
 
+
+    // Save role
+    const handleSaveRole = async (roleData) => {
+        const payload = {
+            role_name: roleData.name.trim(),
+            is_active: roleData.status === "Active",
+        };
+
+        try {
+            if (selectedRole) {
+                await api.put(`roles/${selectedRole.id}/`, payload);
+            } else {
+                await api.post("roles/", payload);
+            }
+
+            await fetchRoles();
+            setIsModalOpen(false);
+            setSelectedRole(null);
+
+        } catch (error) {
+            console.error("Failed to save role:", error.response?.data || error);
+            alert(
+                "Failed to save role. Check the browser console for the error."
+            );
+        }
+    };
     // Search
     const filteredRoles = roles.filter((role) => {
 
         const searchText = search.toLowerCase();
 
         return (
-            role.name.toLowerCase().includes(searchText) ||
-            role.description.toLowerCase().includes(searchText)
+            role.name.toLowerCase().includes(searchText)
         );
     });
+
+    
 
     return (
         <div className="roles-page">
@@ -187,17 +235,8 @@ function Roles() {
                             <tr>
 
                                 <th>
-                                    #
-                                </th>
-
-                                <th>
                                     Role Name
                                 </th>
-
-                                <th>
-                                    Description
-                                </th>
-
                                 <th>
                                     Status
                                 </th>
@@ -230,11 +269,6 @@ function Roles() {
                                 filteredRoles.map((role, index) => (
 
                                     <tr key={role.id}>
-
-                                        <td>
-                                            {index + 1}
-                                        </td>
-
                                         <td>
 
                                             <div className="role-name">
@@ -249,23 +283,46 @@ function Roles() {
 
                                         </td>
 
-                                        <td className="description-cell">
-                                            {role.description}
-                                        </td>
-
-                                        <td>
-
-                                            <span
-                                                className={
-                                                    role.status === "Active"
-                                                        ? "status active-status"
-                                                        : "status inactive-status"
+                                       
+                                    <td>
+                                        <div className="status-dropdown-wrapper">
+                                            <button
+                                                type="button"
+                                                className={`status ${
+                                                    role.is_active ? "active-status" : "inactive-status"
+                                                }`}
+                                                onClick={() =>
+                                                    setOpenStatusId(
+                                                        openStatusId === role.id ? null : role.id
+                                                    )
                                                 }
                                             >
-                                                {role.status}
-                                            </span>
+                                                {role.is_active ? "Active" : "Inactive"}
+                                                <span className="status-arrow">▼</span>
+                                            </button>
 
-                                        </td>
+                                            {openStatusId === role.id && (
+                                                <div className="status-dropdown-menu">
+                                                    <button
+                                                        type="button"
+                                                        className={role.is_active ? "selected-status" : ""}
+                                                        onClick={() => handleSelectStatus(role, true)}
+                                                    >
+                                                        Active {role.is_active ? "✓" : ""}
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className={!role.is_active ? "selected-status" : ""}
+                                                        onClick={() => handleSelectStatus(role, false)}
+                                                    >
+                                                        Inactive {!role.is_active ? "✓" : ""}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+
 
                                         <td>
 

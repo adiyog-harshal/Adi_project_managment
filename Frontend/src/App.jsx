@@ -134,21 +134,6 @@ function RoutesLayout() {
                                                 .toUpperCase()
                                             : "U"}
                                 </div>
-
-                                <span className="user-name">
-                                    {user?.first_name || user?.last_name
-                                        ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
-                                        : user?.username || "User"}
-                                </span>
-
-                                <ChevronDown
-                                    size={16}
-                                    className={
-                                        showUserMenu
-                                            ? "user-chevron rotate"
-                                            : "user-chevron"
-                                    }
-                                />
                             </button>
 
                             {showUserMenu && (

@@ -335,39 +335,26 @@
 /* =========================
    MODAL
 ========================= */
-
+/* Make Designation form vertical and narrow */
 .designation-modal {
-    width: 100%;
-    max-width: 720px;
-
-    background: #ffffff;
-
-    border-radius: 12px;
-
-    box-shadow:
-        0 15px 40px rgba(0, 0, 0, 0.18);
-
+    width: 420px !important;
+    max-width: 90% !important;
+    min-height: auto !important;
+    height: auto !important;
+    padding: 24px !important;
+    margin: auto !important;
     box-sizing: border-box;
 }
-
 
 /* =========================
    MODAL HEADER
 ========================= */
 
 .designation-modal-header {
-    width: 100%;
-    height: 65px;
-
-    padding: 0 24px;
-
     display: flex;
-    align-items: center;
     justify-content: space-between;
-
-    border-bottom: 1px solid #eeeeee;
-
-    box-sizing: border-box;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
 .designation-modal-header h2 {
@@ -411,21 +398,15 @@
 
 .designation-form {
     width: 100%;
-
-    padding: 22px 26px 24px;
-
-    box-sizing: border-box;
+    gap: 20px;
+    flex-direction: column;
+    display: flex;
 }
 
 .designation-form-group {
     width: 100%;
-
     display: flex;
     flex-direction: column;
-
-    margin-bottom: 14px;
-
-    box-sizing: border-box;
 }
 
 .designation-form-group label {
@@ -816,4 +797,115 @@
 
 .designation-status-dropdown button:hover {
     background: #f2f4f7 !important;
+}
+
+
+/* ===== DESIGNATION FORM COLOR THEME ===== */
+
+/* Modal overlay */
+.designation-modal-overlay {
+    background: rgba(30, 27, 75, 0.45) !important;
+    backdrop-filter: blur(4px);
+}
+
+/* Main form card */
+.designation-modal {
+    background: #f8faff !important;
+    border: 1px solid #e0e7ff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 50px rgba(31, 41, 55, 0.18) !important;
+    color: #1e1b4b !important;
+}
+
+/* Form header */
+.designation-modal-header {
+    border-bottom: 1px solid #e0e7ff !important;
+}
+
+.designation-modal-header h2 {
+    color: #312e81 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+}
+
+/* Close button */
+.designation-close-btn {
+    color: #64748b !important;
+}
+
+.designation-close-btn:hover {
+    color: #dc2626 !important;
+    background: #fef2f2 !important;
+}
+
+/* Labels */
+.designation-form-group label {
+    color: #3730a3 !important;
+    font-weight: 600 !important;
+}
+
+.designation-form-group label span {
+    color: #dc2626 !important;
+}
+
+/* Input and dropdown */
+.designation-form-group input,
+.designation-form-group select {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #c7d2fe !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+}
+
+/* Placeholder */
+.designation-form-group input::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Focus effect */
+.designation-form-group input:focus,
+.designation-form-group select:focus {
+    border-color: #6c55e8 !important;
+    box-shadow: 0 0 0 3px rgba(108, 85, 232, 0.13) !important;
+    outline: none !important;
+}
+
+/* Form error */
+.designation-form-error {
+    color: #dc2626 !important;
+}
+
+/* Button area */
+.designation-form-actions {
+    border-top: 1px solid #e0e7ff !important;
+}
+
+/* Cancel button */
+.designation-cancel-btn {
+    background: #ffffff !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+}
+
+.designation-cancel-btn:hover {
+    background: #f1f5f9 !important;
+}
+
+/* Create / Update button */
+.designation-create-btn {
+    background: #6c55e8 !important;
+    color: #ffffff !important;
+    border: 1px solid #6c55e8 !important;
+    border-radius: 8px !important;
+}
+
+.designation-create-btn:hover {
+    background: #5840d5 !important;
+}
+
+.designation-create-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
 }

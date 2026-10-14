@@ -10,6 +10,7 @@ import Users from "../pages/Users/Users";
 import Milestones from "../pages/Milestones/Milestones";
 import Designations from "../pages/Designations/designations";
 import Backlog from "../pages/Backlog/Backlog";
+import Sprints from "../pages/Sprints/sprints";
 
 function AppRoutes() {
     return (
@@ -108,12 +109,11 @@ function AppRoutes() {
                 }
             />
 
-            {/* OTHER APPLICATION PAGES */}
             <Route
-                path="/tasks"
+                path="/projects/:id/sprints"
                 element={
                     <ProtectedRoute>
-                        <h1>Tasks</h1>
+                        <Sprints />
                     </ProtectedRoute>
                 }
             />

@@ -3,7 +3,6 @@ import { X } from "lucide-react";
 
 const emptyRole = {
     name: "",
-    description: "",
     status: "Active",
 };
 
@@ -20,9 +19,17 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        console.log("Save Role clicked");
+        console.log("Form data:", formData);
+
+        if (!formData.name.trim()) {
+            alert("Please enter a role name");
+            return;
+        }
+        
         onSave({
             name: formData.name.trim(),
-            description: formData.description.trim(),
             status: formData.status,
         });
     };
@@ -56,16 +63,7 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
                             onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                         />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="role-description">Description</label>
-                        <textarea
-                            id="role-description"
-                            required
-                            rows="3"
-                            value={formData.description}
-                            onChange={(event) => setFormData({ ...formData, description: event.target.value })}
-                        />
-                    </div>
+                
                     <div className="form-group">
                         <label htmlFor="role-status">Status</label>
                         <select
