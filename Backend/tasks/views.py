@@ -1,84 +1,82 @@
+
 from rest_framework import generics
-
-from .models import Task
-from .serializers import TaskSerializer
-
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
-
-from .models import TaskComment
-from .serializers import TaskCommentSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
 from .models import Task, TaskComment
 from .serializers import TaskSerializer, TaskCommentSerializer
+
 from helpers import (
     notify_task_assigned,
     notify_task_reassigned,
 )
 
 
-# Create your views here.
-
+# ==========================================
+# TASK LIST AND CREATE
+# ==========================================
 
 class TaskListCreateView(generics.ListCreateAPIView):
 
-    queryset  = Task.objects.all()
-
-    serializer_class  = TaskSerializer
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
-    
+
     def perform_create(self, serializer):
 
+        # Save the task first
         task = serializer.save()
 
-        if task.assigned_to :
+        # Notify the assigned user
+        if task.assigned_to:
             notify_task_assigned(task)
 
-        
 
+# ==========================================
+# TASK DETAIL, UPDATE AND DELETE
+# ==========================================
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Task.objects.all()
-
-    serializer_class = TaskSerializer
-
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
-    
-    def perform_update(self,serializer):
-        
-        #get the assignee before updatintg the task
+
+    def perform_update(self, serializer):
+
+        # Get the existing task and its current assignee
         old_assignee = self.get_object().assigned_to
-        
-        #save the updated task
+
+        # Save the updated task
         task = serializer.save()
-        
-        #get the assignee after updating the task
+
+        if task.assigned_to:
+            notify_task_assigned(task)
+
+        # Get the updated assignee
         new_assignee = task.assigned_to
-        
-        #first-time assignment
+
+        # First-time assignment
         if old_assignee is None and new_assignee is not None:
             notify_task_assigned(task)
 
-        #reassignment
-        elif(
+        # Notify when assigned to a different user
+        elif (
             old_assignee is not None
             and new_assignee is not None
             and old_assignee != new_assignee
         ):
-            notify_task_reassignment(
+            notify_task_reassigned(
                 task,
                 old_assignee,
             )
 
-class TaskCommentListCreateView(
-    generics.ListCreateAPIView
-):
+
+# ==========================================
+# TASK COMMENTS: LIST AND CREATE
+# ==========================================
+
+class TaskCommentListCreateView(generics.ListCreateAPIView):
 
     serializer_class = TaskCommentSerializer
     permission_classes = [IsAuthenticated]
@@ -94,14 +92,6 @@ class TaskCommentListCreateView(
             "task"
         ).order_by("created_at")
 
-def perform_create(self, serializer):
-
-    task_id = self.kwargs["task_id"]
-
-    serializer.save(
-        task_id=task_id,
-        user=self.request.user
-    )
     def perform_create(self, serializer):
 
         task_id = self.kwargs["task_id"]
@@ -111,6 +101,10 @@ def perform_create(self, serializer):
             user=self.request.user
         )
 
+
+# ==========================================
+# TASK COMMENT: DETAIL, UPDATE AND DELETE
+# ==========================================
 
 class TaskCommentDetailView(
     generics.RetrieveUpdateDestroyAPIView
@@ -129,9 +123,7 @@ class TaskCommentDetailView(
         comment = self.get_object()
 
         if comment.user != self.request.user:
-
             raise PermissionDenied(
-                "you can only edit your own comments."
                 "You can only edit your own comments."
             )
 
@@ -140,12 +132,8 @@ class TaskCommentDetailView(
     def perform_destroy(self, instance):
 
         if instance.user != self.request.user:
-
             raise PermissionDenied(
                 "You can only delete your own comments."
             )
-
-        instance.delete()
-
 
         instance.delete()

@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Sprint
 from .serializers import SprintSerializer
 from tasks.models import Task
+from django.utils import timezone
 
 class SprintListCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -117,6 +118,47 @@ class SprintDetailView(APIView):
             {'message': 'Sprint deleted successfully.'},
             status=status.HTTP_204_NO_CONTENT
         )
+
+class SprintStartView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            sprint = Sprint.objects.get(pk=pk)
+        except Sprint.DoesNotExist:
+            return Response(
+                {"detail": "Sprint not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if sprint.status != "Planned":
+            return Response(
+                {"detail": "Only planned sprints can be started."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        today = timezone.localdate()
+
+        if sprint.start_date > today:
+            return Response(
+                {
+                    "detail": (
+                        "This sprint cannot start before its "
+                        "scheduled start date."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        sprint.status = "In Progress"
+        sprint.save(update_fields=["status", "updated_at"])
+
+        return Response(
+            SprintSerializer(sprint).data,
+            status=status.HTTP_200_OK
+        )
+
+            
 class SprintTaskAssignView(APIView):
     permission_classes = [IsAuthenticated]
 

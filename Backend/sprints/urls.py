@@ -3,6 +3,7 @@ from .views import (
     SprintListCreateView,
     SprintDetailView,
     SprintTaskAssignView,
+    SprintStartView,
 )
 
 urlpatterns = [
@@ -18,5 +19,11 @@ urlpatterns = [
         '<int:pk>/',
         SprintDetailView.as_view(),
         name='sprint-detail'
+    ),
+
+    path(
+        '<int:pk>/start/',
+        SprintStartView.as_view(),
+        name='sprint-start'
     ),
 ]

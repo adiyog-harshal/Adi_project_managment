@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from projects.models import Project
-from sprints.models import Sprint
+from milestones.models import Milestone
 
 
 # Create your models here.
@@ -77,7 +77,13 @@ class Task(models.Model):
         related_name='tasks'
     )
 
-    
+    milestone = models.ForeignKey(
+        Milestone,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tasks'
+    )   
 
 class TaskComment(models.Model):
 
