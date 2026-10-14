@@ -46,11 +46,17 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
 
+        # Save the task first
         task = serializer.save()
 
+        # Notify the assigned user
         if task.assigned_to:
             notify_task_assigned(task)
 
+
+# ==========================================
+# TASK DETAIL, UPDATE AND DELETE
+# ==========================================
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
@@ -60,15 +66,23 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
 
+        # Get the existing task and its current assignee
         old_assignee = self.get_object().assigned_to
 
+        # Save the updated task
         task = serializer.save()
 
+        if task.assigned_to:
+            notify_task_assigned(task)
+
+        # Get the updated assignee
         new_assignee = task.assigned_to
 
+        # First-time assignment
         if old_assignee is None and new_assignee is not None:
             notify_task_assigned(task)
 
+        # Notify when assigned to a different user
         elif (
             old_assignee is not None
             and new_assignee is not None
@@ -80,9 +94,11 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
             )
 
 
-class TaskCommentListCreateView(
-    generics.ListCreateAPIView
-):
+# ==========================================
+# TASK COMMENTS: LIST AND CREATE
+# ==========================================
+
+class TaskCommentListCreateView(generics.ListCreateAPIView):
 
     serializer_class = TaskCommentSerializer
     permission_classes = [IsAuthenticated]
@@ -107,6 +123,10 @@ class TaskCommentListCreateView(
             user=self.request.user
         )
 
+
+# ==========================================
+# TASK COMMENT: DETAIL, UPDATE AND DELETE
+# ==========================================
 
 class TaskCommentDetailView(
     generics.RetrieveUpdateDestroyAPIView

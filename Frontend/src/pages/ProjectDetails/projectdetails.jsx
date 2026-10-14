@@ -8,7 +8,8 @@ import {
     FileText,
     Users,
     ListTodo,
-    Flag
+    Flag,
+    Layers
 } from "lucide-react";
 
 import api from "../../services/api";
@@ -27,7 +28,7 @@ const ProjectDetails = () => {
 
     const [members, setMembers] = useState([]);
     const [tasks, setTasks] = useState([]);
-    const [activeSection, setActiveSection] = useState("overview");
+    const [activeSection, setActiveSection] = useState("");
     const [selectedUser, setSelectedUser] = useState("");
     const [showAddMember, setShowAddMember] = useState(false);
 
@@ -248,18 +249,15 @@ const ProjectDetails = () => {
                 <div className="project-title-section">
 
                     <div className="project-details-icon">
-                        <FileText size={24} />
+                        <FileText size={10} />
                     </div>
 
                     <div>
 
                         <h1>
-                            {project.project_name}
+                                {project.project_name}
+                            
                         </h1>
-
-                        <p>
-                            Project #{project.id}
-                        </p>
 
                     </div>
 
@@ -429,7 +427,17 @@ const ProjectDetails = () => {
                     Milestones
                 </button>
 
+                <button
+                    type="button"
+                    className="project-section-btn"
+                    onClick={() => navigate(`/projects/${id}/sprints`)}
+                >
+                    <Layers size={17} />
+                    Sprints
+                </button>
+
             </div>
+
                 
 
             {activeSection === "members" && (
@@ -540,177 +548,182 @@ const ProjectDetails = () => {
             )}
 
             {/* OVERVIEW SECTION PAGE  */}
-            <div className="project-overview">
+            {activeSection === "overview" && (
+                <div className="project-overview">
 
-                <div className="overview-header">
-                    <div>
-                        <h2>Project Overview</h2>
-                        <p>
-                            Quick summary of this project's current progress.
-                        </p>
-                    </div>
-                </div>
-
-                <div className="overview-stats">
-
-                    <div className="overview-stat-card">
-                        <span>Total Tasks</span>
-                        <strong>{totalTasks}</strong>
-                    </div>
-
-                    <div className="overview-stat-card">
-                        <span>Completed</span>
-                        <strong>{completedTasks}</strong>
-                    </div>
-
-                    <div className="overview-stat-card">
-                        <span>In Progress</span>
-                        <strong>{inProgressTasks}</strong>
-                    </div>
-
-                    <div className="overview-stat-card">
-                        <span>Progress</span>
-                        <strong>{projectProgress}%</strong>
-                    </div>
-
-                </div>
-
-
-                <div className="overview-progress-card">
-
-                    <div className="overview-progress-header">
+                    <div className="overview-header">
                         <div>
-                            <h3>Project Progress</h3>
+                            <h2>Project Overview</h2>
                             <p>
-                                {completedTasks} of {totalTasks} tasks completed
+                                Quick summary of this project's current progress.
                             </p>
                         </div>
-
-                        <strong>{projectProgress}%</strong>
                     </div>
 
-                    <div className="overview-progress-track">
-                        <div
-                            className="overview-progress-fill"
-                            style={{
-                                width: `${projectProgress}%`,
-                            }}
-                        />
+                    <div className="overview-stats">
+
+                        <div className="overview-stat-card">
+                            <span>Total Tasks</span>
+                            <strong>{totalTasks}</strong>
+                        </div>
+
+                        <div className="overview-stat-card">
+                            <span>Completed</span>
+                            <strong>{completedTasks}</strong>
+                        </div>
+
+                        <div className="overview-stat-card">
+                            <span>In Progress</span>
+                            <strong>{inProgressTasks}</strong>
+                        </div>
+
+                        <div className="overview-stat-card">
+                            <span>Progress</span>
+                            <strong>{projectProgress}%</strong>
+                        </div>
+
                     </div>
 
-                </div>
 
+                    <div className="overview-progress-card">
 
-                <div className="overview-grid">
-
-                    {/* BACKLOG */}
-
-                    <div className="overview-card">
-
-                        <div className="overview-card-header">
-
+                        <div className="overview-progress-header">
                             <div>
-                                <h3>Backlog</h3>
+                                <h3>Project Progress</h3>
                                 <p>
-                                    {tasks.length} backlog items
+                                    {completedTasks} of {totalTasks} tasks completed
                                 </p>
                             </div>
 
-                            <ListTodo size={20} />
-
+                            <strong>{projectProgress}%</strong>
                         </div>
 
-
-                        <div className="overview-list">
-
-                            {tasks.slice(0, 5).map((task) => (
-                                <div
-                                    className="overview-list-item"
-                                    key={task.id}
-                                >
-                                    <div>
-                                        <strong>
-                                            {task.task_name || "-"}
-                                        </strong>
-
-                                        <span>
-                                            {task.description || "No description"}
-                                        </span>
-                                    </div>
-
-                                    <span
-                                        className={`overview-priority ${
-                                            task.priority
-                                                ?.toLowerCase()
-                                                .replace(/\s+/g, "-")
-                                        }`}
-                                    >
-                                        {task.priority || "-"}
-                                    </span>
-                                </div>
-                            ))}
-
-                            {tasks.length === 0 && (
-                                <div className="overview-empty">
-                                    No backlog items found.
-                                </div>
-                            )}
-
+                        <div className="overview-progress-track">
+                            <div
+                                className="overview-progress-fill"
+                                style={{
+                                    width: `${projectProgress}%`,
+                                }}
+                            />
                         </div>
-
-
-                        <button
-                            type="button"
-                            className="overview-view-button"
-                            onClick={() =>
-                                navigate(`/projects/${id}/backlog`)
-                            }
-                        >
-                            View Backlog →
-                        </button>
 
                     </div>
 
 
-                    {/* MILESTONES */}
+                    <div className="overview-grid">
 
-                    <div className="overview-card">
+                        {/* BACKLOG */}
 
-                        <div className="overview-card-header">
+                        <div className="overview-card">
 
-                            <div>
-                                <h3>Milestones</h3>
-                                <p>
-                                    Project milestones
-                                </p>
+                            <div className="overview-card-header">
+
+                                <div>
+                                    <h3>Backlog</h3>
+                                    <p>
+                                        {tasks.length} total tasks
+                                    </p>
+                                </div>
+
+                                <ListTodo size={20} />
+
                             </div>
 
-                            <Flag size={20} />
 
-                        </div>
+                            <div className="overview-list">
 
+                                
+<div className="overview-list backlog-scroll-list">
+    {tasks.map((task) => (
+        <div
+            className="overview-list-item"
+            key={task.id}
+        >
+            <div>
+                <strong>
+                    {task.task_name || "-"}
+                </strong>
 
-                        <div className="overview-list">
-                            <div className="overview-empty">
-                                View project milestones and manage them from the Milestones page.
-                            </div>
-                        </div>
-
-                        <button
-                            type="button"
-                            className="overview-view-button"
-                            onClick={() =>
-                                navigate(`/projects/${id}/milestones`)
-                            }
-                        >
-                            View Milestones →
-                        </button>
-
-                    </div>
-
-                </div>
-
+                <span>
+                    {task.description || "No description"}
+                </span>
             </div>
+
+            <span
+                className={`overview-priority ${
+                    task.priority
+                        ?.toLowerCase()
+                        .replace(/\s+/g, "-")
+                }`}
+            >
+                {task.priority || "-"}
+            </span>
+        </div>
+    ))}
+</div>
+
+                                {tasks.length === 0 && (
+                                    <div className="overview-empty">
+                                        No backlog items found.
+                                    </div>
+                                )}
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                className="overview-view-button"
+                                onClick={() =>
+                                    navigate(`/projects/${id}/backlog`)
+                                }
+                            >
+                                View Backlog →
+                            </button>
+
+                        </div>
+
+
+                        {/* MILESTONES */}
+
+                        <div className="overview-card">
+
+                            <div className="overview-card-header">
+
+                                <div>
+                                    <h3>Milestones</h3>
+                                    <p>
+                                        Project milestones
+                                    </p>
+                                </div>
+
+                                <Flag size={20} />
+
+                            </div>
+
+
+                            <div className="overview-list">
+                                <div className="overview-empty">
+                                    View project milestones and manage them from the Milestones page.
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="overview-view-button"
+                                onClick={() =>
+                                    navigate(`/projects/${id}/milestones`)
+                                }
+                            >
+                                View Milestones →
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            )}
 
             {showAddMember && (
                 <div className="member-modal-overlay">

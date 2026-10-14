@@ -73,49 +73,77 @@ function Users() {
         setEditingUser(null);
     };
 
-    const handleSubmit = (e) => {
+    
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (editingUser) {
-            setUsers((previousUsers) =>
-                previousUsers.map((user) =>
-                    user.id === editingUser.id
-                        ? { ...user, ...formData }
-                        : user
+        const payload = {
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            role: formData.role,
+            designation: formData.designation,
+            status: formData.status,
+        };
+
+        try {
+            if (editingUser) {
+                await api.put(`users/${editingUser.id}/`, payload);
+            } else {
+                await api.post("users/", payload);
+            }
+
+            await fetchUsers();
+            closeForm();
+
+            alert(
+                editingUser
+                    ? "User updated successfully."
+                    : "User created successfully."
+            );
+
+        } catch (error) {
+            console.error(
+                "Failed to save user:",
+                error.response?.data || error
+            );
+
+            alert(
+                JSON.stringify(
+                    error.response?.data || "Failed to save user."
                 )
             );
-        } else {
-            const newUser = {
-                id: Date.now(),
-                ...formData,
-            };
-
-            setUsers((previousUsers) => [
-                ...previousUsers,
-                newUser,
-            ]);
         }
-
-        closeForm();
     };
 
-    const handleDelete = (id) => {
+    
+    const handleDelete = async (id) => {
         const confirmed = window.confirm(
-            'Are you sure you want to delete this user?'
+            "Are you sure you want to delete this user?"
         );
 
-        if (!confirmed) {
-            return;
+        if (!confirmed) return;
+
+        try {
+            await api.delete(`users/${id}/`);
+            await fetchUsers();
+
+            alert("User deleted successfully.");
+
+        } catch (error) {
+            console.error(
+                "Failed to delete user:",
+                error.response?.data || error
+            );
+
+            alert("Failed to delete user.");
         }
-
-        setUsers((previousUsers) =>
-            previousUsers.filter((user) => user.id !== id)
-        );
     };
+233
 
     useEffect(() => {
         fetchDesignations();
         fetchRoles();
+        fetchUsers();
     }, []);
 
     const fetchDesignations = async () => {
@@ -144,7 +172,13 @@ function Users() {
                 ? response.data
                 : response.data.results || [];
 
-            setRoles(data);
+            setRoles(
+                data.map((role) => ({
+                    id: role.id,
+                    name: role.role_name,
+                    is_active: role.role_name,
+                    status: role.is_active ? "Active" : "Inactive",
+                })));
         } catch (error) {
             console.error(
                 "Failed to fetch roles:",
@@ -152,6 +186,41 @@ function Users() {
             );
         }
     };
+
+    
+    const fetchUsers = async () => {
+        try {
+            const response = await api.get("users/");
+
+            const data = Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+
+            console.log("Fetched users:", data);
+
+            setUsers(
+                data.map((user) => ({
+                    id: user.id,
+                    name:
+                    `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+                    user.username ||
+                    "N/A",
+                    email: user.email || "N/A",
+                    role: user.role_name || user.role || "Not Assigned",
+                    designation: user.designation_name || "Not Assigned",
+                    status: user.is_active === false ? "Inactive" : "Active",
+                }))
+                );       
+            } catch (error) {
+            console.error(
+                error.response?.status,
+                error.response?.data || error.message
+            );
+        }
+    };
+
+            
+        
 
     return (
         <div className="users-page">
@@ -202,27 +271,19 @@ function Users() {
                         {filteredUsers.length > 0 ? (
                             filteredUsers.map((user) => (
                                 <tr key={user.id}>
-                                    <td className="user-name">
-                                        {user.name}
-                                    </td>
-
-                                    <td>
-                                        {user.email}
-                                    </td>
-
-                                    <td>
-                                        {user.role}
-                                    </td>
-
-                                    <td>
-                                        {user.designation}
-                                    </td>
+                                    <td>{user.name || "N/A"}</td>
+                                    <td>{user.email || "N/A"}</td>
+                                    <td>{user.role || "Not Assigned"}</td>
+                                    <td>{user.designation || "Not Assigned"}</td>
 
                                     <td>
                                         <span
-                                            className={`user-status ${user.status.toLowerCase()}`}
+                                            className={`user-status ${
+                                                (user.status || "Inactive").toLowerCase()
+
+                                            }`}
                                         >
-                                            {user.status}
+                                            {user.status || "Inactive"}
                                         </span>
                                     </td>
 
@@ -331,7 +392,7 @@ function Users() {
                                     <option value="">Select Role</option>
 
                                     {roles
-                                        .filter((role) => role.status)
+                                        .filter((role) => role.is_active)
                                         .map((role) => (
                                             <option
                                                 key={role.id}

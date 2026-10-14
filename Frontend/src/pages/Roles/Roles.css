@@ -907,3 +907,241 @@
         align-self: flex-start;
     }
 }
+
+
+/* ===== Role Modal - PMS Purple Theme ===== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(30, 27, 75, 0.50);
+    backdrop-filter: blur(5px);
+}
+
+/* Modal container */
+.role-modal {
+    width: 100%;
+    max-width: 560px;
+    background: #ffffff;
+    border: 1px solid #e0e7ff;
+    border-radius: 18px;
+    color: #1e1b4b;
+    box-shadow: 0 24px 70px rgba(30, 27, 75, 0.24);
+    overflow: hidden;
+    animation: roleModalAppear 0.25s ease;
+}
+
+/* Header */
+.role-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, #f0edff, #ffffff);
+    border-bottom: 1px solid #e0e7ff;
+}
+
+.role-modal .modal-header h2 {
+    margin: 0;
+    color: #312e81;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.role-modal .modal-header p {
+    margin: 6px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+/* Close button */
+.role-modal .close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: #4f46e5;
+    background: #ffffff;
+    border: 1px solid #e0e7ff;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.role-modal .close-button:hover {
+    background: #eef2ff;
+    color: #4338ca;
+}
+
+/* Form body */
+.role-modal form {
+    padding: 24px;
+}
+
+.role-modal .form-group {
+    margin-bottom: 20px;
+}
+
+.role-modal .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #312e81;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.role-modal .form-group input,
+.role-modal .form-group select {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 13px;
+    box-sizing: border-box;
+    color: #1e1b4b;
+    background: #fafaff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.role-modal .form-group input:focus,
+.role-modal .form-group select:focus {
+    background: #ffffff;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
+}
+
+/* Action buttons */
+.role-modal .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 18px;
+    border-top: 1px solid #e0e7ff;
+}
+
+.role-modal .cancel-button,
+.role-modal .save-button {
+    min-height: 40px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.role-modal .cancel-button {
+    color: #4f46e5;
+    background: #ffffff;
+    border: 1px solid #c7d2fe;
+}
+
+.role-modal .cancel-button:hover {
+    background: #eef2ff;
+    border-color: #a5b4fc;
+}
+
+.role-modal .save-button {
+    color: #ffffff;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    border: 1px solid transparent;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.18);
+}
+
+.role-modal .save-button:hover {
+    background: #4338ca;
+    box-shadow: 0 5px 12px rgba(79, 70, 229, 0.25);
+}
+
+@keyframes roleModalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 600px) {
+    .modal-overlay {
+        padding: 16px;
+    }
+
+    .role-modal .modal-header,
+    .role-modal form {
+        padding: 18px;
+    }
+
+    .role-modal .modal-actions {
+        flex-wrap: wrap;
+    }
+}
+
+
+
+/* Add Role Button - Purple Theme */
+
+.add-role-button {
+    height: 42px;
+    padding: 0 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #6c5ce7 !important;
+    color: #ffffff !important;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.add-role-button:hover {
+    background: #5b4bd6 !important;
+    color: #ffffff !important;
+}
+
+
+.add-role-button:active {
+    transform: translateY(0);
+}
+
+.add-role-button:focus-visible {
+    outline: 3px solid rgba(99, 102, 241, 0.3);
+    outline-offset: 3px;
+}
+
+
+
+/* Active Status - Green */
+.roles-page .active-status {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1px solid #bbf7d0;
+}
+
+/* Inactive Status - Red */
+.roles-page .inactive-status {
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+    border: 1px solid #fecaca;
+}

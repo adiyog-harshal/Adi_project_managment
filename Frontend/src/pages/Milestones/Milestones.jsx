@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 
 import './Milestones.css';
+import { ArrowLeft, Flag } from "lucide-react";
 import {
     PMSPageHeader,
     PMSSearch,
@@ -283,15 +284,20 @@ function Milestones() {
             {/* Header */}
             <button
                 type="button"
-                className="milestones-back-btn"
-                onClick={() => navigate(`/projects/${id}`)}
+                className="back-to-projects-btn"
+                onClick={() =>
+                    navigate(-1)}
             >
-                    ← Back to Project
+                <ArrowLeft size={16} />
+                Back to Project
             </button>
+
             <div className="milestones-header">
                 
                 <div>
-                    <h1>Milestones</h1>
+                    <h1 className='milestones-title'>
+                        <Flag size={16} />
+                        Milestones</h1>
 
                     <p>
                         Manage project milestones and track their progress.
@@ -328,7 +334,6 @@ function Milestones() {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Project</th>
                             <th>Description</th>
                             <th>Start Date</th>
                             <th>End Date</th>
@@ -458,138 +463,124 @@ function Milestones() {
 
             </div>
 
+            
             {/* Add / Edit Milestone Modal */}
             {showForm && (
-
                 <div className="milestone-form-overlay">
-
                     <div className="milestone-form">
 
-                        {/* Close Button */}
-                        <button
-                            type="button"
-                            className="milestone-form-close"
-                            onClick={closeForm}
-                            aria-label="Close"
-                        >
-                            ×
-                        </button>
+                        {/* Form Header */}
+                        <div className="milestone-form-header">
+                            <h2>
+                                {editingMilestone
+                                    ? "Edit Milestone"
+                                    : "Add Milestone"}
+                            </h2>
 
-                        {/* Form Title */}
-                        <h2>
-                            {editingMilestone
-                                ? 'Edit Milestone'
-                                : 'Add Milestone'}
-                        </h2>
+                            <button
+                                type="button"
+                                className="milestone-form-close"
+                                onClick={closeForm}
+                                aria-label="Close"
+                            >
+                                ×
+                            </button>
+                        </div>
 
                         <form onSubmit={handleSubmit}>
 
                             {/* Name */}
-                            <div>
-                                <label>Name:</label>
-
+                            <div className="milestone-form-group">
+                                <label>Name</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
+                                    placeholder="Enter milestone name"
                                     required
                                 />
                             </div>
 
-                            
-
                             {/* Description */}
-                            <div>
-                                <label>Description:</label>
-
+                            <div className="milestone-form-group">
+                                <label>Description</label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
                                     placeholder="Enter milestone description"
+                                    rows={3}
                                 />
                             </div>
 
-                            {/* Start Date */}
-                            <div>
-                                <label>Start Date:</label>
+                            {/* Dates */}
+                            <div className="milestone-form-date-row">
+                                <div className="milestone-form-group">
+                                    <label>Start Date</label>
+                                    <input
+                                        type="date"
+                                        name="startDate"
+                                        value={formData.startDate || ""}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-                                <input
-                                    type="date"
-                                    name="startDate"
-                                    value={formData.startDate || ""}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
-                            {/* End Date */}
-                            <div>
-                                <label>End Date:</label>
-
-                                <input
-                                    type="date"
-                                    name="endDate"
-                                    value={formData.endDate}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                <div className="milestone-form-group">
+                                    <label>End Date</label>
+                                    <input
+                                        type="date"
+                                        name="endDate"
+                                        value={formData.endDate || ""}
+                                        onChange={handleChange}
+                                        min={formData.startDate || undefined}
+                                        required
+                                    />
+                                </div>
                             </div>
 
                             {/* Status */}
-                            <div>
-                                <label>Status:</label>
-
+                            <div className="milestone-form-group">
+                                <label>Status</label>
                                 <select
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
                                     required
                                 >
-                                    <option value="Not Started">
-                                        Not Started
-                                    </option>
-
-                                    <option value="In Progress">
-                                        In Progress
-                                    </option>
-
-                                    <option value="Completed">
-                                        Completed
-                                    </option>
-
-                                    <option value="On Hold">
-                                        On Hold
-                                    </option>
+                                    <option value="Not Started">Not Started</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="On Hold">On Hold</option>
                                 </select>
                             </div>
 
                             {/* Form Actions */}
                             <div className="milestone-form-actions">
-
                                 <button
                                     type="button"
+                                    className="milestone-cancel-button"
                                     onClick={closeForm}
                                 >
                                     Cancel
                                 </button>
 
-                                <button type="submit">
+                                <button
+                                    type="submit"
+                                    className="milestone-save-button"
+                                >
                                     {editingMilestone
-                                        ? 'Update Milestone'
-                                        : 'Create Milestone'}
+                                        ? "Update Milestone"
+                                        : "Create Milestone"}
                                 </button>
-
                             </div>
 
                         </form>
-
                     </div>
-
                 </div>
-
             )}
+
 
         </div>
     );

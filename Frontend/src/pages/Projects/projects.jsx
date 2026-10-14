@@ -211,7 +211,10 @@ const Projects = () => {
     const fetchNotifications = async () => {
         try {
             const response = await api.get("projects/notifications/");
-            setNotifications(response.data);
+            const data = response.data;
+            setNotifications(
+                Array.isArray(data) ? data : data.results || []
+            );
         } catch (error) {
             console.error("Error fetching notifications:", error);
         }
@@ -221,6 +224,9 @@ const Projects = () => {
         fetchProjects();
         fetchUsers();
         fetchNotifications();
+
+        const interval = setInterval(fetchNotifications, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const markAsRead = async (notificationId) => {
@@ -390,20 +396,28 @@ const Projects = () => {
                                         <div
                                             key={notification.id}
                                             className={`notification-item ${
-                                                !notification.is_read
-                                                    ? "unread"
-                                                    : ""
+                                                !notification.is_read ? "unread" : ""
                                             }`}
                                             onClick={() => 
                                                 !notification.is_read &&
                                                 markAsRead(notification.id)
                                             }
                                         >
-                                            <div className="notification-time">
-                                                {new Date(
-                                                    notification.created_at
-                                                ).toLocaleString()}
+                                            <div className="notification-content">
+                                                <p className="notification-message">
+                                                    {notification.message}
+                                                </p>
+
+                                                <div className="notification-time">
+                                                    {new Date(
+                                                        notification.created_at
+                                                    ).toLocaleString()}
+                                                </div>
                                             </div>
+
+                                            {!notification.is_read && (
+                                                <span className="unread-indicator"></span>
+                                            )}
                                         </div>
                                     ))
                                 )}

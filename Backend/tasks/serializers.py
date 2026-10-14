@@ -6,7 +6,16 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = [
+            'id',
+            'task_name',
+            'description',
+            'project',
+            'assigned_to',
+            'priority',
+            'status',
+            'sprint',
+        ]
 
     def validate(self, attrs):
 
