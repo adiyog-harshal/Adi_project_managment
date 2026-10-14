@@ -92,8 +92,8 @@
 /* Project document icon */
 
 .project-details-icon {
-    width: 92px;
-    height: 92px;
+    width: 52px;
+    height: 50px;
 
     flex-shrink: 0;
 
@@ -119,11 +119,11 @@
 /* Project name */
 
 .project-title-section h1 {
-    margin: 0 0 6px;
+    margin: 0 0 4px;
     color: #102d63;
-    font-size: 26px;
-    font-weight: 700;
-    line-height: 1.2;
+    font-size: 17px !important;
+    font-weight: 600;
+    line-height: 1.3;
 
 }
 
@@ -136,8 +136,6 @@
     font-size: 14px;
     font-weight: 500;
 }
-
-
 /* =====================================================
    TOP STATUS BADGE
    ===================================================== */
@@ -183,37 +181,33 @@
 /* =====================================================
    SUMMARY CARDS
    ===================================================== */
-
 .project-summary-grid {
     width: 100%;
-
     display: grid;
-
     grid-template-columns: repeat(4, minmax(0, 1fr));
-
-    gap: 18px;
-
-    margin-bottom: 28px;
+    gap: 14px;
+    margin-bottom: 22px;
 }
-
 
 .project-summary-card {
     min-width: 0;
-
+    min-height: 76px;
     display: flex;
     align-items: center;
-
-    gap: 22px;
-
-    padding: 25px 28px;
-
+    gap: 12px;
+    padding: 12px 15px;
     background: #ffffff;
-
     border: 1px solid #dbe7f5;
-
-    border-radius: 13px;
-
+    border-radius: 10px;
     box-sizing: border-box;
+    box-shadow: 0 2px 6px rgba(16, 45, 99, 0.04);
+    transition: border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.project-summary-card:hover {
+    border-color: #c4d8f5;
+    box-shadow: 0 4px 10px rgba(16, 45, 99, 0.07);
 }
 
 
@@ -232,6 +226,46 @@
     justify-content: center;
 
     border-radius: 14px;
+}
+
+/* Summary Icons */
+.project-summary-card .summary-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+}
+
+.project-summary-card .summary-icon svg {
+    width: 18px;
+    height: 18px;
+    color: inherit;
+}
+
+/* Summary Text */
+.project-summary-card > div:last-child {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.project-summary-card span {
+    color: #58709a;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.project-summary-card strong {
+    color: #102d63;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
 }
 
 
@@ -280,85 +314,86 @@
 
 .project-summary-card > div:last-child {
     min-width: 0;
-
     display: flex;
     flex-direction: column;
-
-    gap: 7px;
+    gap: 4px;
 }
-
 
 .project-summary-card span {
     color: #58709a;
-
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 500;
+    line-height: 1.3;
 }
-
 
 .project-summary-card strong {
     color: #102d63;
-
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
-
-    line-height: 1.2;
-
+    line-height: 1.3;
     word-break: break-word;
 }
-
 
 /* =====================================================
    PROJECT INFORMATION CARD
    ===================================================== */
 
+
+/* Project Information */
 .project-information-card {
     width: 100%;
-
     box-sizing: border-box;
-
-    padding: 30px;
-
+    padding: 20px;
     background: #ffffff;
-
     border: 1px solid #dbe7f5;
-
-    border-radius: 14px;
-
-    margin-bottom: 24px;
+    border-radius: 11px;
+    margin-bottom: 18px;
 }
-
-
-/* =====================================================
-   PROJECT DETAILS TITLE
-   ===================================================== */
 
 .section-title {
     display: flex;
     align-items: center;
-
-    gap: 14px;
-
-    margin-bottom: 30px;
+    gap: 10px;
+    margin-bottom: 18px;
 }
-
 
 .section-title svg {
-    width: 22px;
-    height: 22px;
-
+    width: 18px;
+    height: 18px;
     color: #2563eb;
 }
-
 
 .section-title h2 {
     margin: 0;
-
     color: #2563eb;
-
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
 }
+
+.project-description {
+    width: 100%;
+    min-height: 110px;
+    box-sizing: border-box;
+    padding: 18px;
+    background: #f7fbff;
+    border: 1px solid #dbeafe;
+    border-radius: 9px;
+}
+
+.description-header h3 {
+    margin: 0;
+    color: #102d63;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.project-description p {
+    margin: 10px 0 0;
+    color: #58709a;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
 
 
 /* =====================================================
@@ -537,9 +572,8 @@
    ===================================================== */
 
 @media (max-width: 1100px) {
-
     .project-details-page {
-        padding: 30px;
+        padding: 24px;
     }
 
     .project-summary-grid {
@@ -547,59 +581,82 @@
     }
 }
 
-
 @media (max-width: 700px) {
-
     .project-details-page {
-        padding: 22px 16px 40px;
+        padding: 16px 12px 28px;
     }
 
     .project-details-header {
         align-items: flex-start;
-        gap: 20px;
+        flex-wrap: wrap;
+        padding: 14px;
     }
 
     .project-title-section {
-        gap: 16px;
+        gap: 12px;
     }
 
     .project-details-icon {
-        width: 65px;
-        height: 65px;
+        width: 44px;
+        height: 44px;
     }
 
     .project-details-icon svg {
-        width: 34px;
-        height: 34px;
+        width: 23px;
+        height: 23px;
     }
 
     .project-title-section h1 {
-        font-size: 24px;
+        font-size: 18px;
     }
 
     .project-title-section p {
-        font-size: 15px;
+        font-size: 11px;
     }
 
     .project-detail-status {
-        padding: 8px 15px;
-        font-size: 14px;
+        padding: 6px 10px;
+        font-size: 10px;
     }
 
     .project-summary-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .project-summary-card {
+        min-height: 68px;
+        padding: 10px 12px;
+    }
+
+    .project-information-card {
+        padding: 15px;
+    }
+
+    .project-description {
+        min-height: 90px;
+        padding: 14px;
     }
 
     .project-sections {
-        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 16px;
+        margin-top: 18px;
     }
 
     .project-section-btn {
-        min-height: 50px;
-        padding: 0 20px;
-        font-size: 14px;
+        min-height: 34px;
+        padding: 0 12px;
+        font-size: 11px;
     }
 }
+
+
+
+
+    
+
+    
 
 .project-section-content {
     margin-top: 24px;
@@ -1250,4 +1307,479 @@
     .overview-card-header h3 {
         font-size: 16px;
     }
+}
+
+
+
+/* ==============================
+   PROJECT OVERVIEW
+============================== */
+
+.project-overview {
+    width: 100%;
+    min-width: 0;
+    padding: 24px;
+    color: #172033;
+    background: #f7f8fc;
+    box-sizing: border-box;
+    border-radius: 16px;
+}
+
+.project-overview *,
+.project-overview *::before,
+.project-overview *::after {
+    box-sizing: border-box;
+}
+
+/* Header */
+
+.overview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.overview-header h2 {
+    margin: 0 0 8px;
+    color: #182447;
+    font-size: 28px;
+    font-weight: 750;
+    line-height: 1.3;
+    letter-spacing: -0.6px;
+}
+
+.overview-header p {
+    margin: 0;
+    color: #78839a;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Statistics cards */
+
+.overview-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.overview-stat-card {
+    position: relative;
+    min-width: 0;
+    min-height: 120px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 13px;
+    background: #ffffff;
+    border: 1px solid #e8ebf3;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(31, 45, 85, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.overview-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(31, 45, 85, 0.08);
+}
+
+.overview-stat-card span {
+    color: #768198;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.overview-stat-card strong {
+    color: #202d50;
+    font-size: 30px;
+    font-weight: 750;
+    line-height: 1.15;
+}
+
+/* Give each statistic a subtle accent */
+
+.overview-stat-card:nth-child(1) {
+    border-top: 3px solid #6478ed;
+}
+
+.overview-stat-card:nth-child(2) {
+    border-top: 3px solid #19a974;
+}
+
+.overview-stat-card:nth-child(3) {
+    border-top: 3px solid #e9a23b;
+}
+
+.overview-stat-card:nth-child(4) {
+    border-top: 3px solid #8b5cf6;
+}
+
+/* Project progress */
+
+.overview-progress-card {
+    padding: 25px;
+    margin-bottom: 24px;
+    background: #ffffff;
+    border: 1px solid #e8ebf3;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(31, 45, 85, 0.04);
+}
+
+.overview-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.overview-progress-header h3 {
+    margin: 0 0 7px;
+    color: #202d50;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.overview-progress-header p {
+    margin: 0;
+    color: #7a859a;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.overview-progress-header > strong {
+    flex-shrink: 0;
+    color: #6752d5;
+    font-size: 25px;
+    font-weight: 750;
+}
+
+.overview-progress-track {
+    width: 100%;
+    height: 11px;
+    overflow: hidden;
+    background: #eceef8;
+    border-radius: 20px;
+}
+
+.overview-progress-fill {
+    height: 100%;
+    max-width: 100%;
+    background: linear-gradient(90deg, #6259e8, #9281ff);
+    border-radius: inherit;
+    transition: width 0.4s ease;
+}
+
+/* Backlog and milestones layout */
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 22px;
+}
+
+.overview-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #e5e9f2;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(31, 45, 85, 0.04);
+}
+
+.overview-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 18px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #edf0f6;
+}
+
+.overview-card-header h3 {
+    margin: 0 0 6px;
+    color: #202d50;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.overview-card-header p {
+    margin: 0;
+    color: #8993a8;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.overview-card-header > svg {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    color: #6b58df;
+    background: #f0edff;
+    border-radius: 12px;
+}
+
+/* Task list */
+
+.overview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.overview-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-width: 0;
+    padding: 15px;
+    background: #f8f9fd;
+    border: 1px solid #e9edf5;
+    border-radius: 10px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.overview-list-item:hover {
+    background: #f3f4ff;
+    border-color: #dcd8ff;
+}
+
+.overview-list-item > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.overview-list-item > div strong {
+    color: #263451;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.overview-list-item > div span {
+    color: #8993a8;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* Priority badges */
+
+.overview-priority {
+    flex-shrink: 0;
+    align-self: center;
+    padding: 5px 10px;
+    color: #64748b;
+    background: #edf0f5;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.overview-priority.low {
+    color: #16805d;
+    background: #e5f7ef;
+}
+
+.overview-priority.medium {
+    color: #a66a0b;
+    background: #fff3d8;
+}
+
+.overview-priority.high {
+    color: #c34444;
+    background: #ffebeb;
+}
+
+.overview-priority.urgent {
+    color: #ffffff;
+    background: #dc4545;
+}
+
+/* Empty state */
+
+.overview-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 130px;
+    padding: 24px;
+    color: #8993a8;
+    background: #f8f9fd;
+    border: 1px dashed #d9dfeb;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+/* Navigation buttons */
+
+.overview-view-button {
+    width: 100%;
+    min-height: 43px;
+    margin-top: 18px;
+    padding: 11px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: #6253d7;
+    background: #ffffff;
+    border: 1px solid #d9d3ff;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.overview-view-button:hover {
+    color: #ffffff;
+    background: #6658db;
+    border-color: #6658db;
+    box-shadow: 0 4px 12px rgba(102, 88, 219, 0.18);
+}
+
+/* Responsive layouts */
+
+@media (max-width: 1100px) {
+    .overview-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .overview-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .project-overview {
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .overview-header h2 {
+        font-size: 20px;
+    }
+
+    .overview-stats {
+        gap: 8px;
+    }
+
+    .overview-stat-card {
+        min-height: 100px;
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .overview-stat-card strong {
+        font-size: 25px;
+    }
+
+    .overview-progress-card,
+    .overview-card {
+        padding: 16px;
+    }
+
+    .overview-progress-header h3,
+    .overview-card-header h3 {
+        font-size: 16px;
+    }
+
+    .overview-list-item {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .overview-priority {
+        padding: 4px 7px;
+        font-size: 10px;
+    }
+}
+
+/* Scrollable Backlog Tasks */
+.backlog-scroll-list {
+    max-height: 320px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #b8b0f0 #f4f3fc;
+}
+
+.backlog-scroll-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.backlog-scroll-list::-webkit-scrollbar-track {
+    background: #f4f3fc;
+    border-radius: 8px;
+}
+
+.backlog-scroll-list::-webkit-scrollbar-thumb {
+    background: #b8b0f0;
+    border-radius: 8px;
+}
+
+.backlog-scroll-list::-webkit-scrollbar-thumb:hover {
+    background: #7866e8;
+}
+
+/* Force scrolling inside the Backlog list */
+.overview-list.backlog-scroll-list {
+    display: block !important;
+    height: 200px !important;
+    max-height: 200px !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    padding-right: 8px;
+    box-sizing: border-box;
+}
+
+/* Keep each task visible in the scrolling list */
+.overview-list.backlog-scroll-list .overview-list-item {
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    gap: 8px;
+    border-radius: 7px;
+}
+
+
+/* Scrollbar */
+.overview-list.backlog-scroll-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.overview-list.backlog-scroll-list::-webkit-scrollbar-track {
+    background: #f1f3f9;
+    border-radius: 8px;
+}
+
+.overview-list.backlog-scroll-list::-webkit-scrollbar-thumb {
+    background: #a9a0ed;
+    border-radius: 8px;
 }

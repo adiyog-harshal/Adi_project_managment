@@ -224,6 +224,20 @@ if (loading) {
     return <div className="sprints-page"><p>Loading sprints...</p></div>;
 }
 
+const handleStartSprint = async (sprintId) => {
+    try {
+        await api.post(`sprints/${sprintId}/start/`);
+
+        // Refresh sprint list after starting
+        await fetchSprints();
+    } catch (error) {
+        alert(
+            error.response?.data?.detail ||
+            "Unable to start sprint."
+        );
+    }
+};
+
 return (
     <div className="sprints-page">
         <button
@@ -240,28 +254,30 @@ return (
                 <p>Plan your sprints and track task progress.</p>
             </div>
 
-            
             <button
                 type="button"
                 className="sprints-create-button"
                 onClick={() => {
                     setError("");
+                    setShowAddTasks(false);
                     setEditingSprintId(null);
 
                     setSprintForm({
                         sprint_name: "",
                         goal: "",
-                        milestone: "",
                         start_date: "",
                         end_date: "",
                         status: "Planned",
                     });
-
                     setShowForm(true);
                 }}
             >
-                <Plus size={18} /> Create Sprint
+                <Plus size={18} />
+                Create Sprint
             </button>
+
+
+            
         </div>
 
         {error && <div className="sprints-error">{error}</div>}
@@ -403,6 +419,22 @@ return (
                                 >
                                     {sprint.status}
                                 </span>
+
+                                {/* Start sprint Button */}
+                                {sprint.status === "Planned" && (
+                                    <button
+                                        type="button"
+                                        className="start-sprint-button"
+                                        title="Start Sprint"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleStartSprint(sprint.id);
+                                        }}
+                                        
+                                    >
+                                        Start Sprint
+                                    </button>
+                                )}
                                 
                                 <button
                                     type="button"
@@ -446,6 +478,8 @@ return (
                         <span className="sprint-task-count">
                             {(sprint.task_ids || []).length} assigned tasks
                         </span>
+
+                        
                     </div>
                 ))}
             </div>
@@ -461,24 +495,20 @@ return (
                     </div>
 
                     <button
-                        type="button"
-                        className="sprints-create-button"
-                        onClick={() => {
-                            setError("");
-                            setEditingSprintId(null);
-                            setSprintForm({
-                                sprint_name: "",
-                                goal: "",
-                                start_date: "",
-                                end_date: "",
-                                status: "Planned",
-                            });
-                            setShowForm(true);
-                        }}
-                    >
-                        <Plus size={18} />
-                        Add Tasks
-                    </button>
+                type="button"
+                className="sprints-create-button"
+                onClick={() => {
+                    setError("");
+                    setShowForm(false);
+                    setSelectedTaskIds([]);
+                    setShowAddTasks(true);
+                }}
+            >
+                <Plus size={18} />
+                 Add Tasks
+            </button>
+
+                    
                 </div>
 
                 {showAddTasks && (
@@ -604,8 +634,6 @@ return (
         )}
     </div>
 );
-
-
 };
 
 export default Sprints;
