@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Project, ProjectComment, Notification, Resource, Attachment
+from .models import Notification
+from .models import Project, ProjectComment, Notification
 
 
 class ProjectSerializer(serializers.ModelSerializer):

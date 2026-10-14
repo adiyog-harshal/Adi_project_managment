@@ -76,6 +76,21 @@ class Task(models.Model):
     def __str__(self):
         return self.task_name
 
+    sprint = models.ForeignKey(
+        'sprints.Sprint',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tasks'
+    )
+
+    milestone = models.ForeignKey(
+        Milestone,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tasks'
+    )   
 
 class TaskComment(models.Model):
 

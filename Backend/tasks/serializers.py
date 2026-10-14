@@ -11,6 +11,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'task_name',
             'description',
             'project',
+            'milestone',
             'assigned_to',
             'priority',
             'status',

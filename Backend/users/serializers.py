@@ -1,6 +1,7 @@
 
 from django.contrib.auth.models import User
 from rest_framework import serializers
+<<<<<<< HEAD
 from .models import UserProfile
 from designations.models import Designation
 
@@ -8,6 +9,12 @@ from designations.models import Designation
 from .models import UserProfile
 from designations.models import Designation
 
+=======
+from .models import UserProfile
+from designations.models import Designation
+
+
+>>>>>>> 470d153 (Added start date in milstone")
 class UserSerializer(serializers.ModelSerializer):
     name = serializers.CharField(write_only=True)
     password = serializers.CharField(
@@ -27,13 +34,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-
         fields = [
             "id",
             "name",
             "username",
-            "first_name",
-            "last_name",
             "email",
             "password",
             "designation",
