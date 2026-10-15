@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./Sidebar.css";
@@ -57,7 +57,7 @@ const Sidebar = () => {
 
                 <NavLink
                     to="/"
-                    className={({ isActive }) => 
+                    className={({ isActive }) =>
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
                     >
@@ -88,14 +88,15 @@ const Sidebar = () => {
                 </NavLink>
 
                 <NavLink
-                    to="/users"
+                    to="/milestones"
                     className={({ isActive }) =>
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
                 >
-                    <Users size={20} />
-                    <span>Users</span>
+                    <ClipboardList size={20} />
+                    <span>Milestones</span>
                 </NavLink>
+
 
                 {/* MASTER MENU */}
 
@@ -164,10 +165,10 @@ const Sidebar = () => {
                     <Settings size={20} />
                     <span>Settings</span>
                 </a>
-            
+
             </nav>
-        
-        
+
+
         </aside>
 
 

@@ -248,7 +248,6 @@ function Users() {
                 value={search}
                 onChange={(e) => {
                     setSearch(e.target.value);
-                    setCurrentPage(1);
                 }}
                 placeholder='Search users'
             />

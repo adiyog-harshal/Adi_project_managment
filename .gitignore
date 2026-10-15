@@ -10,3 +10,7 @@ Backend/db.sqlite3
 # Frontend
 Frontend/node_modules/
 Frontend/dist/
+Frontend/.env
+.env
+Backend/.env
+Frontend/.env

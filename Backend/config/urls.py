@@ -11,7 +11,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from users.views import ProfileView
+from users.views import ProfileView, PasswordChangeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -22,6 +22,11 @@ urlpatterns = [
     path('api/milestones/', include('milestones.urls')),
     path('api/sprints/', include('sprints.urls')),
     path('api/profile/', ProfileView.as_view(), name='profile'),
+    path(
+    'api/profile/password/',
+    PasswordChangeView.as_view(),
+    name='password_change',
+),
 
     # Applications
     path('api/users/', include('users.urls')),

@@ -38,6 +38,13 @@ class Task(models.Model):
     blank=True,
     related_name='tasks'
     )
+    milestone = models.ForeignKey(
+    Milestone,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name='tasks'
+)
     assigned_to = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
