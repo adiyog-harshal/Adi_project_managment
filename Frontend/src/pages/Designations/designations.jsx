@@ -15,7 +15,6 @@ import api from "../../services/api";
 import "./designations.css";
 import {
     PMSPageHeader,
-    PMSSearch,
     PMSActionButton,
 } from "../../components/Common/Common";
 

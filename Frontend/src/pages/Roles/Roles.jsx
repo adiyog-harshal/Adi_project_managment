@@ -49,7 +49,6 @@ function Roles() {
         fetchRoles();
     }, []);
 
-
     const handleSelectStatus = async (role, isActive) => {
         try {
             await api.patch(`roles/${role.id}/`, {
@@ -99,7 +98,7 @@ function Roles() {
 
             alert("Role deleted successfully.");
 
-        } catch (error) {
+        } catch (errorf) {
             console.error(
                 "Failed to delete role:",
                 error.response?.data || error
