@@ -22,8 +22,7 @@ urlpatterns = [
     path('api/milestones/', include('milestones.urls')),
     path('api/sprints/', include('sprints.urls')),
     path('api/profile/', ProfileView.as_view(), name='profile'),
-
-    # Applications
+    path('api/clients/',include('clients.urls')),
     path('api/users/', include('users.urls')),
     path('api/projects/', include('projects.urls')),
     path('api/tasks/', include('tasks.urls')),

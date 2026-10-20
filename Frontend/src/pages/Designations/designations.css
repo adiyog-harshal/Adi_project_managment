@@ -65,54 +65,53 @@
     margin-bottom: 20px;
 }
 
-.designation-search-box {
-    width: 320px;
-    height: 42px;
-
+.designation-search {
+    width: min(100%, 500px);
+    height: 48px;
     display: flex;
     align-items: center;
-    gap: 10px;
-
-    padding: 0 13px;
-
+    gap: 12px;
+    padding: 0 18px;
     background: #ffffff;
-
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-
+    border: 1px solid #e1e5eb;
+    border-radius: 10px;
+    color: #98a2b3;
     box-sizing: border-box;
-
-    color: #9ca3af;
+    cursor: text;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.designation-search-box svg {
-    width: 18px;
-    height: 18px;
-
-    flex-shrink: 0;
+.designation-search:focus-within {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.12);
 }
 
-.designation-search-box input {
+.designation-search svg {
+    flex: 0 0 auto;
+}
+
+.designation-search input {
     width: 100%;
+    min-width: 0;
     height: 100%;
-
     padding: 0;
-
-    border: none;
-    outline: none;
-
+    border: 0;
+    outline: 0;
     background: transparent;
-
-    font-size: 14px;
     color: #202124;
-
-    box-sizing: border-box;
+    font-size: 15px;
 }
 
-.designation-search-box input::placeholder {
+.designation-search input::placeholder {
+    color: #98a2b3;
+}
+
+.empty-designation {
+    padding: 25px;
+    text-align: center;
     color: #9ca3af;
+    font-size: 13px;
 }
-
 
 /* =========================
    TABLE

@@ -50,15 +50,14 @@ function Roles() {
     }, []);
 
     
-    const handleToggleRoleStatus = async (role) => {
-        const newStatus = !role.is_active;
-
+    const handleSelectStatus = async (role, isActive) => {
         try {
             await api.patch(`roles/${role.id}/`, {
-                is_active: newStatus
+                is_active: isActive
             });
 
             await fetchRoles();
+            setOpenStatusId(null);
 
         } catch (error) {
             console.error(
@@ -101,7 +100,7 @@ function Roles() {
 
             alert("Role deleted successfully.");
 
-        } catch (error) {
+        } catch (errorf) {
             console.error(
                 "Failed to delete role:",
                 error.response?.data || error
@@ -305,7 +304,9 @@ function Roles() {
                                                 <div className="status-dropdown-menu">
                                                     <button
                                                         type="button"
-                                                        className={role.is_active ? "selected-status" : ""}
+                                                        className={`status-option active-option ${
+                                                            role.is_active ? "selected-status" : ""
+                                                        }`}
                                                         onClick={() => handleSelectStatus(role, true)}
                                                     >
                                                         Active {role.is_active ? "✓" : ""}
@@ -313,7 +314,9 @@ function Roles() {
 
                                                     <button
                                                         type="button"
-                                                        className={!role.is_active ? "selected-status" : ""}
+                                                        className={`status-option inactive-option ${
+                                                            !role.is_active ? "selected-status" : ""
+                                                        }`}
                                                         onClick={() => handleSelectStatus(role, false)}
                                                     >
                                                         Inactive {!role.is_active ? "✓" : ""}

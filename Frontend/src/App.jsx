@@ -93,6 +93,7 @@ function RoutesLayout() {
         "/projects": "Projects",
         "/users": "Users",
         "/roles": "Roles",
+        "/clients": "Clients",
         "/designations": "Designations",
         "/milestones": "Milestones",
         "/tasks": "Tasks",

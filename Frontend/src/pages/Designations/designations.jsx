@@ -15,7 +15,6 @@ import api from "../../services/api";
 import "./designations.css";
 import {
     PMSPageHeader,
-    PMSSearch,
     PMSActionButton,
 } from "../../components/Common/Common";
 
@@ -225,17 +224,16 @@ const Designations = () => {
 
     
     const filteredDesignations = designations.filter((designation) => {
-        const query = searchTerm.toLowerCase();
+        const query = searchTerm.trim().toLowerCase();
 
-        return (
-            String(designation.name || "")
-                .toLowerCase()
-                .includes(query) ||
-            String(designation.status || "")
-                .toLowerCase()
-                .includes(query)
-        );
-    });     
+        if (!query) {
+            return true;
+        }
+
+        return String(designation.name || "")
+            .toLowerCase()
+            .includes(query);
+    });
 
     const totalPages = Math.ceil(filteredDesignations.length / itemsPerPage);
 
@@ -294,30 +292,18 @@ const Designations = () => {
 
             </div>
 
-            {/* SEARCH */}
-
             <div className="designations-toolbar">
-
-                <div className="designation-search-box">
-
-                    <Search 
-                        size={18} 
-                        className="designation-search-icon"
-                    />
-
-                    <PMSSearch
-                        value={Search}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                            setCurrentPage(1);
-                        }}
+                <label className="designation-search" htmlFor="designation-search-input">
+                    <Search size={18} aria-hidden="true" />
+                    <input
+                        id="designation-search-input"
+                        type="search"
                         placeholder="Search designations"
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
                     />
-                </div>
-
+                </label>
             </div>
-
-            {/* ADD DESIGNATIONS MODAL */}
 
             {showForm && (
 
@@ -642,12 +628,14 @@ const Designations = () => {
                     {/* NOT DATA */}
 
                     {!loading &&
-                        designations.length === 0 &&
+                        filteredDesignations.length === 0 &&
                         !error && (
 
                             <div className="empty-designation">
 
-                                No designations found
+                                {searchTerm.trim()
+                                    ? "No matching designations found"
+                                    : "No designations found"}
 
                             </div>
                         )}

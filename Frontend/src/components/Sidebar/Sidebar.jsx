@@ -25,7 +25,8 @@ const Sidebar = () => {
 
     const masterActive =
         location.pathname === "/roles" ||
-        location.pathname === "/designations";
+        location.pathname === "/designations" ||
+        location.pathname === "/clients";
 
 
 
@@ -87,16 +88,6 @@ const Sidebar = () => {
                 <span>Users</span>
                 </NavLink>
 
-                <NavLink
-                    to="/users"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <Users size={20} />
-                    <span>Users</span>
-                </NavLink>
-
                 {/* MASTER MENU */}
 
                 <div className="master-menu">
@@ -138,8 +129,21 @@ const Sidebar = () => {
                             >
                                 <ShieldCheck size={18} />
                                 <span>Roles</span>
+
                             </NavLink>
 
+                            <NavLink
+                                to="/clients"
+                                className={({ isActive }) =>
+                                    `master-submenu-link ${
+                                        isActive ? "active" : ""
+                                    }`
+                                }
+                            >
+                                <Users size={18} />
+                                <span>Clients</span>
+
+                            </NavLink>
 
                             <NavLink
                                 to="/designations"

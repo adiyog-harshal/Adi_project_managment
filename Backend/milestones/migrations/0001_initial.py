@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('projects', '0002_project_delete_projects'),
+        ('tasks', '0003_alter_task_priority_alter_task_start_date'),
     ]
 
     operations = [
