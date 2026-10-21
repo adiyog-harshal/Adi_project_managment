@@ -1,12 +1,13 @@
 html {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  font-size: 16px;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
 }
+
 .app {
     min-height: 100vh;
     background: #f7f8fc;
@@ -68,31 +69,11 @@ body {
 
 .top-header {
     width: 100%;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 8f9ebb0 (sprint feature create successfully)
     min-height: 0;
     height: 0;
     padding: 0;
     border: none;
     background: transparent;
-<<<<<<< HEAD
-=======
-    height: 72px;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 30px;
-    box-sizing: border-box;
-
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
-=======
->>>>>>> 8f9ebb0 (sprint feature create successfully)
     position: relative;
     z-index: 100;
 }
@@ -105,10 +86,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 8f9ebb0 (sprint feature create successfully)
     position: fixed;
     top: 16px;
     right: 24px;
@@ -165,12 +142,7 @@ body {
     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
     overflow: hidden;
     z-index: 10000;
-<<<<<<< HEAD
-=======
     margin-left: auto;
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
-=======
->>>>>>> 8f9ebb0 (sprint feature create successfully)
 }
 
 /* ============================= */
@@ -502,4 +474,3 @@ body {
 }
 
 /* Remove extra space above page content */
-

@@ -266,12 +266,12 @@ const ProjectDetails = () => {
 
                 <span
                     className={`project-detail-status ${getProjectStatus() === "Upcoming"
-                            ? "status-upcoming"
-                            : getProjectStatus() === "Ongoing"
-                                ? "status-ongoing"
-                                : getProjectStatus() === "Completed"
-                                    ? "status-completed"
-                                    : ""
+                        ? "status-upcoming"
+                        : getProjectStatus() === "Ongoing"
+                            ? "status-ongoing"
+                            : getProjectStatus() === "Completed"
+                                ? "status-completed"
+                                : ""
                         }`}
                 >
                     {getProjectStatus()}
@@ -435,10 +435,6 @@ const ProjectDetails = () => {
 
             </div>
 
-<<<<<<< HEAD
-=======
-                
->>>>>>> 8f9ebb0 (sprint feature create successfully)
 
             {activeSection === "members" && (
                 <div className="project-section-content">
@@ -647,27 +643,16 @@ const ProjectDetails = () => {
                                         </div>
 
                                         <span
-                                            className={`overview-priority ${
-                                                task.priority
+                                            className={`overview-priority ${task.priority
                                                     ?.toLowerCase()
                                                     .replace(/\s+/g, "-")
-                                            }`}
+                                                }`}
                                         >
                                             {task.priority || "-"}
                                         </span>
                                     </div>
                                 ))}
 
-<<<<<<< HEAD
-                                    <span
-                                        className={`overview-priority ${task.priority
-                                                ?.toLowerCase()
-                                                .replace(/\s+/g, "-")
-                                            }`}
-                                    >
-                                        {task.priority || "-"}
-                                    </span>
-=======
                                 {tasks.length === 0 && (
                                     <div className="overview-empty">
                                         No backlog items found.
@@ -701,7 +686,6 @@ const ProjectDetails = () => {
                                     <p>
                                         Project milestones
                                     </p>
->>>>>>> 8f9ebb0 (sprint feature create successfully)
                                 </div>
 
                                 <Flag size={20} />

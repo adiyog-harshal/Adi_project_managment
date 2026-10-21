@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from projects.models import Project
 from milestones.models import Milestone
+from sprints.models import Sprint
 
 
 # Create your models here.

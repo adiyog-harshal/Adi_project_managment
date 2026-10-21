@@ -11,12 +11,7 @@ import Milestones from "../pages/Milestones/Milestones";
 import Designations from "../pages/Designations/designations";
 import Backlog from "../pages/Backlog/Backlog";
 import Sprints from "../pages/Sprints/sprints";
-<<<<<<< HEAD
 import Clients from "../pages/clients/client";
-=======
-
-
->>>>>>> 8f9ebb0 (sprint feature create successfully)
 
 function AppRoutes() {
     return (
@@ -133,7 +128,6 @@ function AppRoutes() {
                 }
             />
 
-<<<<<<< HEAD
             <Route
                 path="/teams"
                 element={
@@ -190,8 +184,6 @@ function AppRoutes() {
 
             {/* UNKNOWN ROUTES */}
             <Route path="*" element={<Navigate to="/" replace />} />
-=======
->>>>>>> 8f9ebb0 (sprint feature create successfully)
         </Routes>
     );
 }

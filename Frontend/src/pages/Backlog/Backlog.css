@@ -1,17 +1,12 @@
-<<<<<<< HEAD
-
 /* =========================================
    BACKLOG PAGE - MAIN LAYOUT
 ========================================= */
 
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 .backlog-page {
     width: 100%;
     min-height: 100vh;
     padding: 28px 32px;
     box-sizing: border-box;
-<<<<<<< HEAD
     background: linear-gradient(135deg, #f8faff 0%, #f3f0ff 100%);
     color: #1e1b4b;
 }
@@ -60,36 +55,6 @@
 }
 
 /* Table column layout */
-=======
-    background: #ffffff;
-}
-
-.backlog-back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 18px;
-    padding: 0;
-    border: none;
-    background: transparent;
-    color: #667085;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.backlog-back-button:hover {
-    color: #6c55e8;
-}
-
-.backlog-card {
-    width: 100%;
-    overflow-x: auto;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #ffffff;
-}
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 .backlog-table-header,
 .backlog-table-row {
     min-width: 1000px;
@@ -101,7 +66,6 @@
     box-sizing: border-box;
 }
 
-<<<<<<< HEAD
 /* Table header */
 .backlog-table-header {
     min-height: 58px;
@@ -142,11 +106,7 @@
 
 /* Description */
 .backlog-description {
-    color: #64748b;
-=======
-.backlog-description {
     color: #667085;
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     font-size: 13px;
     line-height: 20px;
     overflow: hidden;
@@ -154,7 +114,6 @@
     white-space: nowrap;
 }
 
-<<<<<<< HEAD
 /* Priority */
 .backlog-priority {
     display: inline-flex;
@@ -179,16 +138,7 @@
 /* =========================================
    STATUS BADGES
 ========================================= */
-=======
-.backlog-priority {
-    color: #344054;
-    font-size: 13px;
-}
 
-.backlog-assigned {
-    color: #344054;
-    font-size: 13px;
-}
 
 .backlog-table-header {
     min-height: 52px;
@@ -214,78 +164,10 @@
     font-weight: 500;
     color: #1f2937;
 }
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
 .backlog-status {
     display: inline-flex;
     align-items: center;
-<<<<<<< HEAD
-    justify-content: center;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.backlog-status.pending {
-    background: #fff4e5;
-    color: #b45309;
-}
-
-.backlog-status.in-progress {
-    background: #e0edff;
-    color: #1d4ed8;
-}
-
-.backlog-status.completed {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.backlog-status.on-hold {
-    background: #f1f5f9;
-    color: #475569;
-}
-
-/* =========================================
-   ACTION BUTTONS
-========================================= */
-
-.backlog-actions {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-}
-
-.backlog-actions button {
-    width: 34px;
-    height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border: 1px solid #e0e7ff;
-    border-radius: 8px;
-    background: #f8faff;
-    color: #6c55e8;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.backlog-actions button:hover {
-    background: #6c55e8;
-    border-color: #6c55e8;
-    color: #ffffff;
-    transform: translateY(-1px);
-}
-
-/* Empty table state */
-.backlog-empty {
-    padding: 55px 20px;
-    text-align: center;
-    color: #64748b;
-    font-size: 14px;
-=======
     padding: 5px 9px;
     border-radius: 5px;
     font-size: 12px;
@@ -475,7 +357,6 @@
 
 .backlog-form-group textarea:focus {
     border-color: #6c55e8;
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 }
 
 /* =========================================
@@ -485,7 +366,6 @@
 .backlog-modal-overlay {
     position: fixed;
     inset: 0;
-<<<<<<< HEAD
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -498,44 +378,11 @@
 
 /* =========================================
    BACKLOG MODAL
-=======
-
-    z-index: 1000;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 24px;
-
-    background: rgba(15, 23, 42, 0.45);
-
-    backdrop-filter: blur(2px);
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================
-   MODAL
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 ========================================= */
 
 .backlog-modal {
     width: 100%;
     max-width: 560px;
-<<<<<<< HEAD
-    max-height: calc(100vh - 48px);
-    overflow-y: auto;
-    background: #ffffff;
-    border: 1px solid #e0e7ff;
-    border-radius: 18px;
-    color: #1e1b4b;
-    box-shadow: 0 24px 70px rgba(30, 27, 75, 0.24);
-    animation: backlogModalOpen 0.2s ease-out;
-}
-
-=======
 
     max-height: calc(100vh - 48px);
 
@@ -553,7 +400,6 @@
 }
 
 
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 @keyframes backlogModalOpen {
     from {
         opacity: 0;
@@ -566,17 +412,12 @@
     }
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 /* =========================================
    MODAL HEADER
 ========================================= */
 
 .backlog-modal-header {
     display: flex;
-<<<<<<< HEAD
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
@@ -623,81 +464,12 @@
 
 /* =========================================
    MODAL FORM
-=======
-
-    align-items: flex-start;
-    justify-content: space-between;
-
-    padding: 22px 24px;
-
-    border-bottom: 1px solid #eaecf0;
-}
-
-
-.backlog-modal-header h2 {
-    margin: 0;
-
-    font-size: 18px;
-    line-height: 26px;
-
-    font-weight: 600;
-
-    color: #101828;
-}
-
-
-.backlog-modal-header p {
-    margin: 5px 0 0;
-
-    font-size: 13px;
-    line-height: 20px;
-
-    color: #667085;
-}
-
-
-/* =========================================
-   CLOSE BUTTON
-========================================= */
-
-.backlog-modal-close {
-    width: 34px;
-    height: 34px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    border: none;
-    border-radius: 6px;
-
-    background: transparent;
-
-    color: #667085;
-
-    cursor: pointer;
-}
-
-
-.backlog-modal-close:hover {
-    background: #f2f4f7;
-
-    color: #344054;
-}
-
-
-/* =========================================
-   FORM
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 ========================================= */
 
 .backlog-modal-form {
     padding: 24px;
 }
 
-<<<<<<< HEAD
 .backlog-form-group {
     display: flex;
     flex-direction: column;
@@ -754,87 +526,10 @@
 }
 
 /* Focus state */
-=======
-
-/* =========================================
-   FORM GROUP
-========================================= */
-
-.backlog-form-group {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 7px;
-
-    margin-bottom: 18px;
-}
-
-
-.backlog-form-group label {
-    font-size: 13px;
-
-    line-height: 20px;
-
-    font-weight: 500;
-
-    color: #344054;
-}
-
-
-/* =========================================
-   INPUT + SELECT
-========================================= */
-
-.backlog-form-group input,
-.backlog-form-group select {
-    width: 100%;
-
-    height: 42px;
-
-    padding: 0 12px;
-
-    box-sizing: border-box;
-
-    border: 1px solid #d0d5dd;
-
-    border-radius: 7px;
-
-    background: #ffffff;
-
-    color: #344054;
-
-    font-family: inherit;
-
-    font-size: 13px;
-
-    outline: none;
-
-    transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
-}
-
-
-.backlog-form-group input::placeholder,
-.backlog-form-group textarea::placeholder {
-    color: #98a2b3;
-}
-
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 .backlog-form-group input:focus,
 .backlog-form-group select:focus,
 .backlog-form-group textarea:focus {
     border-color: #6c55e8;
-<<<<<<< HEAD
-    box-shadow: 0 0 0 4px rgba(108, 85, 232, 0.12);
-    outline: none;
-}
-
-/* =========================================
-   MODAL FOOTER
-=======
 
     box-shadow:
         0 0 0 3px rgba(108, 85, 232, 0.10);
@@ -880,88 +575,10 @@
 
 /* =========================================
    FOOTER
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 ========================================= */
 
 .backlog-modal-footer {
     display: flex;
-<<<<<<< HEAD
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid #e0e7ff;
-}
-
-/* Cancel button */
-.backlog-cancel-button {
-    min-height: 40px;
-    padding: 0 18px;
-    border: 1px solid #cbd5e1;
-    border-radius: 9px;
-    background: #ffffff;
-    color: #475569;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.backlog-cancel-button:hover:not(:disabled) {
-    background: #f1f5f9;
-    border-color: #94a3b8;
-}
-
-/* Save button */
-.backlog-save-button {
-    min-height: 40px;
-    padding: 0 20px;
-    border: 1px solid #6c55e8;
-    border-radius: 9px;
-    background: #6c55e8;
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(108, 85, 232, 0.18);
-    transition: all 0.2s ease;
-}
-
-.backlog-save-button:hover:not(:disabled) {
-    background: #5840d5;
-    border-color: #5840d5;
-    transform: translateY(-1px);
-}
-
-.backlog-save-button:disabled,
-.backlog-cancel-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* =========================================
-   RESPONSIVE DESIGN
-========================================= */
-
-@media (max-width: 768px) {
-    .backlog-page {
-        padding: 20px 14px;
-    }
-
-    .backlog-card {
-        border-radius: 12px;
-    }
-
-    .backlog-modal {
-        max-width: 100%;
-    }
-}
-
-@media (max-width: 600px) {
-=======
 
     align-items: center;
     justify-content: flex-end;
@@ -1050,17 +667,13 @@
 
 @media (max-width: 600px) {
 
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     .backlog-modal-overlay {
         padding: 14px;
     }
 
     .backlog-modal {
         max-height: calc(100vh - 28px);
-<<<<<<< HEAD
         border-radius: 14px;
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     }
 
     .backlog-modal-header {
@@ -1071,13 +684,10 @@
         padding: 18px;
     }
 
-<<<<<<< HEAD
     .backlog-modal-header h2 {
         font-size: 19px;
     }
 
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     .backlog-modal-footer {
         flex-direction: column-reverse;
         align-items: stretch;
@@ -1087,7 +697,6 @@
     .backlog-save-button {
         width: 100%;
     }
-<<<<<<< HEAD
 
     .backlog-table-header,
     .backlog-table-row {
@@ -1144,6 +753,3 @@
     color: #c66b75;
     border-color: #ffe4e6;
 }
-=======
-}
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)

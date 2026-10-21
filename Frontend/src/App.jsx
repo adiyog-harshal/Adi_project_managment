@@ -118,12 +118,8 @@ function RoutesLayout() {
 
                     <div className="top-header-right">
                         {/* USER MENU */}
-<<<<<<< HEAD
-                        <div className="user-menu">
-=======
                         <div className="user-menu-wrapper">
 
->>>>>>> 8f9ebb0 (sprint feature create successfully)
                             <button
                                 type="button"
                                 className="user-menu-button"
@@ -131,7 +127,6 @@ function RoutesLayout() {
                                     setShowUserMenu(!showUserMenu)
                                 }
                             >
-<<<<<<< HEAD
                                 <div className="user-avatar">
                                     {user?.first_name || user?.last_name
                                         ? `${user.first_name?.charAt(0) || ""}${user.last_name?.charAt(0) || ""}`.toUpperCase()
@@ -140,10 +135,6 @@ function RoutesLayout() {
                                                 .substring(0, 2)
                                                 .toUpperCase()
                                             : "U"}
-=======
-                                <div className="user-avatar" title="Admin">
-                                    AD
->>>>>>> 8f9ebb0 (sprint feature create successfully)
                                 </div>
                             </button>
 
