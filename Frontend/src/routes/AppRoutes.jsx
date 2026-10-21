@@ -10,32 +10,18 @@ import Users from "../pages/Users/Users";
 import Milestones from "../pages/Milestones/Milestones";
 import Designations from "../pages/Designations/designations";
 import Backlog from "../pages/Backlog/Backlog";
-<<<<<<< HEAD
 import Sprints from "../pages/Sprints/sprints";
 import Clients from "../pages/clients/client";
-=======
-
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
 function AppRoutes() {
     return (
         <Routes>
-<<<<<<< HEAD
-=======
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
             {/* PUBLIC PAGE */}
             <Route path="/login" element={<Login />} />
 
             {/* PROTECTED PAGES */}
-<<<<<<< HEAD
             <Route
                 path="/"
-=======
-            <Route 
-                path="/" 
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                 element={
                     <ProtectedRoute>
                         <Dashboard />
@@ -107,7 +93,6 @@ function AppRoutes() {
             />
 
             <Route
-<<<<<<< HEAD
                 path="/milestones"
                 element={
                     <ProtectedRoute>
@@ -117,8 +102,6 @@ function AppRoutes() {
             />
 
             <Route
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                 path="/projects/:id/milestones"
                 element={
                     <ProtectedRoute>
@@ -136,7 +119,6 @@ function AppRoutes() {
                 }
             />
 
-<<<<<<< HEAD
             <Route
                 path="/projects/:id/sprints"
                 element={
@@ -202,8 +184,6 @@ function AppRoutes() {
 
             {/* UNKNOWN ROUTES */}
             <Route path="*" element={<Navigate to="/" replace />} />
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
         </Routes>
     );
 }

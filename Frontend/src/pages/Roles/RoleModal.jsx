@@ -3,10 +3,6 @@ import { X } from "lucide-react";
 
 const emptyRole = {
     name: "",
-<<<<<<< HEAD
-=======
-    description: "",
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     status: "Active",
 };
 
@@ -23,7 +19,6 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-<<<<<<< HEAD
 
         console.log("Save Role clicked");
         console.log("Form data:", formData);
@@ -32,14 +27,9 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
             alert("Please enter a role name");
             return;
         }
-        
+
         onSave({
             name: formData.name.trim(),
-=======
-        onSave({
-            name: formData.name.trim(),
-            description: formData.description.trim(),
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
             status: formData.status,
         });
     };
@@ -73,20 +63,7 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
                             onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                         />
                     </div>
-<<<<<<< HEAD
-                
-=======
-                    <div className="form-group">
-                        <label htmlFor="role-description">Description</label>
-                        <textarea
-                            id="role-description"
-                            required
-                            rows="3"
-                            value={formData.description}
-                            onChange={(event) => setFormData({ ...formData, description: event.target.value })}
-                        />
-                    </div>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
+
                     <div className="form-group">
                         <label htmlFor="role-status">Status</label>
                         <select

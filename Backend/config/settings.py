@@ -53,12 +53,8 @@ INSTALLED_APPS = [
     'designations',
     'milestones',
     'role',
-<<<<<<< HEAD
     'sprints',
     'clients',
-=======
-    
->>>>>>> b8b7faa (Added changes in projectDetails)
 ]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -100,9 +96,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'project_management',
+        'NAME': 'project_management_db',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'root',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }

@@ -23,21 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
-<<<<<<< HEAD
     designation_name = serializers.SerializerMethodField()
-=======
-    designation = serializers.PrimaryKeyRelatedField(
-        queryset=Designation.objects.filter(status=True),
-        required=False,
-        allow_null=True,
-        write_only=True
-    )
-
-    designation_name = serializers.CharField(
-        source="profile.designation.name",
-        read_only=True
-    )
->>>>>>> b8b7faa (Added changes in projectDetails)
 
     class Meta:
         model = User
@@ -52,15 +38,10 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "designation",
             "designation_name",
-<<<<<<< HEAD
             "is_active",
-=======
-            
->>>>>>> b8b7faa (Added changes in projectDetails)
         ]
         read_only_fields = ["id", "username", "designation_name"]
 
-<<<<<<< HEAD
     def get_designation_name(self, obj):
         try:
             return obj.profile.designation.name if obj.profile.designation else ""
@@ -92,30 +73,10 @@ class UserSerializer(serializers.ModelSerializer):
             username=username,
             first_name=first_name,
             last_name=last_name,
-=======
-        read_only_fields = [
-            "id",
-            "designation_name"
-
-        ]
-
-    def create(self, validated_data):
-
-        designation = validated_data.pop(
-            "designation",
-            None
-        )
-
-        user = User.objects.create_user(
-            username=validated_data["username"],
-            first_name=validated_data.get("first_name", ""),
-            last_name=validated_data.get("last_name", ""),
->>>>>>> b8b7faa (Added changes in projectDetails)
             email=validated_data.get("email", ""),
             password=password,
         )
 
-<<<<<<< HEAD
         user.is_active = validated_data.get("is_active", True)
         user.save()
 
@@ -125,11 +86,3 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
-=======
-        UserProfile.objects.create(
-            user=user,
-            designation=designation
-        )
-
-        return user
->>>>>>> b8b7faa (Added changes in projectDetails)

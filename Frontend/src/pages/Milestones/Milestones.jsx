@@ -2,10 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 
 import './Milestones.css';
-<<<<<<< HEAD
 import { ArrowLeft, Flag } from "lucide-react";
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 import {
     PMSPageHeader,
     PMSSearch,
@@ -38,7 +35,7 @@ const statusToFrontend = {
 };
 
 function Milestones() {
-    
+
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -84,7 +81,7 @@ function Milestones() {
                 : data.results || [];
 
             const projectMilestones = milestoneList.filter(
-                (milestone) => 
+                (milestone) =>
                     Number(milestone.project) === Number(id)
             );
 
@@ -119,21 +116,21 @@ function Milestones() {
     });
 
     const filteredMilestones = milestones.filter((milestone) => {
-    const project = projects.find(
-        (item) => Number(item.id) === Number(milestone.project)
-    );
+        const project = projects.find(
+            (item) => Number(item.id) === Number(milestone.project)
+        );
 
-    const projectName = project?.project_name || '';
+        const projectName = project?.project_name || '';
 
-    return `${milestone.name}
+        return `${milestone.name}
         ${projectName}
         ${milestone.description}
         ${milestone.startDate}
         ${milestone.endDate}
         ${milestone.status}`
-        .toLowerCase()
-        .includes(search.toLowerCase());
-});
+            .toLowerCase()
+            .includes(search.toLowerCase());
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -287,7 +284,6 @@ function Milestones() {
             {/* Header */}
             <button
                 type="button"
-<<<<<<< HEAD
                 className="back-to-projects-btn"
                 onClick={() =>
                     navigate(-1)}
@@ -297,22 +293,11 @@ function Milestones() {
             </button>
 
             <div className="milestones-header">
-                
+
                 <div>
                     <h1 className='milestones-title'>
                         <Flag size={16} />
                         Milestones</h1>
-=======
-                className="milestones-back-btn"
-                onClick={() => navigate(`/projects/${id}`)}
-            >
-                    ← Back to Project
-            </button>
-            <div className="milestones-header">
-                
-                <div>
-                    <h1>Milestones</h1>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
                     <p>
                         Manage project milestones and track their progress.
@@ -349,10 +334,7 @@ function Milestones() {
                     <thead>
                         <tr>
                             <th>Name</th>
-<<<<<<< HEAD
-=======
                             <th>Project</th>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                             <th>Description</th>
                             <th>Start Date</th>
                             <th>End Date</th>
@@ -362,13 +344,13 @@ function Milestones() {
                     </thead>
 
                     <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="7" className="empty-milestones">
-                                        Loading milestones...
-                                    </td>
-                                </tr>
-                            ) : filteredMilestones.length > 0 ? (
+                        {loading ? (
+                            <tr>
+                                <td colSpan="7" className="empty-milestones">
+                                    Loading milestones...
+                                </td>
+                            </tr>
+                        ) : filteredMilestones.length > 0 ? (
 
                             filteredMilestones.map((milestone) => (
 
@@ -422,11 +404,10 @@ function Milestones() {
 
                                             {openMenu === milestone.id && (
                                                 <div
-                                                    className={`milestone-action-menu ${
-                                                        milestone.id === filteredMilestones[filteredMilestones.length - 1].id
-                                                            ? "menu-up"
-                                                            : ""
-                                                    }`}
+                                                    className={`milestone-action-menu ${milestone.id === filteredMilestones[filteredMilestones.length - 1].id
+                                                        ? "menu-up"
+                                                        : ""
+                                                        }`}
                                                 >
 
                                                     <button
@@ -482,8 +463,7 @@ function Milestones() {
 
             </div>
 
-<<<<<<< HEAD
-            
+
             {/* Add / Edit Milestone Modal */}
             {showForm && (
                 <div className="milestone-form-overlay">
@@ -506,108 +486,30 @@ function Milestones() {
                                 ×
                             </button>
                         </div>
-=======
-            {/* Add / Edit Milestone Modal */}
-            {showForm && (
-
-                <div className="milestone-form-overlay">
-
-                    <div className="milestone-form">
-
-                        {/* Close Button */}
-                        <button
-                            type="button"
-                            className="milestone-form-close"
-                            onClick={closeForm}
-                            aria-label="Close"
-                        >
-                            ×
-                        </button>
-
-                        {/* Form Title */}
-                        <h2>
-                            {editingMilestone
-                                ? 'Edit Milestone'
-                                : 'Add Milestone'}
-                        </h2>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
                         <form onSubmit={handleSubmit}>
 
                             {/* Name */}
-<<<<<<< HEAD
                             <div className="milestone-form-group">
                                 <label>Name</label>
-=======
-                            <div>
-                                <label>Name:</label>
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                                 <input
                                     type="text"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-<<<<<<< HEAD
                                     placeholder="Enter milestone name"
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                                     required
                                 />
                             </div>
 
-<<<<<<< HEAD
                             {/* Description */}
                             <div className="milestone-form-group">
                                 <label>Description</label>
-=======
-                            
-
-                            {/* Description */}
-                            <div>
-                                <label>Description:</label>
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
                                     placeholder="Enter milestone description"
-<<<<<<< HEAD
-                                    rows={3}
-                                />
-                            </div>
-
-                            {/* Dates */}
-                            <div className="milestone-form-date-row">
-                                <div className="milestone-form-group">
-                                    <label>Start Date</label>
-                                    <input
-                                        type="date"
-                                        name="startDate"
-                                        value={formData.startDate || ""}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="milestone-form-group">
-                                    <label>End Date</label>
-                                    <input
-                                        type="date"
-                                        name="endDate"
-                                        value={formData.endDate || ""}
-                                        onChange={handleChange}
-                                        min={formData.startDate || undefined}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Status */}
-                            <div className="milestone-form-group">
-                                <label>Status</label>
-=======
                                 />
                             </div>
 
@@ -641,19 +543,12 @@ function Milestones() {
                             <div>
                                 <label>Status:</label>
 
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                                 <select
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
                                     required
                                 >
-<<<<<<< HEAD
-                                    <option value="Not Started">Not Started</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="On Hold">On Hold</option>
-=======
                                     <option value="Not Started">
                                         Not Started
                                     </option>
@@ -669,43 +564,19 @@ function Milestones() {
                                     <option value="On Hold">
                                         On Hold
                                     </option>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                                 </select>
                             </div>
 
                             {/* Form Actions */}
                             <div className="milestone-form-actions">
-<<<<<<< HEAD
                                 <button
                                     type="button"
                                     className="milestone-cancel-button"
-=======
-
-                                <button
-                                    type="button"
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                                     onClick={closeForm}
                                 >
                                     Cancel
                                 </button>
 
-<<<<<<< HEAD
-                                <button
-                                    type="submit"
-                                    className="milestone-save-button"
-                                >
-                                    {editingMilestone
-                                        ? "Update Milestone"
-                                        : "Create Milestone"}
-                                </button>
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-            )}
-
-=======
                                 <button type="submit">
                                     {editingMilestone
                                         ? 'Update Milestone'
@@ -721,7 +592,6 @@ function Milestones() {
                 </div>
 
             )}
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
         </div>
     );

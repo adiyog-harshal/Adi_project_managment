@@ -5,10 +5,7 @@ import {
     Plus,
     Pencil,
     Trash2,
-<<<<<<< HEAD
     ClipboardList,
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     X,
 } from "lucide-react";
 
@@ -29,10 +26,7 @@ const Backlog = () => {
     const [project, setProject] = useState(null);
     const [tasks, setTasks] = useState([]);
     const [users, setUsers] = useState([]);
-<<<<<<< HEAD
     const [milestones, setMilestones] = useState([]);
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -41,15 +35,9 @@ const Backlog = () => {
 
     const [form, setForm] = useState({
         title: "",
-<<<<<<< HEAD
         assignedTo: "",
         priority: "",
         milestone: ""
-=======
-        description: "",
-        assignedTo: "",
-        priority: "",
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     });
 
 
@@ -90,7 +78,7 @@ const Backlog = () => {
 
                 const taskProjectId =
                     task.project &&
-                    typeof task.project === "object"
+                        typeof task.project === "object"
                         ? task.project.id
                         : task.project;
 
@@ -124,7 +112,6 @@ const Backlog = () => {
         }
     };
 
-<<<<<<< HEAD
     const fetchMilestones = async () => {
         try {
             const response = await api.get("milestones/");
@@ -140,16 +127,16 @@ const Backlog = () => {
             const projectMilestones = allMilestones.filter((milestone) => {
                 console.log("Current Backlog URL ID:", id);
                 console.log("Milestone project IDs:", allMilestones.map(m => m.project));
-            const milestoneProjectId =
-                typeof milestone.project === "object"
-                    ? milestone.project?.id
-                    : milestone.project;
+                const milestoneProjectId =
+                    typeof milestone.project === "object"
+                        ? milestone.project?.id
+                        : milestone.project;
 
-            return (
-                String(milestoneProjectId) ===
-                String(currentProjectId)
-            );
-        });
+                return (
+                    String(milestoneProjectId) ===
+                    String(currentProjectId)
+                );
+            });
 
 
             setMilestones(allMilestones);
@@ -163,17 +150,11 @@ const Backlog = () => {
         }
     };
 
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
     useEffect(() => {
 
         fetchBacklog();
-<<<<<<< HEAD
         fetchMilestones();
-=======
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     }, [id]);
 
 
@@ -210,28 +191,22 @@ const Backlog = () => {
             alert("Please select priority.")
             return;
         }
-        
+
         try {
             setSaving(true);
 
 
             const payload = {
                 task_name: form.title.trim(),
-<<<<<<< HEAD
-=======
                 description: form.description.trim(),
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                 project: Number(id),
                 assigned_to: form.assignedTo
                     ? Number(form.assignedTo)
                     : null,
                 priority: form.priority,
-<<<<<<< HEAD
                 milestone: form.milestone
-                ? Number(form.milestone)
-                : null,
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
+                    ? Number(form.milestone)
+                    : null,
 
             };
 
@@ -243,11 +218,11 @@ const Backlog = () => {
             if (editingTask) {
                 // Edit
                 const response = await api.put(
-                    `tasks/${editingTask.id}/`, 
+                    `tasks/${editingTask.id}/`,
                     payload
                 );
                 console.log("UPDATE RESPONSE:", response.data);
-                
+
             } else {
                 // Create
                 const response = await api.post(
@@ -261,15 +236,9 @@ const Backlog = () => {
             // Clear form
             setForm({
                 title: "",
-<<<<<<< HEAD
                 assignedTo: "",
                 priority: "",
                 milestone: "",
-=======
-                description: "",
-                assignedTo: "",
-                priority: "",
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
             });
 
 
@@ -368,22 +337,16 @@ const Backlog = () => {
 
         setForm({
             title: task.task_name || "",
-<<<<<<< HEAD
-=======
             description: task.description || "",
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
             assignedTo: task.assigned_to && typeof task.assigned_to === "object"
                 ? task.assigned_to.id
                 : task.assigned_to || "",
             priority: task.priority || "",
-<<<<<<< HEAD
-            milestone: 
+            milestone:
                 task.milestone && typeof task.milestone === "object"
-                ? task.milestone.id 
-                : task.milestone || "",
-            
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
+                    ? task.milestone.id
+                    : task.milestone || "",
+
         });
 
         setShowForm(true);
@@ -448,7 +411,6 @@ const Backlog = () => {
             {/* PAGE HEADER */}
 
             <PMSPageHeader
-<<<<<<< HEAD
                 title={
                     <>
                         <ClipboardList
@@ -463,21 +425,10 @@ const Backlog = () => {
                     </>
                 }
                 subtitle={
-                project.project_name ||
-                "Project Backlog"
-                }
-                buttonText="Add Backlog"
-=======
-                title="Backlog"
-
-                subtitle={
                     project.project_name ||
                     "Project Backlog"
                 }
-
                 buttonText="Add Backlog"
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                 buttonIcon={
                     <Plus size={16} />
                 }
@@ -487,15 +438,9 @@ const Backlog = () => {
 
                     setForm({
                         title: "",
-<<<<<<< HEAD
                         assignedTo: "",
                         priority: "",
                         milestone: "",
-=======
-                        description: "",
-                        assignedTo: "",
-                        priority: "",
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                     });
 
                     setShowForm(true);
@@ -567,45 +512,24 @@ const Backlog = () => {
                                 />
 
                             </div>
-<<<<<<< HEAD
-                            
+
                             <div className="backlog-form-group">
-    <label>Milestone</label>
+                                <label>Milestone</label>
 
-    <select
-        name="milestone"
-        value={form.milestone}
-        onChange={handleChange}
-    >
-        <option value="">Select Milestone</option>
-
-        {milestones.map((milestone) => (
-            <option  key ={milestone.id} value={milestone.id}>
-                {milestone.milestone_name}
-            </option>
-        ))}
-    </select>
-</div>
-=======
-
-
-                            {/* DESCRIPTION */}
-                            <div className="backlog-form-group">
-
-                                <label>
-                                    Description
-                                </label>
-
-                                <textarea
-                                    name="description"
-                                    value={form.description}
+                                <select
+                                    name="milestone"
+                                    value={form.milestone}
                                     onChange={handleChange}
-                                    placeholder="Enter description"
-                                    rows={4}
-                                />
+                                >
+                                    <option value="">Select Milestone</option>
 
+                                    {milestones.map((milestone) => (
+                                        <option key={milestone.id} value={milestone.id}>
+                                            {milestone.milestone_name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
 
                             {/* ASSIGNED TO */}
@@ -626,12 +550,11 @@ const Backlog = () => {
                                     </option>
 
                                     {users.map((user) => {
-                                        const fullName = 
-                                            `${user.first_name || ""} ${
-                                                user.last_name || ""
-                                            }`.trim() || user.username;
+                                        const fullName =
+                                            `${user.first_name || ""} ${user.last_name || ""
+                                                }`.trim() || user.username;
 
-                                        const designation = 
+                                        const designation =
                                             typeof user.designation === "object"
                                                 ? user.designation?.name
                                                 : user.designation;
@@ -729,11 +652,7 @@ const Backlog = () => {
 
                 <div className="backlog-table-header">
                     <div>Backlog Item</div>
-<<<<<<< HEAD
                     <div>Milestone</div>
-=======
-                    <div>Description</div>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                     <div>Priority</div>
                     <div>Assigned To</div>
                     <div>Actions</div>
@@ -762,16 +681,14 @@ const Backlog = () => {
                             (item) =>
                                 String(item.id) === String(assignedUserId)
                         );
-                        
+
                         const assignedName =
-                            `${user?.first_name || ""} ${
-                                user?.last_name || ""
-                            }`.trim() ||
+                            `${user?.first_name || ""} ${user?.last_name || ""
+                                }`.trim() ||
                             user?.username ||
                             "Unassigned";
 
-<<<<<<< HEAD
-                        
+
 
                         const milestoneId =
                             task.milestone && typeof task.milestone === "object"
@@ -784,13 +701,10 @@ const Backlog = () => {
                                 : milestones.find(
                                     (m) => String(m.id) === String(milestoneId)
                                 )?.milestone_name || "-";
-        
-=======
 
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                         return (
 
-                            <div 
+                            <div
                                 className="backlog-table-row"
                                 key={task.id}
                             >
@@ -798,32 +712,15 @@ const Backlog = () => {
                                     {task.task_name || "-"}
                                 </div>
 
-<<<<<<< HEAD
                                 <div className="backlog-milestone">
                                     {milestoneName || "-"}
                                 </div>
-                                
-                               {/* PRIORITY */}
-                               <span className={`backlog-priority ${(task.priority || "").toLowerCase()}`}>
+
+                                {/* PRIORITY */}
+                                <span className={`backlog-priority ${(task.priority || "").toLowerCase()}`}>
                                     {task.priority}
                                 </span>
-                                
-=======
 
-                                {/* ITEM */}
-
-                                <div className="backlog-description">
-                                   {task.description || "-"}
-                                </div>
-
-                               {/* PRIORITY */}
-
-                                <div className="backlog-priority">
-                                    {task.priority || "-"}
-                                </div>
-
-
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                                 {/* ASSIGNED */}
 
                                 <div className="backlog-assigned">

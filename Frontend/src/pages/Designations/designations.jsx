@@ -15,10 +15,7 @@ import api from "../../services/api";
 import "./designations.css";
 import {
     PMSPageHeader,
-<<<<<<< HEAD
-=======
     PMSSearch,
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     PMSActionButton,
 } from "../../components/Common/Common";
 
@@ -103,7 +100,7 @@ const Designations = () => {
             setFormError("Designation name is required.");
             return;
         }
-        
+
         if (designationForm.status === "") {
             setFormError("Status is required.");
             return;
@@ -169,11 +166,11 @@ const Designations = () => {
         setDesignationForm({
             name: designation.name || "",
             status:
-             designation.status === true
-             ? "true"
-             :designation.status === false
-             ? "false"
-             : ""
+                designation.status === true
+                    ? "true"
+                    : designation.status === false
+                        ? "false"
+                        : ""
         });
 
         setShowForm(true);
@@ -226,9 +223,8 @@ const Designations = () => {
         }
     };
 
-    
+
     const filteredDesignations = designations.filter((designation) => {
-<<<<<<< HEAD
         const query = searchTerm.trim().toLowerCase();
 
         if (!query) {
@@ -239,19 +235,6 @@ const Designations = () => {
             .toLowerCase()
             .includes(query);
     });
-=======
-        const query = searchTerm.toLowerCase();
-
-        return (
-            String(designation.name || "")
-                .toLowerCase()
-                .includes(query) ||
-            String(designation.status || "")
-                .toLowerCase()
-                .includes(query)
-        );
-    });     
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
     const totalPages = Math.ceil(filteredDesignations.length / itemsPerPage);
 
@@ -299,7 +282,7 @@ const Designations = () => {
 
                         setShowForm(true);
                     }}
-                
+
                 >
                     <Plus size={18} />
 
@@ -311,7 +294,6 @@ const Designations = () => {
             </div>
 
             <div className="designations-toolbar">
-<<<<<<< HEAD
                 <label className="designation-search" htmlFor="designation-search-input">
                     <Search size={18} aria-hidden="true" />
                     <input
@@ -320,23 +302,6 @@ const Designations = () => {
                         placeholder="Search designations"
                         value={searchTerm}
                         onChange={(event) => setSearchTerm(event.target.value)}
-=======
-
-                <div className="designation-search-box">
-
-                    <Search 
-                        size={18} 
-                        className="designation-search-icon"
-                    />
-
-                    <PMSSearch
-                        value={Search}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                            setCurrentPage(1);
-                        }}
-                        placeholder="Search designations"
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
                     />
                 </label>
             </div>
@@ -447,11 +412,11 @@ const Designations = () => {
                                     onClick={handleCreateDesignation}
                                     disabled={saving}
                                 >
-                                    {saving 
+                                    {saving
                                         ? (selectedDesignation ? "Updating..." : "Creating....")
-                                        : (selectedDesignation ? "Update Designation" : "Create Designation") 
-                                    }                       
-                                    
+                                        : (selectedDesignation ? "Update Designation" : "Create Designation")
+                                    }
+
                                 </button>
 
                             </div>
@@ -542,48 +507,47 @@ const Designations = () => {
 
                                 </div>
 
-                               
+
 
                                 <div className="designation-status-menu">
-    <button
-        type="button"
-        className={`designation-status-trigger ${
-            designation.status ? "active" : "inactive"
-        }`}
-        onClick={() =>
-            setOpenAction(
-                openAction === `status-${designation.id}`
-                    ? null
-                    : `status-${designation.id}`
-            )
-        }
-    >
-        <span>
-            {designation.status ? "Active" : "Inactive"}
-        </span>
+                                    <button
+                                        type="button"
+                                        className={`designation-status-trigger ${designation.status ? "active" : "inactive"
+                                            }`}
+                                        onClick={() =>
+                                            setOpenAction(
+                                                openAction === `status-${designation.id}`
+                                                    ? null
+                                                    : `status-${designation.id}`
+                                            )
+                                        }
+                                    >
+                                        <span>
+                                            {designation.status ? "Active" : "Inactive"}
+                                        </span>
 
-        <span className="status-chevron">⌄</span>
-    </button>
+                                        <span className="status-chevron">⌄</span>
+                                    </button>
 
-    {openAction === `status-${designation.id}` && (
-        <div className="designation-status-dropdown">
-            <button
-                type="button"
-                onClick={() => {
-                    handleToggleStatus(
-                        designation,
-                        !designation.status
-                    );
-                    setOpenAction(null);
-                }}
-            >
-                {designation.status ? "Inactive" : "Active"}
-            </button>
-        </div>
-    )}
-</div>
+                                    {openAction === `status-${designation.id}` && (
+                                        <div className="designation-status-dropdown">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    handleToggleStatus(
+                                                        designation,
+                                                        !designation.status
+                                                    );
+                                                    setOpenAction(null);
+                                                }}
+                                            >
+                                                {designation.status ? "Inactive" : "Active"}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
 
-                                
+
 
                                 <span>
 
@@ -594,13 +558,13 @@ const Designations = () => {
                                                 designation.created_at
                                             );
 
-                                            
+
                                             const year = date.getFullYear();
 
                                             const month = String(
                                                 date.getMonth() + 1
                                             ).padStart(2, "0");
-                                            
+
                                             const day = String(
                                                 date.getDate()
                                             ).padStart(2, "0");
@@ -613,7 +577,7 @@ const Designations = () => {
                                 </span>
 
                                 <div className="designation-action-menu">
-                                    
+
                                     <button
                                         type="button"
                                         className="designation-action-button"
@@ -700,14 +664,13 @@ const Designations = () => {
                                 Previous
                             </button>
 
-                            {Array.from({ length: totalPages}, (_, index) => index + 1).map(
+                            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
                                 (page) => (
                                     <button
                                         type="button"
                                         key={page}
-                                        className={`pagination-number ${
-                                            currentPage === page ? "active" : ""
-                                        }`}
+                                        className={`pagination-number ${currentPage === page ? "active" : ""
+                                            }`}
                                         onClick={() => setCurrentPage(page)}
                                     >
                                         {page}
@@ -728,9 +691,9 @@ const Designations = () => {
                     </div>
                 )}
             </div>
-        </div>    
+        </div>
 
-        
+
 
     );
 };

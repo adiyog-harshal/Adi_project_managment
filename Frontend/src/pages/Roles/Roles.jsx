@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useEffect, useState } from "react";
-=======
-import { useState } from "react";
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
 import {
     Plus,
@@ -20,10 +16,7 @@ import {
 
 import RoleModal from "./RoleModal";
 import "./Roles.css";
-<<<<<<< HEAD
 import api from "../../services/api";
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
 
 function Roles() {
@@ -56,7 +49,7 @@ function Roles() {
         fetchRoles();
     }, []);
 
-    
+
     const handleSelectStatus = async (role, isActive) => {
         try {
             await api.patch(`roles/${role.id}/`, {
@@ -89,12 +82,8 @@ function Roles() {
     };
 
 
-<<<<<<< HEAD
-    
+
     const handleDeleteRole = async (id) => {
-=======
-    const handleDeleteRole = (id) => {
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
         const confirmed = window.confirm(
             "Are you sure you want to delete this role?"
@@ -104,7 +93,6 @@ function Roles() {
             return;
         }
 
-<<<<<<< HEAD
         try {
             await api.delete(`roles/${id}/`);
 
@@ -120,16 +108,10 @@ function Roles() {
 
             alert("Failed to delete role.");
         }
-=======
-        setRoles((previousRoles) =>
-            previousRoles.filter((role) => role.id !== id)
-        );
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     };
 
 
     // Save role
-<<<<<<< HEAD
     const handleSaveRole = async (roleData) => {
         const payload = {
             role_name: roleData.name.trim(),
@@ -151,38 +133,9 @@ function Roles() {
             console.error("Failed to save role:", error.response?.data || error);
             alert(
                 "Failed to save role. Check the browser console for the error."
-=======
-    const handleSaveRole = (roleData) => {
-
-        if (selectedRole) {
-
-
-            setRoles((previousRoles) =>
-                previousRoles.map((role) =>
-                    role.id === selectedRole.id
-                        ? {
-                            ...role,
-                            ...roleData,
-                        }
-                        : role
-                )
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
             );
 
-        } else {
-
-            // Create new role
-            const newRole = {
-                id: Date.now(),
-                ...roleData,
-            };
-
-            setRoles((previousRoles) => [
-                ...previousRoles,
-                newRole,
-            ]);
         }
-
         setIsModalOpen(false);
         setSelectedRole(null);
     };
@@ -193,18 +146,11 @@ function Roles() {
         const searchText = search.toLowerCase();
 
         return (
-<<<<<<< HEAD
             role.name.toLowerCase().includes(searchText)
         );
     });
 
-    
-=======
-            role.name.toLowerCase().includes(searchText) ||
-            role.description.toLowerCase().includes(searchText)
-        );
-    });
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
+
 
     return (
         <div className="roles-page">
@@ -274,7 +220,7 @@ function Roles() {
                                 setCurrentPage(1);
                             }}
                             placeholder="Search roles..."
-                                   
+
                         />
 
                     </div>
@@ -348,67 +294,46 @@ function Roles() {
 
                                         </td>
 
-<<<<<<< HEAD
-                                       
-                                    <td>
-                                        <div className="status-dropdown-wrapper">
-                                            <button
-                                                type="button"
-                                                className={`status ${
-                                                    role.is_active ? "active-status" : "inactive-status"
-                                                }`}
-                                                onClick={() =>
-                                                    setOpenStatusId(
-                                                        openStatusId === role.id ? null : role.id
-                                                    )
-                                                }
-                                            >
-                                                {role.is_active ? "Active" : "Inactive"}
-                                                <span className="status-arrow">▼</span>
-                                            </button>
-
-                                            {openStatusId === role.id && (
-                                                <div className="status-dropdown-menu">
-                                                    <button
-                                                        type="button"
-                                                        className={`status-option active-option ${
-                                                            role.is_active ? "selected-status" : ""
-                                                        }`}
-                                                        onClick={() => handleSelectStatus(role, true)}
-                                                    >
-                                                        Active {role.is_active ? "✓" : ""}
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        className={`status-option inactive-option ${
-                                                            !role.is_active ? "selected-status" : ""
-                                                        }`}
-                                                        onClick={() => handleSelectStatus(role, false)}
-                                                    >
-                                                        Inactive {!role.is_active ? "✓" : ""}
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </td>
-=======
-                                        <td className="description-cell">
-                                            {role.description}
-                                        </td>
 
                                         <td>
+                                            <div className="status-dropdown-wrapper">
+                                                <button
+                                                    type="button"
+                                                    className={`status ${role.is_active ? "active-status" : "inactive-status"
+                                                        }`}
+                                                    onClick={() =>
+                                                        setOpenStatusId(
+                                                            openStatusId === role.id ? null : role.id
+                                                        )
+                                                    }
+                                                >
+                                                    {role.is_active ? "Active" : "Inactive"}
+                                                    <span className="status-arrow">▼</span>
+                                                </button>
 
-                                            <span
-                                                className={
-                                                    role.status === "Active"
-                                                        ? "status active-status"
-                                                        : "status inactive-status"
-                                                }
-                                            >
-                                                {role.status}
-                                            </span>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
+                                                {openStatusId === role.id && (
+                                                    <div className="status-dropdown-menu">
+                                                        <button
+                                                            type="button"
+                                                            className={`status-option active-option ${role.is_active ? "selected-status" : ""
+                                                                }`}
+                                                            onClick={() => handleSelectStatus(role, true)}
+                                                        >
+                                                            Active {role.is_active ? "✓" : ""}
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            className={`status-option inactive-option ${!role.is_active ? "selected-status" : ""
+                                                                }`}
+                                                            onClick={() => handleSelectStatus(role, false)}
+                                                        >
+                                                            Inactive {!role.is_active ? "✓" : ""}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </td>
 
 
                                         <td>

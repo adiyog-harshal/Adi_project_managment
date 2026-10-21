@@ -24,15 +24,11 @@ const ProjectDetails = () => {
 
     const [project, setProject] = useState(null);
     const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
 
     const [members, setMembers] = useState([]);
     const [tasks, setTasks] = useState([]);
-<<<<<<< HEAD
-    const [activeSection, setActiveSection] = useState("");
-=======
     const [activeSection, setActiveSection] = useState("overview");
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
     const [selectedUser, setSelectedUser] = useState("");
     const [showAddMember, setShowAddMember] = useState(false);
 
@@ -72,24 +68,24 @@ const ProjectDetails = () => {
 
             // ONLY TASKS BELONGING TO THIS PROJECT
             const projectTasks = allTasks.filter((task) => {
-                const taskProjectId = 
+                const taskProjectId =
                     task.project && typeof task.project === "object"
-                    ? task.project.id 
-                    : task.project;
+                        ? task.project.id
+                        : task.project;
                 return String(taskProjectId) === String(id);
             });
 
-        // BEBUG
-        console.log("PROJECT:", projectResponse.data);
-        console.log("USERS:", userData);
-        console.log("MEMBERS:", memberData);
-        console.log("TASKS:", projectTasks);
-        
-        // SET STATE
-        setProject(projectResponse.data);
-        setUsers(userData);
-        setMembers(memberData);
-        setTasks(projectTasks);
+            // BEBUG
+            console.log("PROJECT:", projectResponse.data);
+            console.log("USERS:", userData);
+            console.log("MEMBERS:", memberData);
+            console.log("TASKS:", projectTasks);
+
+            // SET STATE
+            setProject(projectResponse.data);
+            setUsers(userData);
+            setMembers(memberData);
+            setTasks(projectTasks);
 
         } catch (error) {
             console.error("Failed to fetch project:", error);
@@ -130,7 +126,7 @@ const ProjectDetails = () => {
             // Close popop
             setSelectedUser("");
             setShowAddMember(false);
-        
+
         } catch (error) {
             console.error("Failed to add team member:", error);
             console.error("Backend response:", error.response?.data);
@@ -146,7 +142,7 @@ const ProjectDetails = () => {
     const projectManager = users.find(
         (user) => user.id === project?.project_manager
     );
-    
+
 
 
     if (loading) {
@@ -183,7 +179,7 @@ const ProjectDetails = () => {
     }
 
     const getProjectStatus = () => {
-        if (!project?.start_date || !project?.end_date){
+        if (!project?.start_date || !project?.end_date) {
             return "-";
         }
         const today = new Date();
@@ -259,8 +255,8 @@ const ProjectDetails = () => {
                     <div>
 
                         <h1>
-                                {project.project_name}
-                            
+                            {project.project_name}
+
                         </h1>
 
                     </div>
@@ -269,15 +265,14 @@ const ProjectDetails = () => {
 
 
                 <span
-                    className={`project-detail-status ${
-                        getProjectStatus() === "Upcoming"
+                    className={`project-detail-status ${getProjectStatus() === "Upcoming"
                             ? "status-upcoming"
                             : getProjectStatus() === "Ongoing"
-                            ? "status-ongoing"
-                            : getProjectStatus() === "Completed"
-                            ? "status-completed"
-                            : ""
-                    }`}
+                                ? "status-ongoing"
+                                : getProjectStatus() === "Completed"
+                                    ? "status-completed"
+                                    : ""
+                        }`}
                 >
                     {getProjectStatus()}
                 </span>
@@ -367,9 +362,9 @@ const ProjectDetails = () => {
 
 
                 <div className="project-information-grid">
-                    
+
                     <div className="project-description">
-                        
+
                         <div className="description-header">
                             <h3>Description</h3>
                         </div>
@@ -388,9 +383,8 @@ const ProjectDetails = () => {
 
                 <button
                     type="button"
-                    className={`project-section-btn ${
-                        activeSection === "overview" ? "active" : ""
-                    }`}
+                    className={`project-section-btn ${activeSection === "overview" ? "active" : ""
+                        }`}
                     onClick={() => setActiveSection("overview")}
                 >
                     <FileText size={17} />
@@ -400,9 +394,8 @@ const ProjectDetails = () => {
 
                 <button
                     type="button"
-                    className={`project-section-btn ${
-                        activeSection === "members" ? "active" : ""
-                    }`}
+                    className={`project-section-btn ${activeSection === "members" ? "active" : ""
+                        }`}
                     onClick={() => setActiveSection("members")}
                 >
                     <Users size={17} />
@@ -441,18 +434,13 @@ const ProjectDetails = () => {
                 </button>
 
             </div>
-                
 
-<<<<<<< HEAD
-                
 
-=======
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
             {activeSection === "members" && (
                 <div className="project-section-content">
 
                     <div className="team-members-header">
-                    
+
                         <div className="section-title">
                             <Users size={19} />
                             <h2>Team Members</h2>
@@ -472,7 +460,7 @@ const ProjectDetails = () => {
                     </div>
 
                     {members.length === 0 ? (
-                        
+
                         <p className="empty-section-message">
                             No team members assigned to this project.
                         </p>
@@ -484,7 +472,7 @@ const ProjectDetails = () => {
 
                                 // GET USER ID FROM MEMBER OBJECT
                                 if (
-                                    member.user && 
+                                    member.user &&
                                     typeof member.user === "object"
                                 ) {
                                     memberUserId = member.user.id;
@@ -501,15 +489,14 @@ const ProjectDetails = () => {
 
                                 // FIND COMPLETE USER DETAILS
                                 const memberUser = users.find(
-                                    (item) => 
+                                    (item) =>
                                         String(item.id) === String(memberUserId)
                                 );
 
                                 // Full name
                                 const fullName =
-                                    `${memberUser?.first_name || ""} ${
-                                        memberUser?.last_name || ""
-                                    }`.trim() ||
+                                    `${memberUser?.first_name || ""} ${memberUser?.last_name || ""
+                                        }`.trim() ||
                                     memberUser?.username ||
                                     "Unknown User";
 
@@ -517,7 +504,7 @@ const ProjectDetails = () => {
                                 const designation =
                                     typeof memberUser?.designation === "object"
                                         ? memberUser?.designation?.name
-                                        : memberUser?.designation;                               
+                                        : memberUser?.designation;
 
                                 return (
                                     <div
@@ -556,140 +543,6 @@ const ProjectDetails = () => {
             )}
 
             {/* OVERVIEW SECTION PAGE  */}
-<<<<<<< HEAD
-            {activeSection === "overview" && (
-                <div className="project-overview">
-
-                    <div className="overview-header">
-                        <div>
-                            <h2>Project Overview</h2>
-                            <p>
-                                Quick summary of this project's current progress.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="overview-stats">
-
-                        <div className="overview-stat-card">
-                            <span>Total Tasks</span>
-                            <strong>{totalTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>Completed</span>
-                            <strong>{completedTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>In Progress</span>
-                            <strong>{inProgressTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>Progress</span>
-                            <strong>{projectProgress}%</strong>
-                        </div>
-
-                    </div>
-
-
-                    <div className="overview-progress-card">
-
-                        <div className="overview-progress-header">
-                            <div>
-                                <h3>Project Progress</h3>
-                                <p>
-                                    {completedTasks} of {totalTasks} tasks completed
-                                </p>
-                            </div>
-
-                            <strong>{projectProgress}%</strong>
-                        </div>
-
-                        <div className="overview-progress-track">
-                            <div
-                                className="overview-progress-fill"
-                                style={{
-                                    width: `${projectProgress}%`,
-                                }}
-                            />
-                        </div>
-
-                    </div>
-
-
-                    <div className="overview-grid">
-
-                        {/* BACKLOG */}
-
-                        <div className="overview-card">
-
-                            <div className="overview-card-header">
-
-                                <div>
-                                    <h3>Backlog</h3>
-                                    <p>
-                                        {tasks.length} total tasks
-                                    </p>
-                                </div>
-
-                                <ListTodo size={20} />
-
-                            </div>
-
-
-                            <div className="overview-list">
-
-                                
-<div className="overview-list backlog-scroll-list">
-    {tasks.map((task) => (
-        <div
-            className="overview-list-item"
-            key={task.id}
-        >
-            <div>
-                <strong>
-                    {task.task_name || "-"}
-                </strong>
-
-                <span>
-                    {task.description || "No description"}
-                </span>
-            </div>
-
-            <span
-                className={`overview-priority ${
-                    task.priority
-                        ?.toLowerCase()
-                        .replace(/\s+/g, "-")
-                }`}
-            >
-                {task.priority || "-"}
-            </span>
-        </div>
-    ))}
-</div>
-
-                                {tasks.length === 0 && (
-                                    <div className="overview-empty">
-                                        No backlog items found.
-                                    </div>
-                                )}
-
-                            </div>
-
-
-                            <button
-                                type="button"
-                                className="overview-view-button"
-                                onClick={() =>
-                                    navigate(`/projects/${id}/backlog`)
-                                }
-                            >
-                                View Backlog →
-                            </button>
-=======
             <div className="project-overview">
 
                 <div className="overview-header">
@@ -789,11 +642,10 @@ const ProjectDetails = () => {
                                     </div>
 
                                     <span
-                                        className={`overview-priority ${
-                                            task.priority
+                                        className={`overview-priority ${task.priority
                                                 ?.toLowerCase()
                                                 .replace(/\s+/g, "-")
-                                        }`}
+                                            }`}
                                     >
                                         {task.priority || "-"}
                                     </span>
@@ -836,53 +688,10 @@ const ProjectDetails = () => {
                             </div>
 
                             <Flag size={20} />
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
                         </div>
 
 
-<<<<<<< HEAD
-                        {/* MILESTONES */}
-
-                        <div className="overview-card">
-
-                            <div className="overview-card-header">
-
-                                <div>
-                                    <h3>Milestones</h3>
-                                    <p>
-                                        Project milestones
-                                    </p>
-                                </div>
-
-                                <Flag size={20} />
-
-                            </div>
-
-
-                            <div className="overview-list">
-                                <div className="overview-empty">
-                                    View project milestones and manage them from the Milestones page.
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                className="overview-view-button"
-                                onClick={() =>
-                                    navigate(`/projects/${id}/milestones`)
-                                }
-                            >
-                                View Milestones →
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            )}
-=======
                         <div className="overview-list">
                             <div className="overview-empty">
                                 View project milestones and manage them from the Milestones page.
@@ -904,7 +713,6 @@ const ProjectDetails = () => {
                 </div>
 
             </div>
->>>>>>> c5314eb (In projectDetails page ashows overview page and Bachlog page)
 
             {showAddMember && (
                 <div className="member-modal-overlay">
@@ -936,14 +744,14 @@ const ProjectDetails = () => {
                             <select
                                 value={selectedUser}
                                 onChange={(e) => setSelectedUser(e.target.value)}
-                            > 
+                            >
                                 <option value="">
                                     Select user
                                 </option>
 
                                 {users.map((user) => {
 
-                                    const fullname = 
+                                    const fullname =
                                         `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
                                         user.username ||
                                         "Unknown User";
@@ -951,8 +759,8 @@ const ProjectDetails = () => {
                                     const designation =
                                         typeof user.designation === "object"
                                             ? user.designation?.name
-                                            : user.designation;      
-                                        
+                                            : user.designation;
+
 
                                     return (
                                         <option
@@ -970,11 +778,11 @@ const ProjectDetails = () => {
                         {selectedUser && (() => {
 
                             const selectedUserData = users.find(
-                                (user) => 
+                                (user) =>
                                     String(user.id) ===
                                     String(selectedUser)
                             );
-                            const designation = 
+                            const designation =
                                 typeof selectedUserData?.designation === "object"
                                     ? selectedUserData?.designation?.name
                                     : selectedUserData?.designation;
@@ -994,7 +802,7 @@ const ProjectDetails = () => {
                                         <p>
                                             {designation || "-"}
                                         </p>
-                                    </div>                               
+                                    </div>
 
                                 </div>
                             );
