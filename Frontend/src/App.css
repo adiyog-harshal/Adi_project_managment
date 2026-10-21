@@ -14,11 +14,16 @@ body {
 }
 
 
-/* Main Content */
 
 .main-content {
     margin-left: 250px;
     min-height: 100vh;
+}
+
+@media (max-width: 700px) {
+    .main-content {
+        margin-left: 68px;
+    }
 }
 
 
@@ -34,7 +39,7 @@ body {
 }
 
 
-/* Dashboard */
+
 
 .dashboard-content {
     padding: 30px;

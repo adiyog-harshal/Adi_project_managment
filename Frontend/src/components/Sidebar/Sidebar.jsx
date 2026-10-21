@@ -58,10 +58,10 @@ const Sidebar = () => {
 
                 <NavLink
                     to="/"
-                    className={({ isActive }) => 
+                    className={({ isActive }) =>
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
-                    >
+                >
                     <LayoutDashboard size={20} />
 
                     <span>Dashboard</span>
@@ -81,11 +81,11 @@ const Sidebar = () => {
                 <NavLink
                     to="/users"
                     className={({ isActive }) =>
-                    `sidebar-link ${isActive ? "active" : ""}`
+                        `sidebar-link ${isActive ? "active" : ""}`
                     }
                 >
-                <Users size={20} />
-                <span>Users</span>
+                    <Users size={20} />
+                    <span>Users</span>
                 </NavLink>
 
                 {/* MASTER MENU */}
@@ -94,9 +94,8 @@ const Sidebar = () => {
 
                     <button
                         type="button"
-                        className={`sidebar-link master-button ${
-                            masterActive ? "active" : ""
-                        }`}
+                        className={`sidebar-link master-button ${masterActive ? "active" : ""
+                            }`}
                         onClick={() => setMasterOpen(!masterOpen)}
                     >
 
@@ -107,9 +106,8 @@ const Sidebar = () => {
 
                         <ChevronRight
                             size={18}
-                            className={`master-arrow ${
-                                masterOpen ? "master-arrow-open" : ""
-                            }`}
+                            className={`master-arrow ${masterOpen ? "master-arrow-open" : ""
+                                }`}
                         />
 
                     </button>
@@ -122,8 +120,7 @@ const Sidebar = () => {
                             <NavLink
                                 to="/roles"
                                 className={({ isActive }) =>
-                                    `master-submenu-link ${
-                                        isActive ? "active" : ""
+                                    `master-submenu-link ${isActive ? "active" : ""
                                     }`
                                 }
                             >
@@ -135,8 +132,7 @@ const Sidebar = () => {
                             <NavLink
                                 to="/clients"
                                 className={({ isActive }) =>
-                                    `master-submenu-link ${
-                                        isActive ? "active" : ""
+                                    `master-submenu-link ${isActive ? "active" : ""
                                     }`
                                 }
                             >
@@ -148,8 +144,7 @@ const Sidebar = () => {
                             <NavLink
                                 to="/designations"
                                 className={({ isActive }) =>
-                                    `master-submenu-link ${
-                                        isActive ? "active" : ""
+                                    `master-submenu-link ${isActive ? "active" : ""
                                     }`
                                 }
                             >
@@ -168,10 +163,10 @@ const Sidebar = () => {
                     <Settings size={20} />
                     <span>Settings</span>
                 </a>
-            
+
             </nav>
-        
-        
+
+
         </aside>
 
 

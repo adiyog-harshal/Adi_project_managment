@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import {
     Plus,
@@ -6,6 +7,7 @@ import {
     Trash2,
     ShieldCheck,
     Search,
+    MoreVertical,
 } from "lucide-react";
 
 import {
@@ -27,8 +29,14 @@ function Roles() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [selectedRole, setSelectedRole] = useState(null);
+    const [openActionRoleId, setOpenActionRoleId] = useState(null);
+    const [actionMenuPosition, setActionMenuPosition] = useState({ top: 0, right: 8 });
+    const actionButtonRef = useRef(null);
+    const actionMenuRef = useRef(null);
 
     const [search, setSearch] = useState("");
+    const [statusFilter, setStatusFilter] = useState("All statuses");
+
 
     const fetchRoles = async () => {
         try {
@@ -71,11 +79,13 @@ function Roles() {
 
     // Open Add Role modal
     const handleAddRole = () => {
+        setOpenActionRoleId(null);
         setSelectedRole(null);
         setIsModalOpen(true);
     };
 
     const handleEditRole = (role) => {
+        setOpenActionRoleId(null);
         setSelectedRole(role);
         setIsModalOpen(true);
     };
@@ -169,67 +179,56 @@ function Roles() {
 
         const searchText = search.toLowerCase();
 
-        return (
-            role.name.toLowerCase().includes(searchText)
+        const matchesSearch = (
+            role.name.toLowerCase().includes(searchText) ||
+            role.description.toLowerCase().includes(searchText)
         );
+
+        const matchesStatus =
+            statusFilter === "All statuses" || role.status === statusFilter;
+
+        return matchesSearch && matchesStatus;
     });
 
 
     return (
         <div className="roles-page">
-
-            {/* Header */}
-
-            <div className="page-header">
-
+            <div className="roles-page-header">
                 <div>
-
-                    <div className="page-title-wrapper">
-
-                        <ShieldCheck
-                            size={27}
-                            className="page-title-icon"
-                        />
-
-                        <h1>
-                            Role Management
-                        </h1>
-
+                    <div className="roles-title-row">
+                        <ShieldCheck size={28} className="roles-title-icon" />
+                        <h1>Roles</h1>
                     </div>
-
-                    <p className="page-description">
-                        Manage roles and permissions
-                    </p>
-
+                    <p className="roles-subtitle">Manage roles and permissions</p>
                 </div>
-
                 <button
-                    className="add-role-button"
+                    className="roles-add-button"
+                    type="button"
                     onClick={handleAddRole}
                 >
                     <Plus size={18} />
-                    Add Role
+                    <span>Add role</span>
                 </button>
-
             </div>
 
+            <div className="roles-toolbar">
+                <label className="roles-search">
+                    <Search size={18} aria-hidden="true" />
+                    <span className="visually-hidden">Search roles</span>
+                    <input
+                        type="search"
+                        placeholder="Search roles..."
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                    />
+                </label>
+            </div>
 
-            <div className="roles-card">
-
-
-
-                <div className="card-header">
-
+            <section className="roles-table-card" aria-labelledby="roles-table-title">
+                <div className="roles-card-header">
                     <div>
-
-                        <h2>
-                            Roles
-                        </h2>
-
-                        <p>
-                            {roles.length} roles configured
-                        </p>
-
+                        <h2 id="roles-table-title">All roles</h2>
+                        <p>{filteredRoles.length} of {roles.length} roles shown</p>
                     </div>
 
                     <div className="search-box">
@@ -250,61 +249,31 @@ function Roles() {
 
                 </div>
 
-                {/* Table */}
-
-                <div className="table-container">
-
-                    <table>
-
+                <div className="roles-table-scroll">
+                    <table className="roles-table">
                         <thead>
-
                             <tr>
-
-                                <th>
-                                    Role Name
-                                </th>
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Actions
-                                </th>
-
+                                <th scope="col">Role</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
                             </tr>
-
                         </thead>
-
                         <tbody>
-
                             {filteredRoles.length === 0 ? (
-
                                 <tr>
-
-                                    <td
-                                        colSpan="5"
-                                        className="empty-state"
-                                    >
+                                    <td colSpan="4" className="roles-empty-state">
                                         No roles found
                                     </td>
-
                                 </tr>
-
                             ) : (
-
-                                filteredRoles.map((role, index) => (
-
+                                filteredRoles.map((role) => (
                                     <tr key={role.id}>
                                         <td>
-
-                                            <div className="role-name">
-
-                                                <div className="role-icon">
+                                            <div className="roles-role-name">
+                                                <span className="roles-role-icon">
                                                     <ShieldCheck size={17} />
-                                                </div>
-
-                                                {role.name}
-
+                                                </span>
+                                                <strong>{role.name}</strong>
                                             </div>
 
                                         </td>
@@ -351,48 +320,47 @@ function Roles() {
 
 
                                         <td>
-
-                                            <div className="action-buttons">
-
+                                            <div className="roles-actions">
                                                 <button
-                                                    className="edit-button"
-                                                    title="Edit Role"
-                                                    onClick={() =>
-                                                        handleEditRole(role)
-                                                    }
+                                                    className="roles-action-button"
+                                                    type="button"
+                                                    aria-label={`Actions for ${role.name}`}
+                                                    aria-haspopup="menu"
+                                                    aria-expanded={openActionRoleId === role.id}
+                                                    title="Role actions"
+                                                    onClick={(event) => toggleActionMenu(role.id, event)}
                                                 >
-                                                    <Pencil size={17} />
+                                                    <MoreVertical size={18} />
                                                 </button>
-
-                                                <button
-                                                    className="delete-button"
-                                                    title="Delete Role"
-                                                    onClick={() =>
-                                                        handleDeleteRole(role.id)
-                                                    }
-                                                >
-                                                    <Trash2 size={17} />
-                                                </button>
-
+                                                {openActionRoleId === role.id && createPortal(
+                                                    <div
+                                                        ref={actionMenuRef}
+                                                        className="roles-action-menu-list"
+                                                        role="menu"
+                                                        aria-label={`Actions for ${role.name}`}
+                                                        style={{ top: actionMenuPosition.top, right: actionMenuPosition.right }}
+                                                    >
+                                                        <button type="button" role="menuitem" onClick={handleAddRole}>
+                                                            <Plus size={16} /> Add role
+                                                        </button>
+                                                        <button type="button" role="menuitem" onClick={() => handleEditRole(role)}>
+                                                            <Pencil size={16} /> Edit role
+                                                        </button>
+                                                        <button type="button" role="menuitem" className="delete-action" onClick={() => handleDeleteRole(role.id)}>
+                                                            <Trash2 size={16} /> Delete role
+                                                        </button>
+                                                    </div>,
+                                                    document.body
+                                                )}
                                             </div>
-
                                         </td>
-
                                     </tr>
-
                                 ))
-
                             )}
-
                         </tbody>
-
                     </table>
-
                 </div>
-
-            </div>
-
-            {/* Modal */}
+            </section>
 
             <RoleModal
                 isOpen={isModalOpen}
