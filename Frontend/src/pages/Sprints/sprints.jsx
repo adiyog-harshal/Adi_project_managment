@@ -224,6 +224,7 @@ if (loading) {
     return <div className="sprints-page"><p>Loading sprints...</p></div>;
 }
 
+<<<<<<< HEAD
 const handleStartSprint = async (sprintId) => {
     try {
         await api.post(`sprints/${sprintId}/start/`);
@@ -238,6 +239,8 @@ const handleStartSprint = async (sprintId) => {
     }
 };
 
+=======
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
 return (
     <div className="sprints-page">
         <button
@@ -254,21 +257,33 @@ return (
                 <p>Plan your sprints and track task progress.</p>
             </div>
 
+<<<<<<< HEAD
+=======
+            
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
             <button
                 type="button"
                 className="sprints-create-button"
                 onClick={() => {
                     setError("");
+<<<<<<< HEAD
                     setShowAddTasks(false);
+=======
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
                     setEditingSprintId(null);
 
                     setSprintForm({
                         sprint_name: "",
                         goal: "",
+<<<<<<< HEAD
+=======
+                        milestone: "",
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
                         start_date: "",
                         end_date: "",
                         status: "Planned",
                     });
+<<<<<<< HEAD
                     setShowForm(true);
                 }}
             >
@@ -278,6 +293,14 @@ return (
 
 
             
+=======
+
+                    setShowForm(true);
+                }}
+            >
+                <Plus size={18} /> Create Sprint
+            </button>
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
         </div>
 
         {error && <div className="sprints-error">{error}</div>}
@@ -419,6 +442,7 @@ return (
                                 >
                                     {sprint.status}
                                 </span>
+<<<<<<< HEAD
 
                                 {/* Start sprint Button */}
                                 {sprint.status === "Planned" && (
@@ -435,6 +459,8 @@ return (
                                         Start Sprint
                                     </button>
                                 )}
+=======
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
                                 
                                 <button
                                     type="button"
@@ -478,8 +504,11 @@ return (
                         <span className="sprint-task-count">
                             {(sprint.task_ids || []).length} assigned tasks
                         </span>
+<<<<<<< HEAD
 
                         
+=======
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
                     </div>
                 ))}
             </div>
@@ -495,6 +524,7 @@ return (
                     </div>
 
                     <button
+<<<<<<< HEAD
                 type="button"
                 className="sprints-create-button"
                 onClick={() => {
@@ -509,6 +539,26 @@ return (
             </button>
 
                     
+=======
+                        type="button"
+                        className="sprints-create-button"
+                        onClick={() => {
+                            setError("");
+                            setEditingSprintId(null);
+                            setSprintForm({
+                                sprint_name: "",
+                                goal: "",
+                                start_date: "",
+                                end_date: "",
+                                status: "Planned",
+                            });
+                            setShowForm(true);
+                        }}
+                    >
+                        <Plus size={18} />
+                        Add Tasks
+                    </button>
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
                 </div>
 
                 {showAddTasks && (
@@ -634,6 +684,11 @@ return (
         )}
     </div>
 );
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 8f9ebb0 (sprint feature create successfully)
 };
 
 export default Sprints;
