@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import './Users.css';
-import {
-    PMSPageHeader,
-    PMSSearch,
-    PMSActionButton,
-} from "../../components/Common/Common";
 
 import api from "../../services/api";
+import CommonSearch from "../../components/Common/Common.jsx";
+
+import {
+    Plus,
+    Pencil,
+    Trash2,
+    ShieldCheck,
+    Search,
+} from "lucide-react";
 
 function Users() {
     const [users, setUsers] = useState([]);
@@ -165,31 +169,41 @@ function Users() {
     };
 
     const fetchRoles = async () => {
+    try {
+        const response = await api.get("roles/");
+
+        const data = Array.isArray(response.data)
+            ? response.data
+            : response.data.results || [];
+
+        setRoles(
+            data.map((role) => ({
+                id: role.id,
+                name: role.role_name,
+                is_active: role.is_active,
+            }))
+        );
+    } catch (error) {
+        console.error(
+            "Failed to fetch roles:",
+            error.response?.data || error
+        );
+    }
+};
+
+        const fetchUsers = async () => {
         try {
-            const response = await api.get("roles/");
+            // Check whether the JWT access token exists
+            const token = localStorage.getItem("token");
 
-            const data = Array.isArray(response.data)
-                ? response.data
-                : response.data.results || [];
+            if (!token) {
+                console.error(
+                    "Access token missing. Please log in again."
+                );
+                return;
+            }
 
-            setRoles(
-                data.map((role) => ({
-                    id: role.id,
-                    name: role.role_name,
-                    is_active: role.role_name,
-                    status: role.is_active ? "Active" : "Inactive",
-                })));
-        } catch (error) {
-            console.error(
-                "Failed to fetch roles:",
-                error.response?.data || error
-            );
-        }
-    };
-
-    
-    const fetchUsers = async () => {
-        try {
+            // Request users through your configured Axios instance
             const response = await api.get("users/");
 
             const data = Array.isArray(response.data)
@@ -202,57 +216,59 @@ function Users() {
                 data.map((user) => ({
                     id: user.id,
                     name:
-                    `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-                    user.username ||
-                    "N/A",
+                        `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+                        user.username ||
+                        "N/A",
                     email: user.email || "N/A",
                     role: user.role_name || user.role || "Not Assigned",
                     designation: user.designation_name || "Not Assigned",
-                    status: user.is_active === false ? "Inactive" : "Active",
+                    status: user.is_active === false
+                        ? "Inactive"
+                        : "Active",
                 }))
-                );       
-            } catch (error) {
+            );
+        } catch (error) {
             console.error(
+                "Users API error:",
                 error.response?.status,
                 error.response?.data || error.message
             );
         }
     };
 
-            
-        
 
     return (
         <div className="users-page">
 
             {/* Header */}
-            <div className="users-header">
-                <div>
-                    <h1>Users</h1>
-                    <p>
-                        Manage users and their access to the system.
-                    </p>
-                </div>
+           
+<div className="common-page-toolbar">
 
-                <button
-                    type="button"
-                    className="add-user-btn"
-                    onClick={openAddForm}
-                >
-                    + Add User
-                </button>
-            </div>
+    <div className="common-page-title">
+        <Users size={22} color="#D9A21B" />
+        <h1>User Management</h1>
+        <p>Manage users, roles, and designations.</p>
+    </div>
 
-            {/* Search */}
-            <PMSSearch
-                value={search}
-                onChange={(e) => {
-                    setSearch(e.target.value);
-                    setCurrentPage(1);
-                }}
-                placeholder='Search users'
-            />
+    <CommonSearch
+        search={search}
+        setSearch={setSearch}
+        placeholder="Search users..."
+    />
 
+    <button
+        type="button"
+        className="add-user-btn"
+        onClick={() => setShowForm(true)}
+    >
+        <Plus size={17} />
+        Add User
+    </button>
+
+</div>
+
+
+            
             {/* Users Table */}
             <div className="users-card">
                 <table className="users-table">
@@ -271,7 +287,15 @@ function Users() {
                         {filteredUsers.length > 0 ? (
                             filteredUsers.map((user) => (
                                 <tr key={user.id}>
-                                    <td>{user.name || "N/A"}</td>
+                                    <td>
+                                        <div className='user-name'>
+                                            <div className='user-icon'>
+                                                <Users size={18} />
+                                            </div>
+
+                                            <span>{user.name || "N/A"}</span>
+                                        </div>
+                                    </td>
                                     <td>{user.email || "N/A"}</td>
                                     <td>{user.role || "Not Assigned"}</td>
                                     <td>{user.designation || "Not Assigned"}</td>
@@ -419,13 +443,10 @@ function Users() {
                                     </option>
 
                                     {designations
-                                        .filter((designation) => designation.status)
+                                        .filter((designation) => designation.is_active)
                                         .map((designation) => (
-                                            <option
-                                                key={designation.id}
-                                                value={designation.id}
-                                            >
-                                                {designation.name}
+                                            <option key={designation.id} value={designation.id}>
+                                                {designation.designation_name}
                                             </option>
                                         ))}
                                 </select>
@@ -441,17 +462,11 @@ function Users() {
                                     onChange={handleChange}
                                     required
                                 >
-                                    <option value="">
-                                        Select Status
-                                    </option>
+                                    <option value="">Select Status</option>
 
-                                    <option value="Active">
-                                        Active
-                                    </option>
+                                    <option value="Active">Active</option>
 
-                                    <option value="Inactive">
-                                        Inactive
-                                    </option>
+                                    <option value="Inactive">Inactive</option>
                                 </select>
                             </div>
 
@@ -480,5 +495,4 @@ function Users() {
         </div>
     );
 }
-
 export default Users;

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
@@ -12,80 +13,71 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
 
     const handleLogin = async (e) => {
-
         e.preventDefault();
 
-        if (!username.trim() || !password.trim()) {
-            setError("Username and password are required.");
-            return;
-        }
+        setError("");
+        setLoading(true);
 
         try {
-
-            setLoading(true);
-            setError("");
-
             const response = await api.post("login/", {
-                username,
-                password
+                username: username,
+                password: password,
             });
-                
-            
 
-            console.log("LOGIN RESPONSE:", response.data);
+            const accessToken = response.data.access;
+            const refreshToken = response.data.refresh;
 
-            // SAVE JWT TOKENS
-            localStorage.setItem("token", response.data.access);
+            if (!accessToken) {
+                throw new Error(
+                    "Access token was not returned by the server."
+                );
+            }
 
-            localStorage.setItem("refresh_token", response.data.refresh);
+            // Save JWT tokens
+            localStorage.setItem("token", accessToken);
 
+            if (refreshToken) {
+                localStorage.setItem("refresh_token", refreshToken);
+            }
+
+            console.log("Login successful");
             console.log(
-                "SAVED TOKEN:",
-                localStorage.getItem("token")
+                "Token saved:",
+                Boolean(localStorage.getItem("access_token"))
             );
 
+            // Change "/dashboard" if your app uses a different route.
+            navigate("/dashboard");
 
-            // Go to dashboard
-            navigate("/");
+        } catch (err) {
+            console.error(
+                "Login failed:",
+                err.response?.data || err.message
+            );
 
-        } catch (error) {
-
-            console.error(error);
-
-            if (error.response?.status === 401) {
-                setError("Invalid username or password.");
-            } else {
-                setError("Unable to connect the server. ");
-            }
+            setError(
+                err.response?.data?.detail ||
+                err.response?.data?.non_field_errors?.[0] ||
+                err.message ||
+                "Login failed. Please try again."
+            );
         } finally {
-
             setLoading(false);
-
         }
     };
 
     return (
         <div className="login-page">
-
             <div className="login-card">
-
                 <div className="login-header">
-
                     <h1>PMS</h1>
-
                     <h2>Login</h2>
-
-                    <p>
-                        Sign in to your account
-                    </p>
+                    <p>Sign in to your account</p>
                 </div>
 
                 <form onSubmit={handleLogin}>
-
                     <div className="login-field">
-
                         <label>Username</label>
-
                         <input
                             type="text"
                             value={username}
@@ -93,14 +85,12 @@ const Login = () => {
                                 setUsername(e.target.value)
                             }
                             placeholder="Enter username"
+                            required
                         />
-                        
                     </div>
 
                     <div className="login-field">
-
                         <label>Password</label>
-
                         <input
                             type="password"
                             value={password}
@@ -108,8 +98,8 @@ const Login = () => {
                                 setPassword(e.target.value)
                             }
                             placeholder="Enter password"
+                            required
                         />
-
                     </div>
 
                     {error && (
@@ -125,11 +115,10 @@ const Login = () => {
                     >
                         {loading ? "Logging in..." : "Login"}
                     </button>
-
                 </form>
-
             </div>
         </div>
     );
 };
+
 export default Login;

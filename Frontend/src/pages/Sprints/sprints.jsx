@@ -37,6 +37,9 @@ const [completingSprint, setCompletingSprint] = useState(false);
 const [unfinishedTaskAction, setUnfinishedTaskAction] = useState("backlog");
 const [nextSprintId, setNextSprintId] = useState("");
 const [startingSprint, setStartingSprint] = useState(false);
+
+const [showStartSprintModal, setShowStartSprintModal] = useState(false);
+const [sprintStartChoice, setSprintStartChoice] = useState("today");
 const [users, setUsers] = useState([]);
 useEffect(() => {
     const fetchUsers = async () => {
@@ -56,6 +59,19 @@ useEffect(() => {
 
     fetchUsers();
 }, []);
+
+const [toast, setToast] = useState({
+    message: "",
+    type: "success",
+});
+
+const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+        setToast({ message: "", type: "success" });
+    }, 3000);
+};
 
 const [carryOverTargets, setCarryOverTargets] = useState({});
 const [timeSummary, setTimeSummary] = useState({
@@ -90,8 +106,8 @@ const [scheduleForm, setScheduleForm] = useState({
     due_date: "",
     actual_start_date: "",
     actual_end_date: "",
-    estimated_time: "0h 0m",
-    actual_time: "0h 0m",
+    estimated_time: "",
+    actual_time: "",
     
 });
 
@@ -169,28 +185,50 @@ const handleScheduleChange = (e) => {
     }));
 };
 
+const parseTimeToMinutes = (value) => {
+    const text = (value || "").trim();
+
+    if (!text) return 0;
+
+    const match = text.match(
+        /^(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?$/i
+    );
+
+    if (!match || (!match[1] && !match[2])) {
+        return null;
+    }
+
+    const hours = Number(match[1] || 0);
+    const minutes = Number(match[2] || 0);
+
+    if (minutes > 59) return null;
+
+    return hours * 60 + minutes;
+};
+
+const formatMinutes = (value) => {
+    const total = Number(value || 0);
+    const hours = Math.floor(total / 60);
+    const minutes = total % 60;
+
+    if (hours && minutes) return `${hours}h ${minutes}m`;
+    if (hours) return `${hours}h`;
+    return `${minutes}m`;
+};
+
 const handleSaveSchedule = async () => {
     if (!selectedTask) return;
 
-    const estimatedHours = Number(scheduleForm.estimated_hours);
-    const estimatedMinutes = Number(scheduleForm.estimated_minutes);
-    const actualHours = Number(scheduleForm.actual_hours);
-    const actualMinutes = Number(scheduleForm.actual_minutes);
+    const estimatedTime = parseTimeToMinutes(
+        scheduleForm.estimated_time
+    );
+    const actualTime = parseTimeToMinutes(
+        scheduleForm.actual_time
+    );
 
-    if (
-        !Number.isInteger(estimatedHours) ||
-        !Number.isInteger(estimatedMinutes) ||
-        !Number.isInteger(actualHours) ||
-        !Number.isInteger(actualMinutes) ||
-        estimatedHours < 0 ||
-        actualHours < 0 ||
-        estimatedMinutes < 0 ||
-        estimatedMinutes > 59 ||
-        actualMinutes < 0 ||
-        actualMinutes > 59
-    ) {
+    if (estimatedTime === null || actualTime === null) {
         setScheduleMessage(
-            "Enter valid hours and minutes. Minutes must be between 0 and 59."
+            "Enter time like 2h 30m, 2h, or 30m."
         );
         return;
     }
@@ -222,12 +260,8 @@ const handleSaveSchedule = async () => {
         due_date: scheduleForm.due_date || null,
         actual_start_date: scheduleForm.actual_start_date || null,
         actual_end_date: scheduleForm.actual_end_date || null,
-
-        estimated_time_minutes:
-            estimatedHours * 60 + estimatedMinutes,
-
-        actual_time_minutes:
-            actualHours * 60 + actualMinutes,
+        estimated_time_minutes: estimatedTime,
+        actual_time_minutes: actualTime,
     };
 
     try {
@@ -239,9 +273,32 @@ const handleSaveSchedule = async () => {
             payload
         );
 
-        setSelectedTask((previous) => ({
-            ...previous,
+        const updatedTask = {
+            ...selectedTask,
             ...response.data,
+        };
+        // updated the selected task details 
+        setSelectedTask(updatedTask);
+
+        setSprintTasks((previous) => 
+            previous.map((task) => 
+                String(task.id) === String(updatedTask.id)
+                    ? {...task, ...response.data }
+                    : task   
+        ));
+
+        setScheduleForm((previous) => ({
+            ...previous,
+            start_date: response.data.start_date || "",
+            due_date: response.data.due_date || "",
+            actual_start_date: response.data.actual_start_date || "",
+            actual_end_date: response.data.actual_end_date || "",
+            estimated_time: formatMinutes(
+                response.data.estimated_time_minutes
+            ),
+            actual_time: formatMinutes(
+                response.data.actual_time_minutes
+            ),
         }));
 
         setScheduleMessage("Task schedule saved successfully.");
@@ -252,6 +309,9 @@ const handleSaveSchedule = async () => {
         );
 
         setScheduleMessage(
+            Object.values(error.response?.data || {})
+                .flat()
+                .join(" ") ||
             "Failed to save. Please check the backend API and try again."
         );
     } finally {
@@ -366,13 +426,25 @@ const loadData = async () => {
             ? taskResponse.data
             : taskResponse.data.results || [];
 
-        const projectSprints = sprintData.filter(
-            sprint => String(
-                typeof sprint.project === "object"
-                    ? sprint.project.id
-                    : sprint.project
-            ) === String(id)
-        );
+        const projectSprints = sprintData.filter(sprint => {
+            const sameProject =
+                String(
+                    typeof sprint.project === "object"
+                        ? sprint.project.id
+                        : sprint.project
+                ) === String(id);
+            const isRunning = 
+                sprint.status?.toLowerCase() === "in progress";
+            
+            const hasAssignedTasks = taskData.some(task => 
+                String(
+                    typeof task.sprint === "object"
+                        ? task.sprint?.id
+                        : task.sprint
+                ) === String(sprint.id)
+            );
+            return sameProject && isRunning && hasAssignedTasks;
+    });
 
         const projectTasks = taskData.filter(
             task => String(
@@ -458,10 +530,12 @@ useEffect(() => {
         due_date: selectedTask.due_date || "",
         actual_start_date: selectedTask.actual_start_date || "",
         actual_end_date: selectedTask.actual_end_date || "",
-
-        estimated_time: estimated,
-
-        actual_time: actual,
+        estimated_time: formatMinutes(
+        selectedTask.estimated_time_minutes
+        ),
+        actual_time: formatMinutes(
+            selectedTask.actual_time_minutes
+        ),
     });
 
     setScheduleMessage("");
@@ -591,17 +665,42 @@ const handleAssignTasks = async () => {
     }
 };
 
-const handleStartSprint = async (sprintId) => {
+const handleStartSprint = async (sprintId, startChoice) => {
     try {
-        await api.post(`sprints/${sprintId}/start/`);
+        setStartingSprint(true);
+
+        const response = await api.post(
+            `sprints/${sprintId}/start/`,
+            { start_choice: startChoice }
+        );
+
         await fetchSprints();
+
+        // Update the selected sprint with the latest backend data.
+        if (response.data.sprint) {
+            setSelectedSprint(response.data.sprint);
+        } else {
+            setSelectedSprint(response.data);
+        }
+
+        setShowStartSprintModal(false);
+
+        alert(
+            response.data.message ||
+            "Sprint updated successfully."
+        );
     } catch (error) {
-        console.error("Start sprint error:", error.response?.data || error);
+        console.error(
+            "Sprint start error:",
+            error.response?.data || error
+        );
 
         alert(
             error.response?.data?.detail ||
-            "Unable to start sprint."
+            "Unable to update sprint."
         );
+    } finally {
+        setStartingSprint(false);
     }
 };
 
@@ -660,11 +759,6 @@ const getTaskEstimatedMinutes = (task) => {
     return Number.isFinite(hours) && hours > 0
         ? hours * 60
         : 0;
-};
-
-const formatMinutes = (minutes) => {
-    const total = Number(minutes) || 0;
-    return `${Math.floor(total / 60)}h ${total % 60}m`;
 };
 
 const loadActiveTimer = async () => {
@@ -1024,10 +1118,7 @@ return (
             >
                 <Plus size={18} />
                 Create Sprint
-            </button>
-
-
-            
+            </button>     
         </div>
 
         {error && <div className="sprints-error">{error}</div>}
@@ -1041,30 +1132,41 @@ return (
                 </h2>
 
                 <div className="sprint-form-grid">
-                    <label>Sprint Duration</label>
-                    <select
-                        value={duration}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            setDuration(value);
-
-                            const newEndDate = calculateEndDate(
-                                sprintForm.start_date,
-                                value
-                            );
-
-                            setEndDate(newEndDate);
-                            setSprintForm((prev) => ({
-                                ...prev,
-                                end_date: newEndDate,
-                            }));
-                        }}
-                    >
-                        <option value="7">7 Days</option>
-                        <option value="15">15 Days</option>
-                        <option value="30">30 Days</option>
-                    </select>
                     
+                    <div className="sprint-duration-field">
+                        <label htmlFor="sprint-duration">
+                            <span className="duration-icon">
+                                <CalendarDays size={15} />
+                            </span>
+                            Sprint Duration
+                        </label>
+
+                        <select
+                            id="sprint-duration"
+                            value={duration}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setDuration(value);
+
+                                const newEndDate = calculateEndDate(
+                                    sprintForm.start_date,
+                                    value
+                                );
+
+                                setEndDate(newEndDate);
+
+                                setSprintForm((prev) => ({
+                                    ...prev,
+                                    end_date: newEndDate,
+                                }));
+                            }}
+                        >
+                            <option value="7">7 Days</option>
+                            <option value="15">15 Days</option>
+                            <option value="30">30 Days</option>
+                        </select>
+
+                    </div>
                     <label>
                         Sprint Name *
                         <input
@@ -1190,6 +1292,8 @@ return (
                         key={sprint.id}
                         className={`sprint-card ${
                             selectedSprint?.id === sprint.id ? "selected" : ""
+                        } ${
+                            sprint.status?.toLowerCase() === "in progress" ? "active-card" : ""
                         }`}
                         onClick={() => {
                             setSelectedSprint(sprint);
@@ -1203,10 +1307,14 @@ return (
                             <span className="sprint-card-actions">
                                 <span
                                     className={`sprint-status ${
-                                        (sprint.status || "").toLowerCase()
+                                        (sprint.status || "").toLowerCase() === "in progress"
+                                            ? "active"
+                                            : (sprint.status || "").toLowerCase().replace(/\s+/g, "-")
                                     }`}
                                 >
-                                    {sprint.status}
+                                    {(sprint.status || ""). toLowerCase() === "in progress"
+                                        ? "Active"
+                                        : sprint.status}
                                 </span>
 
                                 {/* Start sprint Button */}
@@ -1304,7 +1412,7 @@ return (
                                     className="complete-sprint-button"
                                     onClick={() => setShowCompleteSprintModal(true)}
                                 >
-                                    Complete Sprint
+                                    End Sprint
                                 </button>
                             )} 
                     </div>                   
@@ -1399,23 +1507,27 @@ return (
                                 {assigningTasks ? "Adding..." : "Add Selected Tasks"}
                             </button>
 
-                                {/* ADD START SPRINT BUTTON  */}
-                            {(selectedSprint.status || "").toLowerCase() === "planned" && (
+                        {/* START SPRINT BUTTON */}
+                        {selectedSprint &&
+                            selectedSprint.status?.toLowerCase() === "planned" && (
                                 <button
                                     type="button"
                                     className="start-sprint-button"
-                                    onClick={() => handleStartSprint(selectedSprint.id)}
+                                    onClick={() => {
+                                        setSprintStartChoice("today");
+                                        setShowStartSprintModal(true);
+                                    }}
                                     disabled={startingSprint || assigningTasks}
                                 >
                                     <Play size={16} />
-                                    {startingSprint ? "Starting...." : "Start Sprint"}
+                                    Start Sprint
                                 </button>
                             )}
                         </div>
                     </div>
                 )}
                 
-                <div className="sprint-content-layout">
+                <div className={`sprint-content-layout ${!selectedTask ? "no-task-selected" : ""}`}>
 
                 {/* LEFT: TASK TABLE */}
                 <div className="sprint-task-list">
@@ -1476,7 +1588,9 @@ return (
                                             <tr
                                                 key={task.id}
                                                 className={isSelected ? "selected" : ""}
-                                                onClick={() => setSelectedTask(task)}
+                                                onClick={() => {
+                                                    setSelectedTask(task);
+                                                }}
                                             >
                                                 <td>
                                                     <strong>
@@ -1523,327 +1637,330 @@ return (
                 </div>
 
                    {/* RIGHT: TASK DETAILS */}
-                   
-                <aside className="task-details-panel">
-                    {!selectedTask ? (
-                        <div className="task-details-empty">
-                            <Layers size={30} />
-                            <h4>Select a task</h4>
-                            <p>
-                                Click any task from the list to see its details here.
-                            </p>
-                        </div>
-                    ) : (
+                   {selectedTask && (
                         <>
-                            {(() => {
-                                const selectedTimeEntry = timeSummary.by_task.find(
-                                    row =>
-                                        String(row.task_id) ===
-                                        String(selectedTask.id)
-                                );
-
-                                const timerRunning =
-                                    String(activeTimer?.task_id) === String(selectedTask.id);
-
-
-                                const savedMinutes = Number(
-                                    selectedTimeEntry?.total_minutes || 0
-                                );
-
-                                const estimatedMinutes =
-                                    getTaskEstimatedMinutes(selectedTask);
-
-                                // Timer values will be connected to backend state
-                                const actualMinutes =
-                                    savedMinutes +
-                                    (timerRunning ? Math.floor(timerSeconds / 60) : 0);
-
-                            
-                                return (
+                            <div
+                                className="task-details-backdrop"
+                                onClick={() => setSelectedTask(null)}
+                            />
+                        
+                            <aside className="task-details-panel task-details-drawer">
+                                {!selectedTask ? (
+                                    <div className="task-details-empty">
+                                        <Layers size={30} />
+                                        <h4>Select a task</h4>
+                                        <p>
+                                            Click any task from the list to see its details here.
+                                        </p>
+                                    </div>
+                                ) : (
                                     <>
-                                        {/* HEADER */}
-                                        <div className="task-details-header">
-                                            <div>
-                                                <span className="task-id">
-                                                    TASK-{selectedTask.id}
-                                                </span>
-                                                <h2>
-                                                    {selectedTask.task_name ||
-                                                        selectedTask.title ||
-                                                        `Task ${selectedTask.id}`}
-                                                </h2>
-                                            </div>
+                                        {(() => {
+                                            const selectedTimeEntry = timeSummary.by_task.find(
+                                                row =>
+                                                    String(row.task_id) ===
+                                                    String(selectedTask.id)
+                                            );
 
-                                            <button
-                                                type="button"
-                                                className="task-details-close"
-                                                aria-label="Close task details"
-                                                onClick={() => setSelectedTask(null)}
-                                            >
-                                                ×
-                                            </button>
-                                        </div>
+                                            const timerRunning =
+                                                String(activeTimer?.task_id) === String(selectedTask.id);
 
-                                        <div className="task-details-content">
 
-                                            {/* DESCRIPTION */}
-                                            <section className="task-info-section">
-                                                <h4>Description</h4>
-                                                <p className="task-description">
-                                                    {selectedTask.description ||
-                                                        "No description provided."}
-                                                </p>
-                                            </section>
+                                            const savedMinutes = Number(
+                                                selectedTimeEntry?.total_minutes || 0
+                                            );
 
-                                            <div className="task-priority-assignee-row">                                          
+                                            const estimatedMinutes =
+                                                getTaskEstimatedMinutes(selectedTask);
 
-                                            {/* STATUS */}
-                                                <section className="task-info-section">
-                                                    <h4>Status</h4>
+                                            // Timer values will be connected to backend state
+                                            const actualMinutes =
+                                                savedMinutes +
+                                                (timerRunning ? Math.floor(timerSeconds / 60) : 0);
 
-                                                    <select
-                                                        className="task-status-select"
-                                                        value={selectedTask.status || "To Do"}
-                                                        onChange={e =>
-                                                            handleTaskStatusChange(
-                                                                selectedTask,
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                    >
-                                                        <option value="To Do">To Do</option>
-                                                        <option value="In Progress">In Progress</option>
-                                                        <option value="Completed">Completed</option>
-                                                        <option value="On Hold">On Hold</option>
-                                                    </select>
-                                                </section>
-
-                                                {/* ASSIGN USER - NEXT TO STATUS */}
-                                                <section className="task-info-section">
-                                                    <h4>Assign User</h4>
-
-                                                    <select
-                                                        className="task-status-select"
-                                                        value={
-                                                            selectedTask.assigned_to?.id ??
-                                                            selectedTask.assigned_to ??
-                                                            ""
-                                                        }
-                                                        onChange={(e) => {
-                                                            if (e.target.value) {
-                                                                handleTaskAssigneeChange(
-                                                                    selectedTask,
-                                                                    e.target.value
-                                                                );
-                                                            }
-                                                        }}     
-                                                    >
-                                                        <option value="">Select user</option>
-
-                                                        {users.map((user) => (
-                                                            <option key={user.id} value={user.id}>
-                                                                {user.first_name
-                                                                    ? `${user.first_name} ${user.last_name || ""}`.trim()
-                                                                    : user.username}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </section>
-                                            </div>
-                                            
-                                            <div className="task-priority-assignee-row">
-
-                                                {/* PRIORITY */}
-                                                <section className="task-info-section">
-                                                    <h4>Priority</h4>
-                                                    <span className={`task-priority priority-${(
-                                                        selectedTask.priority || "medium"
-                                                    ).toLowerCase()}`}>
-                                                        {selectedTask.priority || "Medium"}
-                                                    </span>
-                                                </section>
-
-                                                {/* ASSIGNEE */}
-                                                <section className="task-info-section">
-                                                    <h4>Assigned To</h4>
-                                                    <p className="task-assignee">
-                                                        <Users size={15} />
-                                                        {selectedTask.assigned_to_name ||
-                                                            selectedTask.assigned_to_username ||
-                                                            (typeof selectedTask.assigned_to === "object"
-                                                                ? selectedTask.assigned_to?.username ||
-                                                                  selectedTask.assigned_to?.first_name ||
-                                                                  "Assigned user"
-                                                                : users.find(
-                                                                    (user) => 
-                                                                        String(user.id) ===
-                                                                        String(selectedTask.assigned_to)
-                                                                )
-                                                                    ? (() => {
-                                                                        const user = users.find(
-                                                                            (user) =>
-                                                                                String(user.id) ===
-                                                                                String(selectedTask.assigned_to)
-                                                                    
-                                                                        );
-
-                                                                        return user.first_name
-                                                                            ? `${user.first_name} ${user.last_name || ""}`.trim()
-                                                                            : user.username;
-                                                                    })()
-                                                                    : "Unassigned")}
-                                                    </p>
-                                                </section>
-                                            </div>
-
-                                            {/* TIME SUMMARY */}
-                                                                                       
                                         
-                                        {/* TASK SCHEDULE AND MANUAL TIME */}
-<section className="task-info-section task-schedule-section">
-    <h4>Task Schedule</h4>
+                                            return (
+                                                <>
+                                                    {/* HEADER */}
+                                                    <div className="task-details-header">
+                                                        <div>
+                                                            <span className="task-id">
+                                                                TASK-{selectedTask.id}
+                                                            </span>
+                                                            <h2>
+                                                                {selectedTask.task_name ||
+                                                                    selectedTask.title ||
+                                                                    `Task ${selectedTask.id}`}
+                                                            </h2>
+                                                        </div>
 
-    <div className="schedule-date-grid">
-        <div className="schedule-field">
-            <label htmlFor="estimated-start-date">
-                Estimated Start Date
-            </label>
+                                                        <button
+                                                            type="button"
+                                                            className="task-details-close"
+                                                            aria-label="Close task details"
+                                                            onClick={() => setSelectedTask(null)}
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
 
-            <input
-                id="estimated-start-date"
-                type="date"
-                name="start_date"
-                value={scheduleForm.start_date}
-                onChange={handleScheduleChange}
-            />
-        </div>
+                                                    <div className="task-details-content">
 
-        <div className="schedule-field">
-            <label htmlFor="estimated-end-date">
-                Estimated End Date
-            </label>
+                                                        {/* DESCRIPTION */}
+                                                        <section className="task-info-section">
+                                                            <h4>Description</h4>
+                                                            <p className="task-description">
+                                                                {selectedTask.description ||
+                                                                    "No description provided."}
+                                                            </p>
+                                                        </section>
 
-            <input
-                id="estimated-end-date"
-                type="date"
-                name="due_date"
-                min={scheduleForm.start_date || undefined}
-                value={scheduleForm.due_date}
-                onChange={handleScheduleChange}
-            />
-        </div>
+                                                        <div className="task-priority-assignee-row">                                          
 
-        <div className="schedule-field">
-            <label htmlFor="actual-start-date">
-                Actual Start Date
-            </label>
+                                                        {/* STATUS */}
+                                                            <section className="task-info-section">
+                                                                <h4>Status</h4>
 
-            <input
-                id="actual-start-date"
-                type="date"
-                name="actual_start_date"
-                value={scheduleForm.actual_start_date}
-                onChange={handleScheduleChange}
-            />
-        </div>
+                                                                <select
+                                                                    className="task-status-select"
+                                                                    value={selectedTask.status || "To Do"}
+                                                                    onChange={e =>
+                                                                        handleTaskStatusChange(
+                                                                            selectedTask,
+                                                                            e.target.value
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <option value="To Do">To Do</option>
+                                                                    <option value="In Progress">In Progress</option>
+                                                                    <option value="Completed">Completed</option>
+                                                                    <option value="On Hold">On Hold</option>
+                                                                </select>
+                                                            </section>
 
-        <div className="schedule-field">
-            <label htmlFor="actual-end-date">
-                Actual End Date
-            </label>
+                                                            {/* ASSIGN USER - NEXT TO STATUS */}
+                                                            <section className="task-info-section">
+                                                                <h4>Assign User</h4>
 
-            <input
-                id="actual-end-date"
-                type="date"
-                name="actual_end_date"
-                min={scheduleForm.actual_start_date || undefined}
-                value={scheduleForm.actual_end_date}
-                onChange={handleScheduleChange}
-            />
-        </div>
-    </div>
+                                                                <select
+                                                                    className="task-status-select"
+                                                                    value={
+                                                                        selectedTask.assigned_to?.id ??
+                                                                        selectedTask.assigned_to ??
+                                                                        ""
+                                                                    }
+                                                                    onChange={(e) => {
+                                                                        if (e.target.value) {
+                                                                            handleTaskAssigneeChange(
+                                                                                selectedTask,
+                                                                                e.target.value
+                                                                            );
+                                                                        }
+                                                                    }}     
+                                                                >
+                                                                    <option value="">Select user</option>
 
-    {/* ESTIMATED TIME */}
-<div className="schedule-time-group estimated-time-group">
-    <label htmlFor="estimated-time">
-        Estimated Time
-    </label>
+                                                                    {users.map((user) => (
+                                                                        <option key={user.id} value={user.id}>
+                                                                            {user.first_name
+                                                                                ? `${user.first_name} ${user.last_name || ""}`.trim()
+                                                                                : user.username}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            </section>
+                                                        </div>
+                                                        
+                                                        <div className="task-priority-assignee-row">
 
-    <input
-        id="estimated-time"
-        type="text"
-        name="estimated_time"
-        placeholder="e.g. 2h 30m"
-        value={scheduleForm.estimated_time}
-        onChange={handleScheduleChange}
-    />
+                                                            {/* PRIORITY */}
+                                                            <section className="task-info-section">
+                                                                <h4>Priority</h4>
+                                                                <span className={`task-priority priority-${(
+                                                                    selectedTask.priority || "medium"
+                                                                ).toLowerCase()}`}>
+                                                                    {selectedTask.priority || "Medium"}
+                                                                </span>
+                                                            </section>
 
-    <small>Planned effort</small>
-</div>
+                                                            {/* ASSIGNEE */}
+                                                            <section className="task-info-section">
+                                                                <h4>Assigned To</h4>
+                                                                <p className="task-assignee">
+                                                                    <Users size={15} />
+                                                                    {selectedTask.assigned_to_name ||
+                                                                        selectedTask.assigned_to_username ||
+                                                                        (typeof selectedTask.assigned_to === "object"
+                                                                            ? selectedTask.assigned_to?.username ||
+                                                                            selectedTask.assigned_to?.first_name ||
+                                                                            "Assigned user"
+                                                                            : users.find(
+                                                                                (user) => 
+                                                                                    String(user.id) ===
+                                                                                    String(selectedTask.assigned_to)
+                                                                            )
+                                                                                ? (() => {
+                                                                                    const user = users.find(
+                                                                                        (user) =>
+                                                                                            String(user.id) ===
+                                                                                            String(selectedTask.assigned_to)
+                                                                                
+                                                                                    );
 
-{/* ACTUAL TIME */}
-<div className="schedule-time-group actual-time-group">
-    <label htmlFor="actual-time">
-        Actual Time Taken
-    </label>
+                                                                                    return user.first_name
+                                                                                        ? `${user.first_name} ${user.last_name || ""}`.trim()
+                                                                                        : user.username;
+                                                                                })()
+                                                                                : "Unassigned")}
+                                                                </p>
+                                                            </section>
+                                                        </div>
 
-    <input
-        id="actual-time"
-        type="text"
-        name="actual_time"
-        placeholder="e.g. 1h 45m"
-        value={scheduleForm.actual_time}
-        onChange={handleScheduleChange}
-    />
+                                                        {/* TIME SUMMARY */}
+                                                                                                
+                                                    
+                                                    {/* TASK SCHEDULE AND MANUAL TIME */}
+            <section className="task-info-section task-schedule-section">
+                <h4>Task Schedule</h4>
 
-    <small>Actual effort</small>
-</div>
+                <div className="schedule-date-grid">
+                    <div className="schedule-field">
+                        <label htmlFor="estimated-start-date">
+                            Estimated Start Date
+                        </label>
 
-<button
-    type="button"
-    className="save-schedule-button"
-    onClick={handleSaveSchedule}
-    disabled={savingSchedule}
->
-    {savingSchedule ? "Saving..." : "Save Schedule"}
-</button>
+                        <input
+                            id="estimated-start-date"
+                            type="date"
+                            name="start_date"
+                            value={scheduleForm.start_date}
+                            onChange={handleScheduleChange}
+                        />
+                    </div>
 
-{scheduleMessage && (
-    <p className="schedule-message" role="status">
-        {scheduleMessage}
-    </p>
-)}
+                    <div className="schedule-field">
+                        <label htmlFor="estimated-end-date">
+                            Estimated End Date
+                        </label>
+
+                        <input
+                            id="estimated-end-date"
+                            type="date"
+                            name="due_date"
+                            min={scheduleForm.start_date || undefined}
+                            value={scheduleForm.due_date}
+                            onChange={handleScheduleChange}
+                        />
+                    </div>
+
+                    <div className="schedule-field">
+                        <label htmlFor="actual-start-date">
+                            Actual Start Date
+                        </label>
+
+                        <input
+                            id="actual-start-date"
+                            type="date"
+                            name="actual_start_date"
+                            value={scheduleForm.actual_start_date}
+                            onChange={handleScheduleChange}
+                        />
+                    </div>
+
+                    <div className="schedule-field">
+                        <label htmlFor="actual-end-date">
+                            Actual End Date
+                        </label>
+
+                        <input
+                            id="actual-end-date"
+                            type="date"
+                            name="actual_end_date"
+                            min={scheduleForm.actual_start_date || undefined}
+                            value={scheduleForm.actual_end_date}
+                            onChange={handleScheduleChange}
+                        />
+                    </div>
+                </div>
+
+                {/* ESTIMATED TIME */}
+            <div className="schedule-time-group estimated-time-group">
+                <label htmlFor="estimated-time">
+                    Estimated Time
+                </label>
+
+                <input
+                    id="estimated-time"
+                    type="text"
+                    value={scheduleForm.estimated_time}
+                    onChange={(e) =>
+                        setScheduleForm({
+                            ...scheduleForm,
+                            estimated_time: e.target.value
+                        }) 
+                    }
+                    placeholder="e.g. 2h 30m"
+                />
+
+                <small>Planned effort</small>
+            </div>
+
+            {/* ACTUAL TIME */}
+            <div className="schedule-time-group actual-time-group">
+                <label htmlFor="actual-time">
+                    Actual Time Taken
+                </label>
+
+                <input
+                    id="actual-time"
+                    type="text"
+                    
+                    value={scheduleForm.actual_time}
+                    onChange={(e) =>
+                        setScheduleForm({
+                            ...scheduleForm,
+                            actual_time: e.target.value
+                        }) 
+                    }
+                    placeholder="e.g. 1h 45m"
+                />
+
+                <small>Actual effort</small>
+            </div>
+
+            <button
+                type="button"
+                className="save-schedule-button"
+                onClick={handleSaveSchedule}
+                disabled={savingSchedule}
+            >
+                {savingSchedule ? "Saving..." : "Save Schedule"}
+            </button>
+
+            {scheduleMessage && (
+                <p className="schedule-message" role="status">
+                    {scheduleMessage}
+                </p>
+            )}
+            {scheduleMessage && (
+                    <p className="schedule-message" role="status">
+                        {scheduleMessage}
+                    </p>
+                )}
+            </section>
 
 
-    
-
-    {scheduleMessage && (
-        <p className="schedule-message" role="status">
-            {scheduleMessage}
-        </p>
-    )}
-</section>
-
-
-                                            {/* MANUAL TIME LOG */}
-                                            <button
-                                                type="button"
-                                                className="log-time-button"
-                                                onClick={() => openTimeLog(selectedTask)}
-                                            >
-                                                <Plus size={16} />
-                                                Log Time Manually
-                                            </button>
-                                        </div>
+                                                        
+                                                        
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
                                     </>
-                                );
-                            })()}
+                                )}
+                            </aside>
                         </>
                     )}
-                </aside>
-
-
-
 
                 </div>
 
@@ -1987,7 +2104,7 @@ return (
                     className="complete-sprint-modal"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <h2>Complete Sprint</h2>
+                    <h2>End Sprint</h2>
 
                     <p>
                         Finish <strong>{selectedSprint.sprint_name}</strong>?
@@ -2150,6 +2267,64 @@ return (
                 </div>
             </div>
         )}
+
+        {showStartSprintModal && selectedSprint && (
+    <div className="sprint-modal-overlay">
+        <div className="sprint-start-modal">
+            <h2>Start Sprint</h2>
+            <p>When would you like to start this sprint?</p>
+
+            <label className="sprint-start-option">
+                <input
+                    type="checkbox"
+                    checked={sprintStartChoice === "today"}
+                    onChange={() => setSprintStartChoice("today")}
+                />
+                <span>
+                    <strong>Today</strong>
+                    <small>Start the sprint today.</small>
+                </span>
+            </label>
+
+            <label className="sprint-start-option">
+                <input
+                    type="checkbox"
+                    checked={sprintStartChoice === "tomorrow"}
+                    onChange={() => setSprintStartChoice("tomorrow")}
+                />
+                <span>
+                    <strong>Tomorrow</strong>
+                    <small>Schedule the sprint for tomorrow.</small>
+                </span>
+            </label>
+
+            <div className="sprint-modal-actions">
+                <button
+                    type="button"
+                    className="sprint-cancel-button"
+                    onClick={() => setShowStartSprintModal(false)}
+                    disabled={startingSprint}
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    className="start-sprint-button"
+                    onClick={() =>
+                        handleStartSprint(
+                            selectedSprint.id,
+                            sprintStartChoice
+                        )
+                    }
+                    disabled={startingSprint}
+                >
+                    {startingSprint ? "Processing..." : "Confirm"}
+                </button>
+            </div>
+        </div>
+    </div>
+)}
     </div>
 );
 };

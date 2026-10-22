@@ -8,12 +8,6 @@ import {
     Search,
 } from "lucide-react";
 
-import {
-    PMSPageHeader,
-    PMSSearch,
-    PMSActionButton,
-} from "../../components/Common/Common";
-
 import RoleModal from "./RoleModal";
 import "./Roles.css";
 import api from "../../services/api";
@@ -138,6 +132,8 @@ function Roles() {
         }
     };
     // Search
+
+
     const filteredRoles = roles.filter((role) => {
 
         const searchText = search.toLowerCase();
@@ -203,22 +199,6 @@ function Roles() {
                         <p>
                             {roles.length} roles configured
                         </p>
-
-                    </div>
-
-                    <div className="search-box">
-
-                        <Search size={18} />
-
-                        <PMSSearch
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                            placeholder="Search roles..."
-                                   
-                        />
 
                     </div>
 

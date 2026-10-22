@@ -10,12 +10,8 @@ import {
 } from "lucide-react";
 
 import api from "../../services/api";
-
-import {
-    PMSPageHeader,
-} from "../../components/Common/Common";
-
 import "./Backlog.css";
+import { PMSPageHeader } from "../../components/Common/Common.jsx";
 
 
 const Backlog = () => {
@@ -35,6 +31,7 @@ const Backlog = () => {
 
     const [form, setForm] = useState({
         title: "",
+        description: "",
         assignedTo: "",
         priority: "",
         milestone: ""
@@ -139,7 +136,7 @@ const Backlog = () => {
         });
 
 
-            setMilestones(allMilestones);
+            setMilestones(projectMilestones);
 
         } catch (error) {
             console.error(
@@ -206,6 +203,7 @@ const Backlog = () => {
                 milestone: form.milestone
                 ? Number(form.milestone)
                 : null,
+                description: form.description || "",
 
             };
 
@@ -235,6 +233,7 @@ const Backlog = () => {
             // Clear form
             setForm({
                 title: "",
+                description: "",
                 assignedTo: "",
                 priority: "",
                 milestone: "",
@@ -336,6 +335,7 @@ const Backlog = () => {
 
         setForm({
             title: task.task_name || "",
+            description: task.description || "",
             assignedTo: task.assigned_to && typeof task.assigned_to === "object"
                 ? task.assigned_to.id
                 : task.assigned_to || "",
@@ -510,16 +510,29 @@ const Backlog = () => {
                                 />
 
                             </div>
+
+                            {/* DESCRIPTION - NEW FIELD */}
+                            <div className="backlog-form-group">
+                                <label>Description</label>
+
+                                <textarea
+                                    name="description"
+                                    value={form.description || ""}
+                                    onChange={handleChange}
+                                    placeholder="Enter backlog description"
+                                    rows={2}
+                                />
+                            </div>
                             
                             <div className="backlog-form-group">
-    <label>Milestone</label>
+    <label>Module</label>
 
     <select
         name="milestone"
         value={form.milestone}
         onChange={handleChange}
     >
-        <option value="">Select Milestone</option>
+        <option value="">Select Module</option>
 
         {milestones.map((milestone) => (
             <option  key ={milestone.id} value={milestone.id}>
@@ -552,7 +565,7 @@ const Backlog = () => {
                                             `${user.first_name || ""} ${
                                                 user.last_name || ""
                                             }`.trim() || user.username;
-
+ 
                                         const designation = 
                                             typeof user.designation === "object"
                                                 ? user.designation?.name
@@ -651,7 +664,8 @@ const Backlog = () => {
 
                 <div className="backlog-table-header">
                     <div>Backlog Item</div>
-                    <div>Milestone</div>
+                    <div>Description</div>
+                    <div>Module</div>
                     <div>Priority</div>
                     <div>Assigned To</div>
                     <div>Actions</div>
@@ -712,8 +726,12 @@ const Backlog = () => {
                                     {task.task_name || "-"}
                                 </div>
 
+                                <div className="backlog-description">
+                                    {task.description || "-"}
+                                </div>
+
                                 <div className="backlog-milestone">
-                                    {milestoneName || "-"}
+                                    {milestoneName}
                                 </div>
                                 
                                {/* PRIORITY */}
