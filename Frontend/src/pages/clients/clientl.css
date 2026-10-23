@@ -1,6 +1,8 @@
 .clients-page {
-    min-height: calc(100vh - 72px);
-    padding: 28px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 34px 74px 28px;
+    background: #f5f6f9;
     color: #1f2937;
 }
 
@@ -297,7 +299,7 @@
 
 @media (max-width: 640px) {
     .clients-page {
-        padding: 20px 14px;
+        padding: 24px 20px;
     }
 
     .clients-toolbar {

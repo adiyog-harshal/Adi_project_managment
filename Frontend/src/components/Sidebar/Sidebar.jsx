@@ -10,60 +10,38 @@ import {
     Users,
     Settings,
     ShieldCheck,
-    ChevronRight,
-    ClipboardList,
-    LogOut
+    ChevronDown
 } from "lucide-react";
 
-
-
-
 const Sidebar = () => {
-    const [masterOpen, setMasterOpen] = useState(false);
-
     const location = useLocation();
-
-    const masterActive =
-        location.pathname === "/roles" ||
-        location.pathname === "/designations" ||
-        location.pathname === "/clients";
-
-
+    const masterPaths = ["/roles", "/clients", "/designations"];
+    const masterActive = masterPaths.includes(location.pathname);
+    const [masterState, setMasterState] = useState({
+        pathname: location.pathname,
+        open: masterActive,
+    });
+    const masterOpen = masterState.pathname === location.pathname
+        ? masterState.open
+        : masterActive;
 
     return (
-
         <aside className="sidebar">
-
-            {/* LOGO */}
-
             <div className="sidebar-logo">
-
-                <div className="logo-icon">
-                    PMS
-                </div>
-
-                <span>
-                    Project Management
-                </span>
-
+                <div className="">PMS  <span> <h3>Project Management System</h3></span></div>
+                
             </div>
 
-            {/* NAVIGATION */}
-
             <nav className="sidebar-nav">
-
-                <p className="menu-title">
-                    MAIN MENU
-                </p>
-
+                <p className="menu-title">MAIN MENU</p>
                 <NavLink
                     to="/"
+                    end
                     className={({ isActive }) =>
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
                 >
                     <LayoutDashboard size={20} />
-
                     <span>Dashboard</span>
                 </NavLink>
 
@@ -73,11 +51,10 @@ const Sidebar = () => {
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
                 >
-
                     <FolderKanban size={20} />
-
                     <span>Projects</span>
                 </NavLink>
+
                 <NavLink
                     to="/users"
                     className={({ isActive }) =>
@@ -88,35 +65,31 @@ const Sidebar = () => {
                     <span>Users</span>
                 </NavLink>
 
-                {/* MASTER MENU */}
-
                 <div className="master-menu">
-
                     <button
                         type="button"
                         className={`sidebar-link master-button ${masterActive ? "active" : ""
                             }`}
-                        onClick={() => setMasterOpen(!masterOpen)}
+                        onClick={() => setMasterState({
+                            pathname: location.pathname,
+                            open: !masterOpen,
+                        })}
+                        aria-expanded={masterOpen}
+                        aria-controls="master-submenu"
                     >
-
                         <div className="master-left">
                             <ShieldCheck size={20} />
                             <span>Master</span>
                         </div>
-
-                        <ChevronRight
+                        <ChevronDown
                             size={18}
                             className={`master-arrow ${masterOpen ? "master-arrow-open" : ""
                                 }`}
                         />
-
                     </button>
 
-
                     {masterOpen && (
-
-                        <div className="master-submenu">
-
+                        <div className="master-submenu" id="master-submenu">
                             <NavLink
                                 to="/roles"
                                 className={({ isActive }) =>
@@ -126,7 +99,6 @@ const Sidebar = () => {
                             >
                                 <ShieldCheck size={18} />
                                 <span>Roles</span>
-
                             </NavLink>
 
                             <NavLink
@@ -138,7 +110,6 @@ const Sidebar = () => {
                             >
                                 <Users size={18} />
                                 <span>Clients</span>
-
                             </NavLink>
 
                             <NavLink
@@ -151,27 +122,22 @@ const Sidebar = () => {
                                 <BriefcaseBusiness size={18} />
                                 <span>Designations</span>
                             </NavLink>
-
                         </div>
-
                     )}
-
                 </div>
 
-                <a href="#" className="sidebar-link">
-
+                <NavLink
+                    to="/settings"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
                     <Settings size={20} />
                     <span>Settings</span>
-                </a>
-
+                </NavLink>
             </nav>
-
-
         </aside>
-
-
     );
-
 };
 
 export default Sidebar;

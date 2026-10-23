@@ -210,8 +210,8 @@ export default function Clients() {
                             type="search"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Search clients, projects, or contact"
-                            aria-label="Search clients, projects, or contact"
+                            placeholder="Search clients or projects"
+                            aria-label="Search clients or projects"
                         />
                     </label>
                 </div>

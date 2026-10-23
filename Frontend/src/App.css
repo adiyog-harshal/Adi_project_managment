@@ -14,15 +14,16 @@ body {
 }
 
 
+/* Main Content */
 
 .main-content {
-    margin-left: 250px;
+    margin-left: 294px;
     min-height: 100vh;
 }
 
 @media (max-width: 700px) {
     .main-content {
-        margin-left: 68px;
+        margin-left: 220px;
     }
 }
 
@@ -39,7 +40,7 @@ body {
 }
 
 
-
+/* Dashboard */
 
 .dashboard-content {
     padding: 30px;
@@ -147,7 +148,6 @@ body {
     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
     overflow: hidden;
     z-index: 10000;
-    margin-left: auto;
 }
 
 /* ============================= */

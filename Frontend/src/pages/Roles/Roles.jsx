@@ -120,33 +120,6 @@ function Roles() {
 
 
     // Save role
-    const handleSaveRole = async (roleData) => {
-        const payload = {
-            role_name: roleData.name.trim(),
-            is_active: roleData.status === "Active",
-        };
-
-        try {
-            if (selectedRole) {
-                await api.put(`roles/${selectedRole.id}/`, payload);
-            } else {
-                await api.post("roles/", payload);
-            }
-
-            await fetchRoles();
-            setIsModalOpen(false);
-            setSelectedRole(null);
-
-        } catch (error) {
-            console.error("Failed to save role:", error.response?.data || error);
-            alert(
-                "Failed to save role. Check the browser console for the error."
-            );
-
-        }
-        setIsModalOpen(false);
-        setSelectedRole(null);
-    };
 
 
     // Save role

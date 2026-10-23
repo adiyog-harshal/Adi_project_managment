@@ -238,26 +238,6 @@ const Sprints = () => {
         }
     };
 
-    const columns = ["To Do", "In Progress", "Completed"];
-
-    if (loading) {
-        return <div className="sprints-page"><p>Loading sprints...</p></div>;
-    }
-
-    const handleStartSprint = async (sprintId) => {
-        try {
-            await api.post(`sprints/${sprintId}/start/`);
-
-            // Refresh sprint list after starting
-            await fetchSprints();
-        } catch (error) {
-            alert(
-                error.response?.data?.detail ||
-                "Unable to start sprint."
-            );
-        }
-    };
-
     return (
         <div className="sprints-page">
             <button
@@ -266,39 +246,6 @@ const Sprints = () => {
             >
                 <ArrowLeft size={17} /> Back to Project
             </button>
-
-            <div className="sprints-header">
-                <div>
-                    <span className="sprints-eyebrow">PROJECT WORKSPACE</span>
-                    <h1>Sprint Management</h1>
-                    <p>Plan your sprints and track task progress.</p>
-                </div>
-
-                <button
-                    type="button"
-                    className="sprints-create-button"
-                    onClick={() => {
-                        setError("");
-                        setShowAddTasks(false);
-                        setEditingSprintId(null);
-
-                        setSprintForm({
-                            sprint_name: "",
-                            goal: "",
-                            start_date: "",
-                            end_date: "",
-                            status: "Planned",
-                        });
-                        setShowForm(true);
-                    }}
-                >
-                    <Plus size={18} />
-                    Create Sprint
-                </button>
-
-
-
-            </div>
 
             <div className="sprints-header">
                 <div>
@@ -516,29 +463,6 @@ const Sprints = () => {
                                         <Pencil size={16} />
                                     </button>
                                 </span>
-
-                                {/* Start sprint Button */}
-                                {sprint.status === "Planned" && (
-                                    <button
-                                        type="button"
-                                        className="start-sprint-button"
-                                        title="Start Sprint"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleStartSprint(sprint.id);
-                                        }}
-
-                                    >
-                                        Start Sprint
-                                    </button>
-                                )}
-
-                                <button
-                                    type="button"
-                                    className="edit-sprint-button"
-                                    title="Edit Sprint"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
 
                             </div>
 

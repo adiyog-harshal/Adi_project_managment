@@ -118,8 +118,7 @@ function RoutesLayout() {
 
                     <div className="top-header-right">
                         {/* USER MENU */}
-                        <div className="user-menu-wrapper">
-
+                        <div className="user-menu">
                             <button
                                 type="button"
                                 className="user-menu-button"

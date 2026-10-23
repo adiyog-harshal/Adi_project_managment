@@ -3,9 +3,6 @@ import React, { useEffect, useState, useRef } from "react";
 import {
     Plus,
     Search,
-    MoreVertical,
-    Pencil,
-    Trash2,
     FolderKanban,
     Bell,
     FolderOpen,
@@ -23,14 +20,13 @@ const Projects = () => {
 
     const [showForm, setShowForm] = useState(false);
     const [users, setUsers] = useState([]);
+    const [clients, setClients] = useState([]);
     const [projects, setProjects] = useState([]);
 
     const [notifications, setNotifications] = useState([]);
     const [showNotifications, setShowNotifications] = useState(false);
 
     const [search, setSearch] = useState("");
-    const [openAction, setOpenAction] = useState(null);
-
     const navigate = useNavigate();
 
     const [editingProject, setEditingProject] = useState(null);
@@ -81,13 +77,12 @@ const Projects = () => {
 
     const [selectedProject, setSelectedProject] = useState(null);
 
-    const [selectedProject, setSelectedProject] = useState(null);
-
     const [projectForm, setProjectForm] = useState({
         project_name: "",
         start_date: "",
         end_date: "",
         project_manager: "",
+        client: "",
         description: ""
     });
 
@@ -165,6 +160,7 @@ const Projects = () => {
                 start_date: "",
                 end_date: "",
                 project_manager: "",
+                client: "",
                 description: ""
             });
 
@@ -209,6 +205,16 @@ const Projects = () => {
         }
     };
 
+    const fetchClients = async () => {
+        try {
+            const response = await api.get("clients/");
+            const data = response.data;
+            setClients(Array.isArray(data) ? data : data.results || []);
+        } catch (error) {
+            console.error("Error fetching clients:", error);
+        }
+    };
+
     // NOTIFICATIONS
     const fetchNotifications = async () => {
         try {
@@ -225,6 +231,7 @@ const Projects = () => {
     useEffect(() => {
         fetchProjects();
         fetchUsers();
+        fetchClients();
         fetchNotifications();
 
         const interval = setInterval(fetchNotifications, 30000);
@@ -263,47 +270,6 @@ const Projects = () => {
 
     const currentProjects =
         filteredProjects.slice(startIndex, endIndex);
-
-    // EDIT PROJECT
-    const handleEditProject = (project) => {
-
-        setProjectForm({
-            project_name: project.project_name || "",
-            start_date: project.start_date || "",
-            end_date: project.end_date || "",
-            project_manager: project.project_manager || "",
-            description: project.description || ""
-        });
-
-        setEditingProject(project);
-        setShowForm(true);
-    };
-
-    // DELETE PROJECT
-    const handleDeleteProject = async (id) => {
-
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this project?"
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        try {
-
-            await api.delete(`projects/${id}/`);
-
-            await fetchProjects();
-
-        } catch (error) {
-
-            console.error("Delete project error:", error);
-
-            alert("Failed to delete project.");
-
-        }
-    };
 
     const calculateProgress = (project) => {
         if (!project.start_date || !project.end_date) {
@@ -578,12 +544,8 @@ const Projects = () => {
                                 </select>
                             </div>
 
-
-
-
-
-
-                            {/* Start Date */}
+                            
+                              {/* Start Date */}
                             <div className="form-group">
                                 <label>Start Date</label>
 
@@ -611,9 +573,27 @@ const Projects = () => {
 
                                 />
                             </div>
+                             <div className="form-group full-width client-field">
+                                <label>Client</label>
 
+                                <select
+                                    name="client"
+                                    value={projectForm.client}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select Client (optional)</option>
+
+                                    {clients.map((client) => (
+                                        <option key={client.id} value={client.id}>
+                                            {client.client_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                                 
                             <div className="form-group full-width">
-                                <label>Description</label>
+                                <label>Description</label> 
+                                
 
                                 <textarea
                                     name="description"
@@ -689,13 +669,13 @@ const Projects = () => {
 
                         <span>Projects</span>
 
+                        <span> Client </span>
+
                         <span>Start Date</span>
 
                         <span>End Date</span>
 
                         <span>Progress</span>
-
-                        <span>Actions</span>
 
                     </div>
 
@@ -710,6 +690,7 @@ const Projects = () => {
                                     <div className="project-icon">
                                         <FolderKanban size={18} />
                                     </div>
+                                    
 
                                     <div>
                                         <Link
@@ -720,7 +701,11 @@ const Projects = () => {
                                         </Link>
                                     </div>
                                 </div>
-
+                                  
+                                {/* CLIENT */}
+                                <span>
+                                    {project.client_name || "-"}
+                                </span>
 
                                 {/* START DATE */}
                                 <span>
@@ -748,62 +733,6 @@ const Projects = () => {
                                     </span>
 
                                 </div>
-
-                                {/* STATUS */}
-
-
-                                {/* ACTION */}
-                                <div
-                                    className="action-menu"
-                                >
-
-
-                                    <button
-                                        type="button"
-                                        className="action-button"
-                                        onClick={() => {
-
-
-                                            setOpenAction(
-                                                openAction === project.id ? null : project.id
-                                            );
-                                        }}
-                                    >
-                                        <MoreVertical size={18} />
-                                    </button>
-
-                                    {openAction === project.id && (
-                                        <div
-                                            className="action-dropdown"
-
-                                        >
-
-
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setOpenAction(null);
-                                                    handleEditProject(project);
-                                                }}
-                                            >
-                                                Edit
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setOpenAction(null);
-                                                    handleDeleteProject(project.id);
-
-                                                }}
-                                            >
-
-                                                Delete
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-
                             </div>
                         ))
                     ) : (
@@ -851,82 +780,8 @@ const Projects = () => {
                     </div>
                 </div>
             </div>
-
         </div>
 
-            {/* PROJECT DETAILS */ }
-
-    {
-        selectedProject && (
-            <div className="project-details-page">
-
-                <div className="project-details-header">
-
-                    <div>
-                        <h1>
-                            {selectedProject.project_name}
-                        </h1>
-
-                        <p>
-                            {selectedProject.client}
-                        </p>
-                    </div>
-
-                    <button
-                        className="back-project-btn"
-                        onClick={() => setSelectedProject(null)}
-                    >
-                        Back to Projects
-                    </button>
-
-                </div>
-
-                {/* PROJECT TABS */}
-
-                <div className="project-details-tabs">
-
-                    <button className="project-tab active">
-                        Overview
-                    </button>
-
-                    <button className="project-tab">
-                        Backlog
-                    </button>
-
-                    <button className="project-tab">
-                        Tasks
-                    </button>
-
-                    <button className="project-tab">
-                        Milestones
-                    </button>
-
-                    <button className="project-tab">
-                        Sprints
-                    </button>
-
-                </div>
-
-                {/* OVERVIEW */}
-
-                <div className="project-details-card">
-
-                    <h2>
-                        Project Overview
-                    </h2>
-
-                    <p>
-                        Project details and activities will appear here.
-                    </p>
-
-                </div>
-
-            </div>
-        )
-    }
-
-        </div >
-      
     );
 };
 

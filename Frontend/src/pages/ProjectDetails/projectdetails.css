@@ -249,7 +249,7 @@
 
 /* Summary Text */
 .project-summary-card>div:last-child {
-    >>>>>>>b134cfb (Added sprints page) min-width: 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -414,11 +414,11 @@
 .project-description {
     width: 100%;
 
-    min-height: 170px;
+    min-height: 160px;
 
     box-sizing: border-box;
 
-    padding: 30px;
+    padding: 20px;
 
     background: #f7fbff;
 
