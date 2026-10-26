@@ -234,20 +234,6 @@ const Tasks = () => {
 
       <div className="filter-card">
 
-        <div className="search-box">
-          <Search size={18} />
-          <input
-            type="text"
-            placeholder="Search tasks..."
-            value={searchTerm}
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              setCurrentPage(1);
-            }}
-            aria-label="Search tasks"
-          />
-        </div>
-
         <select className="filter-select" value={projectFilter} onChange={(event) => {
           setProjectFilter(event.target.value);
           setCurrentPage(1);

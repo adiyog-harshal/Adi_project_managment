@@ -54,17 +54,29 @@
     background: #ffffff;
     box-shadow: 0 8px 28px rgba(49, 46, 129, 0.07);
 }
+.backlog-card {
+    padding: 20px;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+.backlog-table-header,
+.backlog-table-row {
+    padding-left: 12px;
+    padding-right: 12px;
+    box-sizing: border-box;
+}
+
+
 
 /* Table column layout */
 .backlog-table-header,
 .backlog-table-row {
-    min-width: 1000px;
     display: grid;
-    grid-template-columns: 2fr 2.5fr 1fr 1.5fr 0.8fr;
-    column-gap: 18px;
+    grid-template-columns: minmax(150px, 1.3fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(80px, 0.7fr) minmax(120px, 1fr) minmax(90px, 0.7fr);
     align-items: center;
-    padding: 0 22px;
-    box-sizing: border-box;
+    gap: 12px;
+    width: 100%;
 }
 
 /* Table header */
@@ -545,3 +557,5 @@
     color: #c66b75;
     border-color: #ffe4e6;
 }
+
+

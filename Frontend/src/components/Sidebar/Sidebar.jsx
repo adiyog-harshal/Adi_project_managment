@@ -15,9 +15,6 @@ import {
     LogOut
 } from "lucide-react";
 
-
-
-
 const Sidebar = () => {
     const [masterOpen, setMasterOpen] = useState(false);
 
@@ -87,6 +84,7 @@ const Sidebar = () => {
                 <span>Users</span>
                 </NavLink>
 
+
                 <NavLink
                     to="/milestones"
                     className={({ isActive }) =>
@@ -96,6 +94,7 @@ const Sidebar = () => {
                     <ClipboardList size={20} />
                     <span>Milestones</span>
                 </NavLink>
+
 
 
                 {/* MASTER MENU */}

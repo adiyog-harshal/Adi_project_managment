@@ -1,102 +1,68 @@
+
 import React from "react";
-import { Search, Plus, MoreVertical } from "lucide-react";
+import { Search, X } from "lucide-react";
 import "./Common.css";
 
-
-/* ================================
-   PAGE HEADER
-================================ */
-
-export const PMSPageHeader = ({
-    title,
-    subtitle,
-    buttonText,
-    onButtonClick,
-    buttonIcon = <Plus size={16} />,
-    searchValue,
-    onSearchChange,
-    searchPlaceholder = "Search",
-}) => {
+// Reusable search component
+export default function CommonSearch({
+    search,
+    setSearch,
+    placeholder = "Search..."
+}) {
     return (
-        <div className="pms-page-header">
-
-            <div className="pms-page-header-left">
-                <h1 className="pms-page-title">
-                    {title}
-                </h1>
-
-                {subtitle && (
-                    <p className="pms-page-subtitle">
-                        {subtitle}
-                    </p>
-                )}
-            </div>
-
-            <div className="pms-page-header-right">
-
-                {onSearchChange && (
-                    <PMSSearch
-                        value={searchValue}
-                        onChange={onSearchChange}
-                        placeholder={searchPlaceholder}
-                    />
-                )}
-
-                {buttonText && (
-                    <button
-                        type="button"
-                        className="pms-primary-button"
-                        onClick={onButtonClick}
-                    >
-                        {buttonIcon}
-                        {buttonText}
-                    </button>
-                )}
-
-            </div>
-
-        </div>
-    );
-};
-
-/* ================================
-   SEARCH
-================================ */
-
-export const PMSSearch = ({
-    value,
-    onChange,
-    placeholder = "Search",
-}) => {
-    return (
-        <div className="pms-search">
-
-            <Search size={16} />
+        <div className="common-search-box">
+            <Search
+                size={18}
+                className="common-search-icon"
+            />
 
             <input
                 type="text"
-                value={value}
-                onChange={onChange}
+                className="common-search-input"
                 placeholder={placeholder}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
             />
 
+            {search && (
+                <button
+                    type="button"
+                    className="common-search-clear"
+                    onClick={() => setSearch("")}
+                    aria-label="Clear search"
+                >
+                    <X size={16} />
+                </button>
+            )}
         </div>
     );
-};
+}
 
-
-/* ================================
-   ACTION BUTTON
-================================ */
-
-export const PMSActionButton = ({ onClick }) => {
+// Reusable PMS page header
+export function PMSPageHeader({
+    title,
+    subtitle,
+    buttonText,
+    buttonIcon,
+    onButtonClick,
+}) {
     return (
-        <button
-            type="button"
-            className="pms-action-button"
-            onClick={onClick}
-        >
-            <MoreVertical size={18} />
-        </button>
+        <div className="pms-page-header">
+            <div className="pms-page-header-title">
+                <h1>{title}</h1>
+                <p>{subtitle}</p>
+            </div>
+
+            {buttonText && (
+                <button
+                    type="button"
+                    className="pms-page-header-button"
+                    onClick={onButtonClick}
+                >
+                    {buttonIcon}
+                    <span>{buttonText}</span>
+                </button>
+            )}
+        </div>
     );
-};
+}

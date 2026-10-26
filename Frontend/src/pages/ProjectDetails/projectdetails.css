@@ -1783,3 +1783,75 @@
     background: #a9a0ed;
     border-radius: 8px;
 }
+
+/* Team member row */
+.project-member-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+/* Member details take the available space */
+.member-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Role checkboxes on the right */
+.member-role-checkboxes {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
+}
+
+.member-role-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: #7ba4da;
+    white-space: nowrap;
+}
+
+.member-role-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #6d5dfc;
+    cursor: pointer;
+}
+
+.member-role-option input[type="checkbox"]:focus-visible {
+    outline: 2px solid #6d5dfc;
+    outline-offset: 3px;
+}
+
+/* Responsive layout for smaller screens */
+@media (max-width: 700px) {
+    .project-member-card {
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .member-info {
+        flex-basis: calc(100% - 70px);
+    }
+
+    .member-role-checkboxes {
+        width: 100%;
+        padding-left: 4px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}

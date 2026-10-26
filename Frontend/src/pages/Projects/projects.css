@@ -2728,3 +2728,47 @@
     border-radius: 50%;
     background: #7c3aed;
 }
+.projects-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.project-title {
+    flex-shrink: 0;
+}
+
+.projects-header .common-search-box {
+    flex: 1;
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.projects-header .add-project-btn {
+    flex-shrink: 0;
+}
+.projects-page .projects-header {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px;
+}
+
+.projects-page .projects-header .project-title {
+    flex: 0 0 auto;
+}
+
+.projects-page .projects-header .common-search-box {
+    flex: 0 1 350px;
+    width: 350px;
+    min-width: 200px;
+    margin: 0;
+}
+
+.projects-page .projects-header .add-project-btn {
+    flex: 0 0 auto;
+}

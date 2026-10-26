@@ -380,15 +380,6 @@ const Tasks = () => {
 
       <div className="filter-card">
 
-        <PMSSearch
-          value={Search}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-          }}
-          placeholder="Search tasks"
-        />
-
         <select className="filter-select" value={projectFilter} onChange={(event) => {
           setProjectFilter(event.target.value);
           setCurrentPage(1);
