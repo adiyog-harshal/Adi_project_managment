@@ -3,6 +3,7 @@ padding: 28px;
 color: #20243a;
 background: #f7f8fc;
 min-height: 100vh;
+
 }
 
 .sprints-back-button {
@@ -33,7 +34,7 @@ margin-bottom: 28px;
 
 .sprints-header h1 {
 margin: 5px 0;
-font-size: 21px;
+font-size: 20px;
 line-height: 1.3;
 font-weight: 700;
 }
@@ -166,21 +167,19 @@ margin: 30px 0 16px;
 }
 
 .sprint-cards {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+    gap: 10px;
 }
 
 .sprint-card {
-    min-width: 0;
-    padding: 15px;
-    border: 1px solid #e7e9f2;
-    border-radius: 11px;
-    background: #f0c3c3;
-    color: #242941;
-    text-align: left;
+    width: 100%;
+    min-height: 85px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    border-radius: 10px;
     cursor: pointer;
-    transition: border-color .2s, box-shadow .2s, transform .2s;
 }
 
 .sprint-card:hover {
@@ -230,11 +229,17 @@ background: #e7f0ff;
 color: #3468bc;
 }
 
-.sprint-card h3 {
-margin: 12px 0 6px;
-font-size: 17px;
+/* Make sprint card content compact */
+.sprint-card h3,
+.sprint-card h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
 }
 
+.sprint-card p {
+    margin: 4px 0;
+    font-size: 12px;
+}
 .sprint-card > p {
 min-height: 32px;
 margin: 0 0 18px;
@@ -962,3 +967,3042 @@ text-align: center;
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.sprint-task-count {
+    display: inline-block;
+    padding: 0;
+    margin-top: 12px;
+    border: none;
+    background: transparent;
+    color: #5145e5;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sprint-task-count:hover {
+    color: #3730a3;
+    text-decoration: underline;
+}
+/* move to backlog */
+.move-to-backlog-button {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border: 1px solid #e0d7ff;
+    border-radius: 7px;
+    background: #f5f2ff;
+    color: #6554f0;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.move-to-backlog-button:hover {
+    background: #eae4ff;
+    border-color: #6554f0;
+}
+
+.carryover-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.carryover-sprint-select {
+    flex: 1;
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid #e0d7ff;
+    border-radius: 7px;
+    background: #fff;
+}
+
+.carryover-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 7px;
+    background: #6554f0;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.carryover-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* time tracking  */
+
+/* TIME TRACKING SUMMARY ON TASK CARDS */
+.task-time-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eeeaf7;
+}
+
+.task-time-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.task-time-summary span {
+    font-size: 12px;
+    color: #77738b;
+}
+
+.task-time-summary strong {
+    font-size: 14px;
+    color: #28243b;
+}
+
+.log-time-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 11px;
+    border: 1px solid #ddd6fe;
+    border-radius: 8px;
+    background: #f5f3ff;
+    color: #5b45d6;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.log-time-button:hover {
+    background: #eae5ff;
+}
+
+/* TIME LOG MODAL */
+.time-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(24, 20, 43, 0.52);
+    backdrop-filter: blur(4px);
+}
+
+.time-modal {
+    width: 100%;
+    max-width: 540px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 26px;
+    border: 1px solid #eeeaf7;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 24px 80px rgba(24, 20, 43, 0.2);
+}
+
+.time-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.time-modal-header h2 {
+    margin: 8px 0;
+    color: #242037;
+    font-size: 24px;
+}
+
+.time-modal-header p {
+    margin: 0;
+    color: #77738b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.time-modal-close {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 9px;
+    background: #f4f2f9;
+    color: #514b65;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.time-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.time-form-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #39344d;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.time-form-grid input,
+.time-form-grid select,
+.time-form-grid textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 1px solid #ded9eb;
+    border-radius: 9px;
+    outline: none;
+    background: #fff;
+    color: #29243d;
+    font: inherit;
+    font-weight: 400;
+}
+
+.time-form-grid input:focus,
+.time-form-grid select:focus,
+.time-form-grid textarea:focus {
+    border-color: #7965ed;
+    box-shadow: 0 0 0 3px rgba(121, 101, 237, 0.12);
+}
+
+.time-form-full {
+    grid-column: 1 / -1;
+}
+
+.time-form-grid textarea {
+    resize: vertical;
+}
+
+.time-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #eeeaf7;
+}
+
+@media (max-width: 560px) {
+    .time-modal {
+        padding: 18px;
+    }
+
+    .time-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .time-form-full {
+        grid-column: auto;
+    }
+}
+
+
+/* SPRINT TASK LISTS  */
+
+
+/* TASK LIST + RIGHT DETAILS PANEL */
+.sprint-content-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 20px;
+    align-items: start;
+    margin-top: 20px;
+}
+
+.sprint-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
+.sprint-list-header {
+    margin-bottom: 4px;
+}
+
+.sprint-list-header h3 {
+    margin: 0 0 5px;
+    font-size: 18px;
+    color: #1f2937;
+}
+
+.sprint-list-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.sprint-task-row {
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+}
+
+.sprint-task-row:hover {
+    background: #f8faff;
+    border-color: #a5b4fc;
+}
+
+.sprint-task-row.selected {
+    background: #f0f4ff;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 1px #6366f1;
+}
+
+.sprint-task-main h4 {
+    margin: 7px 0;
+    font-size: 15px;
+    color: #1f2937;
+}
+
+.sprint-task-main p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.sprint-task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px 14px;
+    margin-top: 12px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+/* RIGHT DETAILS PANEL */
+.task-details-panel {
+    position: sticky;
+    top: 20px;
+    min-width: 0;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 6px 22px rgba(15, 23, 42, .06);
+}
+
+.task-details-empty {
+    padding: 35px 20px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.task-details-empty svg {
+    color: #6366f1;
+}
+
+.task-details-empty h3 {
+    color: #1f2937;
+}
+
+.task-details-empty p {
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.task-details-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.task-details-header span {
+    color: #6366f1;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.task-details-header h2 {
+    margin: 8px 0 0;
+    color: #111827;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.task-details-header button {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.task-details-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 20px;
+}
+
+.task-details-content h4 {
+    margin: 8px 0 0;
+    color: #374151;
+    font-size: 13px;
+}
+
+.task-details-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.task-time-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 4px;
+    background: #f8faff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.task-time-detail span {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.task-time-detail strong {
+    color: #1f2937;
+    font-size: 20px;
+}
+
+.task-details-content .log-time-button {
+    margin-top: 8px;
+}
+
+@media (max-width: 1000px) {
+    .sprint-content-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .task-details-panel {
+        position: static;
+        max-height: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .sprint-task-row {
+        padding: 12px;
+    }
+
+    .carryover-controls {
+        flex-wrap: wrap;
+    }
+
+    .carryover-sprint-select {
+        max-width: 100%;
+    }
+}
+/* task looks like a compact list row */
+
+
+/* Compact sprint task list */
+.sprint-content-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+    align-items: start;
+    width: 100%;
+}
+
+.sprint-task-list {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.sprint-list-header {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.sprint-task-row {
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid #edf0f5;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.sprint-task-row:last-child {
+    border-bottom: none;
+}
+
+.sprint-task-row:hover {
+    background: #f8faff;
+}
+
+.sprint-task-row.selected {
+    background: #eef2ff;
+    border-left: 3px solid #635bff;
+    box-shadow: none;
+}
+
+.sprint-task-main h4 {
+    margin: 5px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sprint-task-main p {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.sprint-task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 8px;
+    font-size: 11px;
+}
+
+/* Keep task details in a separate right panel */
+.task-details-panel {
+    width: 100%;
+    min-width: 0;
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+}
+
+/* Smaller details spacing */
+.task-details-header {
+    padding: 16px;
+}
+
+.task-details-content {
+    padding: 16px;
+    gap: 8px;
+}
+
+.task-details-content h4 {
+    margin-top: 8px;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+    .sprint-content-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .task-details-panel {
+        position: static;
+        max-height: none;
+    }
+}
+
+
+/* Main sprint page: left list + right selected sprint */
+.sprint-workspace {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    margin-top: 20px;
+}
+
+/* Left sprint list */
+.sprint-sidebar {
+    min-width: 0;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.sprint-sidebar h2 {
+    margin: 0 0 14px;
+    font-size: 18px;
+}
+
+.sprint-sidebar .sprint-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sprint-sidebar .sprint-card {
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* Right selected sprint area */
+.sprint-main-panel {
+    min-width: 0;
+}
+
+.sprint-main-panel .sprint-board-section {
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .sprint-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .sprint-sidebar .sprint-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+
+/* Place sprint cards on the left and selected sprint on the right */
+.sprints-page {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    column-gap: 20px;
+    align-items: start;
+}
+
+/* Keep the page header and form across the full width */
+.sprints-back-button,
+.sprints-header,
+.sprint-form,
+.sprints-error,
+.sprints-empty {
+    grid-column: 1 / -1;
+}
+
+/* Left column: vertical sprint cards */
+.sprint-list-heading,
+.sprint-cards {
+    grid-column: 1;
+}
+
+.sprint-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-self: start;
+}
+
+.sprint-card {
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+}
+
+/* Right column: selected sprint board */
+.sprint-board-section {
+    grid-column: 2;
+    grid-row: 2 / span 10;
+    min-width: 0;
+    margin-top: 0;
+}
+
+/* Compact sprint cards */
+.sprint-card h3 {
+    font-size: 14px;
+}
+
+.sprint-card > p {
+    min-height: 0;
+    margin-bottom: 10px;
+}
+
+.sprint-card-icon {
+    width: 30px;
+    height: 30px;
+}
+
+/* Keep task layout inside the right panel */
+.sprint-content-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+    .sprints-page {
+        display: block;
+    }
+
+    .sprint-cards {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(180px, 1fr)
+        );
+    }
+
+    .sprint-board-section {
+        margin-top: 24px;
+    }
+
+    .sprint-content-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Align the sprint list and selected sprint board at the top */
+.sprints-page {
+    align-content: start;
+}
+
+/* Move the sprint list heading and cards to the top-left */
+.sprint-list-heading {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    margin-top: 0;
+}
+
+.sprint-cards {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: start;
+    margin-top: 0;
+}
+
+/* Start selected sprint details at the top-right */
+.sprint-board-section {
+    grid-column: 2;
+    grid-row: 2 / span 10;
+    align-self: start;
+    margin-top: 0;
+}
+
+/* Prevent extra spacing above the sprint content */
+.sprint-board-header {
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .sprint-list-heading,
+    .sprint-cards,
+    .sprint-board-section {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+
+/* Keep the page content in its normal vertical order */
+.sprints-page {
+    display: block;
+}
+
+/* Sprint heading and Create Sprint button stay at the top */
+.sprints-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+/* Create/Edit form stays below the header */
+.sprint-form {
+    width: 100%;
+    max-width: 760px;
+    margin: 20px 0 28px;
+}
+
+/* Sprint list and board appear side by side */
+.sprint-list-heading,
+.sprint-cards {
+    width: 250px;
+    box-sizing: border-box;
+}
+
+.sprint-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Position board beside the sprint list */
+.sprint-board-section {
+    margin-top: 0;
+}
+
+/* Two-column layout for the list and board */
+.sprints-page:has(.sprint-board-section) {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    column-gap: 20px;
+    align-content: start;
+}
+
+/* Keep header and form across both columns */
+.sprints-page:has(.sprint-board-section) > .sprints-header,
+.sprints-page:has(.sprint-board-section) > .sprint-form,
+.sprints-page:has(.sprint-board-section) > .sprints-back-button,
+.sprints-page:has(.sprint-board-section) > .sprints-error {
+    grid-column: 1 / -1;
+}
+
+/* Sprint heading and cards on the left */
+.sprints-page:has(.sprint-board-section) > .sprint-list-heading {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+    margin: 0 0 12px;
+}
+
+.sprints-page:has(.sprint-board-section) > .sprint-cards {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+    align-self: start;
+}
+
+/* Selected sprint board on the right */
+.sprints-page:has(.sprint-board-section) > .sprint-board-section {
+    grid-column: 2;
+    grid-row: auto;
+    align-self: start;
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .sprints-page:has(.sprint-board-section) {
+        display: block;
+    }
+
+    .sprints-page:has(.sprint-board-section) > .sprint-cards {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(180px, 1fr)
+        );
+    }
+
+    .sprints-page:has(.sprint-board-section) > .sprint-board-section {
+        margin-top: 24px;
+    }
+}
+/* HIDE SPRINT GOAL FROM SPRINT CARDS */
+.sprint-card .sprint-goal {
+    display: none;
+}
+
+
+/* Sprint task table */
+.sprint-task-list {
+    min-width: 0;
+    background: #fff;
+    border: 1px solid #e3e9f2;
+    border-radius: 12px;
+    padding: 18px;
+    overflow: hidden;
+}
+
+.sprint-list-header {
+    margin-bottom: 16px;
+}
+
+.sprint-list-header h3 {
+    margin: 0 0 5px;
+    font-size: 18px;
+}
+
+.sprint-list-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.sprint-task-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.sprint-task-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+}
+
+.sprint-task-table th {
+    padding: 13px 12px;
+    background: #f6f8fc;
+    color: #475569;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sprint-task-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #edf0f5;
+    color: #334155;
+}
+
+.sprint-task-table tbody tr {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.sprint-task-table tbody tr:hover {
+    background: #f7f9ff;
+}
+
+.sprint-task-table tbody tr.selected {
+    background: #edf4ff;
+}
+
+.sprint-task-table td:first-child strong {
+    display: block;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.sprint-task-table td:first-child small {
+    display: block;
+    margin-top: 5px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.sprint-progress-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 90px;
+}
+
+.sprint-progress-track {
+    width: 65px;
+    height: 6px;
+    background: #e8edf4;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.sprint-progress-fill {
+    height: 100%;
+    background: #22c55e;
+    border-radius: 10px;
+}
+
+.sprint-progress-cell small {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.sprint-task-table .task-status {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 20px;
+    background: #e8eef7;
+    color: #475569;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.sprint-task-table .task-status.in-progress {
+    background: #e1edff;
+    color: #2459c5;
+}
+
+.sprint-task-table .task-status.completed {
+    background: #d8f8e5;
+    color: #15803d;
+}
+
+@media (max-width: 700px) {
+    .sprint-task-list {
+        padding: 12px;
+    }
+
+    .sprint-task-table th,
+    .sprint-task-table td {
+        padding: 10px 8px;
+    }
+}
+
+
+/* Compact right-side task details panel */
+.task-details-panel {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #e3e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    box-sizing: border-box;
+    align-self: start;
+}
+
+.task-details-empty {
+    padding: 20px 10px;
+    text-align: center;
+}
+
+.task-details-empty svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 8px;
+}
+
+.task-details-empty h3 {
+    margin: 4px 0 6px;
+    font-size: 15px;
+}
+
+.task-details-empty p {
+    margin: 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.task-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.task-details-header span {
+    color: #64748b;
+    font-size: 10px;
+}
+
+.task-details-header h2 {
+    margin: 4px 0 0;
+    font-size: 15px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.task-details-header button {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+    cursor: pointer;
+}
+
+.task-details-content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-top: 10px;
+}
+
+.task-details-content h4 {
+    margin: 10px 0 3px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.task-details-content p {
+    margin: 0;
+    color: #253047;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.task-details-content .task-status-select {
+    width: 100%;
+    min-height: 32px;
+    margin: 2px 0 0;
+    padding: 6px 9px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+.task-time-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 9px 10px;
+    border-radius: 7px;
+    background: #f7f9fc;
+    font-size: 11px;
+}
+
+.task-time-detail span {
+    color: #64748b;
+}
+
+.task-time-detail strong {
+    color: #1e293b;
+    font-size: 12px;
+}
+
+.task-details-content .log-time-button {
+    align-self: flex-start;
+    margin-top: 12px;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.sprint-content-layout {
+    align-items: start;
+    gap: 16px;
+}
+
+@media (max-width: 700px) {
+    .task-details-panel {
+        padding: 12px;
+    }
+}
+
+/* ==========================================
+   RIGHT-SIDE TASK DETAILS PANEL
+   Clean white + purple + teal theme
+========================================== */
+
+.task-details-panel {
+    background: #ffffff;
+    color: #28304b;
+    border: 1px solid #e5e8f2;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(36, 45, 90, 0.06);
+    font-family: inherit;
+}
+
+/* Header */
+.task-details-panel .task-details-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    background: #fafaff;
+    border-bottom: 1px solid #e9eaf5;
+}
+
+.task-details-panel .task-id {
+    display: inline-block;
+    margin-bottom: 5px;
+    color: #6257d9;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+}
+
+.task-details-panel .task-details-header h2 {
+    margin: 0;
+    color: #2c0864;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.task-details-panel .task-details-close {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #e5e5f2;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #747b95;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.task-details-panel .task-details-close:hover {
+    background: #f0efff;
+    color: #5548d9;
+    border-color: #d5d0ff;
+}
+
+/* Scrollable details content */
+.task-details-panel .task-details-content {
+    padding: 18px 20px;
+    max-height: 75vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #d0d2e5 transparent;
+}
+
+.task-details-panel .task-details-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.task-details-panel .task-details-content::-webkit-scrollbar-thumb {
+    background: #d0d2e5;
+    border-radius: 10px;
+}
+
+/* Description, status, priority and assignee sections */
+.task-details-panel .task-info-section {
+    margin: 0 0 17px;
+    padding: 0 0 15px;
+    border-bottom: 1px solid #edf0f6;
+}
+
+.task-details-panel .task-info-section h4 {
+    margin: 0 0 8px;
+    color: #626b86;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.task-details-panel .task-description,
+.task-details-panel .task-info-section > p {
+    margin: 0;
+    color: #414a65;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* Status dropdown */
+.task-details-panel .task-status-select {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid #dfe3f0;
+    border-radius: 8px;
+    background: #f9faff;
+    color: #35405e;
+    font-size: 13px;
+    outline: none;
+}
+
+.task-details-panel .task-status-select:focus {
+    border-color: #8b82f6;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.10);
+}
+
+/* Priority badges */
+.task-details-panel .task-priority {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.task-details-panel .priority-high {
+    background: #fff0ee;
+    color: #c24136;
+}
+
+.task-details-panel .priority-medium {
+    background: #fff6df;
+    color: #9a6700;
+}
+
+.task-details-panel .priority-low {
+    background: #e9f8ef;
+    color: #237747;
+}
+
+/* Assigned user */
+.task-details-panel .task-assignee {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #414a65;
+    font-size: 13px;
+}
+
+.task-details-panel .task-assignee svg {
+    flex-shrink: 0;
+    color: #7165df;
+}
+
+/* Estimated and actual time layout */
+
+
+.task-details-panel .task-time-card {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid #e5e3ff;
+    border-radius: 11px;
+    background: #f7f6ff;
+}
+
+.task-details-panel .task-time-card.actual-card {
+    border-color: #cceee5;
+    background: #f0fbf8;
+}
+
+.task-details-panel .task-time-card > span {
+    display: block;
+    color: #737b95;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.task-details-panel .task-time-card strong {
+    display: block;
+    margin: 7px 0 5px;
+    color: #5a4bd6;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.task-details-panel .task-time-card.actual-card strong {
+    color: #087f70;
+}
+
+.task-details-panel .task-time-card small {
+    color: #858ca2;
+    font-size: 11px;
+}
+
+
+/* Smaller time cards */
+.task-details-panel .task-time-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 5px 0 10px;
+}
+.task-time-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.task-time-card {
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.task-time-card .time-label,
+.task-time-card h4 {
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.task-time-card .time-value,
+.task-time-card strong {
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+.task-time-card p {
+    font-size: 10px;
+    line-height: 1.4;
+    margin: 3px 0 0;
+}
+
+
+/* Work timer card */
+.task-details-panel .task-timer-card {
+    margin-top: 4px;
+    padding: 15px;
+    border: 1px solid #dfe4f4;
+    border-radius: 12px;
+    background: #fafbff;
+}
+
+.task-details-panel .task-timer-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.task-details-panel .task-timer-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: #eeecff;
+    color: #6558d9;
+}
+
+.task-details-panel .task-timer-heading h4 {
+    margin: 0 0 3px;
+    color: #303956;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.task-details-panel .task-timer-heading p {
+    margin: 0;
+    color: #8289a0;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.task-details-panel .timer-status {
+    margin-left: auto;
+    padding: 5px 8px;
+    border-radius: 20px;
+    background: #eceef4;
+    color: #626b80;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.task-details-panel .timer-status-running {
+    background: #d9f8eb;
+    color: #087a52;
+}
+
+/* Timer clock */
+.task-details-panel .task-timer-display {
+    margin: 15px 0 12px;
+    padding: 13px 10px;
+    border: 1px solid #d5eee8;
+    border-radius: 9px;
+    background: #f0fbf8;
+    color: #087f70;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Start / stop timer buttons */
+.task-details-panel .task-timer-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 20px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.task-details-panel .start-timer-button {
+    background: #6558d9;
+}
+
+.task-details-panel .start-timer-button:hover {
+    background: #5145c5;
+}
+
+.task-details-panel .stop-timer-button {
+    background: #d94850;
+}
+
+.task-details-panel .stop-timer-button:hover {
+    background: #bd303b;
+}
+
+.task-details-panel .task-timer-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.task-details-panel .timer-hint {
+    margin: 9px 0 0;
+    color: #8a7180;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Manual time log button */
+.task-details-panel .log-time-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 40px;
+    margin-top: 14px;
+    padding: 10px 14px;
+    border: 1px solid #d9d5ff;
+    border-radius: 9px;
+    background: #f4f2ff;
+    color: #5548c8;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.task-details-panel .log-time-button:hover {
+    background: #eae7ff;
+    border-color: #bcb5ff;
+}
+
+/* Empty state */
+.task-details-panel .task-details-empty {
+    padding: 45px 20px;
+    text-align: center;
+    color: #777f99;
+}
+
+.task-details-panel .task-details-empty svg {
+    color: #8175e8;
+}
+
+.task-details-panel .task-details-empty h4 {
+    margin: 12px 0 6px;
+    color: #343b5b;
+    font-size: 16px;
+}
+
+.task-details-panel .task-details-empty p {
+    margin: 0;
+    color: #8189a0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Smaller panel / mobile screens */
+@media (max-width: 600px) {
+    .task-details-panel .task-details-header {
+        padding: 15px;
+    }
+
+    .task-details-panel .task-details-content {
+        padding: 15px;
+        max-height: none;
+    }
+
+    .task-details-panel .task-time-cards {
+        gap: 5px;
+    }
+
+    .task-details-panel .task-time-card {
+        padding: 11px;
+    }
+
+    .task-details-panel .task-time-card strong {
+        font-size: 18px;
+    }
+
+    .task-details-panel .task-timer-display {
+        font-size: 22px;
+    }
+}
+
+
+/* Priority and Assigned To in the same row */
+.task-priority-assignee-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.task-priority-assignee-row .task-info-section {
+    min-width: 0;
+    margin-bottom: 10px;
+}
+
+.task-priority-assignee-row select {
+    width: 100%;
+    min-width: 0;
+    font-size: 12px;
+}
+
+.task-priority-assignee-row .task-assignee {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 400px) {
+    .task-priority-assignee-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+}
+
+
+
+.sprint-task-assignee {
+    width: 145px;
+    min-width: 110px;
+    padding: 8px 10px;
+    border: 1px solid #d8d5e8;
+    border-radius: 8px;
+    background: #fff;
+    color: #34304a;
+    font-size: 12px;
+    outline: none;
+}
+
+.sprint-task-assignee:focus {
+    border-color: #7866d8;
+    box-shadow: 0 0 0 2px rgba(120, 102, 216, 0.12);
+}
+
+.available-sprint-task {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.available-sprint-task > span {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 600px) {
+    .sprint-task-assignee {
+        width: 110px;
+        min-width: 90px;
+    }
+}
+
+
+.task-time-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.task-time-card {
+    min-width: 0;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.task-time-card label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.task-time-card input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid #d8d5e8;
+    border-radius: 6px;
+    background: #fff;
+    color: #34304a;
+    font-size: 13px;
+}
+
+.task-time-card input:focus {
+    outline: none;
+    border-color: #7866d8;
+}
+
+.task-time-card small {
+    display: block;
+    margin-top: 6px;
+    font-size: 10px;
+    color: #77738b;
+}
+
+/* ESTAMTED AND ACTUAL DATEDS AND TIME */
+.task-schedule-section {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #839146;
+}
+
+.schedule-date-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.schedule-time-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.schedule-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.schedule-field label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #662e5d;
+}
+
+.schedule-field input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid #502045;
+    border-radius: 7px;
+    background: #f7f3f5;
+    color: #1f2937;
+    font: inherit;
+    font-size: 12px;
+}
+
+.schedule-field input:focus {
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 2px rgb(124 58 237 / 12%);
+}
+
+.schedule-time-heading {
+    margin-top: 20px;
+}
+
+.save-schedule-button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 11px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #6d28d9;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.save-schedule-button:hover {
+    background: #5b21b6;
+}
+
+.save-schedule-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.schedule-message {
+    margin-top: 10px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 420px) {
+    .schedule-date-grid,
+    .schedule-time-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ESTIMATED AND ACTUAL TIME  */
+.schedule-time-section {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 12px 0 16px;
+}
+
+.schedule-time-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid;
+    min-width: 0;
+}
+
+.estimated-time-group {
+    background: #F5F3FF;
+    border-color: #DDD6FE;
+}
+
+.actual-time-group {
+    background: #ECFDF5;
+    border-color: #A7F3D0;
+}
+
+.schedule-time-group label {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.estimated-time-group label {
+    color: #5B21B6;
+}
+
+.actual-time-group label {
+    color: #065F46;
+}
+
+.schedule-time-group input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 7px 8px;
+    border: 1px solid;
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: #1E293B;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+    outline: none;
+}
+
+.estimated-time-group input {
+    border-color: #C4B5FD;
+}
+
+.actual-time-group input {
+    border-color: #6EE7B7;
+}
+
+.schedule-time-group input:focus {
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 2px rgb(124 58 237 / 10%);
+}
+
+.schedule-time-group small {
+    color: #64748B;
+    font-size: 10px;
+}
+
+@media (max-width: 480px) {
+    .schedule-time-section {
+        grid-template-columns: 1fr;
+    }
+}
+/* COMPLETE SPRINT BUTTON */
+.sprint-board-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.complete-sprint-button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #c2331a;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.complete-sprint-button:hover {
+    background: #166534;
+}
+
+.complete-sprint-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.sprint-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.sprint-start-modal {
+    width: 100%;
+    max-width: 420px;
+    background: #f0d0d0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.sprint-start-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.sprint-start-option span {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sprint-start-option small {
+    color: #64748b;
+}
+
+.sprint-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.complete-sprint-modal {
+    width: 100%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 24px;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #1f2937;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.complete-sprint-modal h2 {
+    margin: 0 0 12px;
+}
+
+.complete-sprint-modal > p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.complete-sprint-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.complete-sprint-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.complete-sprint-summary span {
+    color: #64748b;
+    font-size: 10px;
+}
+
+.complete-sprint-summary strong {
+    font-size: 20px;
+}
+
+.unfinished-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    margin: 12px 0 20px;
+    list-style: none;
+}
+
+.unfinished-task-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.unfinished-task-list small {
+    color: #c2410c;
+    white-space: nowrap;
+}
+
+.complete-sprint-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+@media (max-width: 480px) {
+    .complete-sprint-modal {
+        padding: 18px;
+    }
+
+    .complete-sprint-actions {
+        flex-direction: column-reverse;
+    }
+
+    .complete-sprint-actions button {
+        width: 100%;
+    }
+}
+
+/* Complete Sprint Modal Overlay */
+.sprint-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(30, 27, 75, 0.55);
+    backdrop-filter: blur(4px);
+}
+
+/* Main Modal */
+.complete-sprint-modal {
+    width: 100%;
+    max-width: 460px;
+    max-height: 82vh;
+    overflow-y: auto;
+    padding: 20px;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #334155;
+    box-shadow: 0 18px 50px rgba(49, 46, 129, 0.22);
+    font-size: 12px;
+}
+
+/* Modal Heading */
+.complete-sprint-modal h2 {
+    margin: -20px -20px 14px;
+    padding: 17px 20px;
+    background: linear-gradient(120deg, #6366f1, #8b5cf6, #a855f7);
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.complete-sprint-modal h4 {
+    margin: 16px 0 9px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.complete-sprint-modal > p {
+    margin: 12px 0;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.complete-sprint-modal p strong {
+    color: #6d28d9;
+    font-weight: 600;
+}
+
+/* Summary Cards */
+.complete-sprint-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.complete-sprint-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+}
+
+.complete-sprint-summary > div:first-child {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border-color: #a7f3d0;
+}
+
+.complete-sprint-summary > div:last-child {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border-color: #fed7aa;
+}
+
+.complete-sprint-summary span {
+    font-size: 10px;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.complete-sprint-summary strong {
+    font-size: 21px;
+    font-weight: 700;
+    color: #334155;
+}
+
+/* Unfinished Task List */
+.unfinished-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding: 0;
+    margin: 10px 0 16px;
+    list-style: none;
+}
+
+.unfinished-task-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 11px;
+    border: 1px solid #e9e5ff;
+    border-radius: 8px;
+    background: #faf9ff;
+    font-size: 11px;
+}
+
+.unfinished-task-list li span {
+    color: #334155;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.unfinished-task-list small {
+    padding: 3px 7px;
+    border-radius: 20px;
+    background: #ffedd5;
+    color: #c2410c;
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Modal Buttons */
+.complete-sprint-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.complete-sprint-actions button {
+    padding: 8px 12px;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.sprint-cancel-button {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+}
+
+.sprint-cancel-button:hover {
+    background: #e2e8f0;
+}
+
+.complete-sprint-actions .complete-sprint-button {
+    border: none;
+    background: linear-gradient(120deg, #4f46e5, #7c3aed);
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.complete-sprint-actions .complete-sprint-button:hover {
+    background: linear-gradient(120deg, #4338ca, #6d28d9);
+}
+
+.complete-sprint-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Mobile Layout */
+@media (max-width: 480px) {
+    .complete-sprint-modal {
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .complete-sprint-modal h2 {
+        margin: -16px -16px 12px;
+        padding: 15px 16px;
+        font-size: 15px;
+    }
+
+    .complete-sprint-actions {
+        flex-direction: column-reverse;
+    }
+
+    .complete-sprint-actions button {
+        width: 100%;
+    }
+}
+
+
+.unfinished-task-options {
+    margin: 16px 0;
+}
+
+.unfinished-task-options h4 {
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #4c1d95;
+}
+
+.unfinished-task-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd6fe;
+    border-radius: 9px;
+    background: linear-gradient(120deg, #faf5ff, #eff6ff);
+    cursor: pointer;
+}
+
+.unfinished-task-option:has(input:checked) {
+    border-color: #8b5cf6;
+    background: linear-gradient(120deg, #ede9fe, #dbeafe);
+}
+
+.unfinished-task-option input {
+    margin-top: 3px;
+    accent-color: #7c3aed;
+}
+
+.unfinished-task-option span {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.unfinished-task-option strong {
+    color: #3730a3;
+    font-size: 11px;
+}
+
+.unfinished-task-option small {
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.next-sprint-select {
+    margin: 12px 0;
+}
+
+.next-sprint-select label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: #5b21b6;
+}
+
+.next-sprint-select select {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #c4b5fd;
+    border-radius: 7px;
+    background: #fff;
+    font-size: 11px;
+    color: #334155;
+}
+
+/* ADD SELECTED TASKS BUTTON */
+.sprint-create-button {
+    background-color: #dd9716;
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.sprint-create-button:hover:not(:disabled) {
+    background-color: #4338ca;
+}
+
+.sprint-create-button:disabled {
+    background-color: #a5b4fc;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* START SPRINT BUTTON */
+.start-sprint-button {
+    background-color: #16a316;
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.start-sprint-button:hover:not(:disabled) {
+    background-color: #15803d;
+}
+
+.start-sprint-button:disabled {
+    background-color: #86efac;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+
+
+.sprint-card.active-card {
+    background: #fef9c3 !important;
+    border: 1px solid #e9b57a !important;
+}
+
+.sprint-card.active-card:hover {
+    background: #ffb091 !important;
+}
+
+.sprint-card.active-card.selected {
+    background: #fef08a !important;
+    border: 2px solid #eab308 !important;
+}
+
+
+
+/* Layout: task list on left, details on right */
+.sprint-content-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.9fr);
+    gap: 8px;
+    align-items: start;
+    width: 100%;
+}
+
+/* Left: smaller task list */
+.sprint-task-list {
+    margin-right: 0;
+    min-width: 0;
+}
+
+.task-details-panel {
+    margin-left: 0;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Smaller task list heading */
+.sprint-list-header h3 {
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.sprint-list-header p {
+    font-size: 11px;
+}
+
+/* Compact task table */
+.sprint-task-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.sprint-task-table th {
+    padding: 8px 6px;
+    font-size: 10px;
+    white-space: normal;
+}
+
+.sprint-task-table td {
+    padding: 9px 6px;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+.sprint-task-table td strong {
+    display: block;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.sprint-task-table td small {
+    display: block;
+    font-size: 9px;
+    margin-top: 3px;
+}
+
+.sprint-task-table .task-status {
+    font-size: 10px;
+    padding: 3px 6px;
+}
+
+/* Right: task details panel */
+.task-details-panel {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 14px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+/* Smaller details heading */
+.task-details-header h2 {
+    font-size: 17px;
+    overflow-wrap: anywhere;
+}
+
+.task-details-header .task-id {
+    font-size: 10px;
+}
+
+.task-info-section h4 {
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.task-info-section p,
+.task-assignee,
+.task-description {
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Compact form fields in details */
+.task-details-panel input,
+.task-details-panel select {
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: 11px;
+    padding: 7px;
+}
+
+.task-details-panel label {
+    font-size: 11px;
+}
+
+.task-details-panel button {
+    font-size: 11px;
+}
+
+/* Responsive: stack panels on smaller screens */
+@media (max-width: 900px) {
+    .sprint-content-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .task-details-panel {
+        width: 100%;
+    }
+}
+
+/* Task list heading */
+.sprint-list-header h3 {
+    color: #6d28d9;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* Task details heading */
+.task-details-header h2 {
+    color: #5b21b6;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+/* Section headings inside task details */
+.task-info-section h4,
+.task-schedule-section h4 {
+    color: #7c3aed;
+    font-weight: 600;
+}
+
+/* Table headings */
+.sprint-task-table th {
+    color: #5b21b6;
+    background: #f3e8ff;
+    font-weight: 600;
+}
+
+/* Progress track */
+.sprint-progress-cell {
+    min-width: 70px;
+}
+
+.sprint-progress-bar {
+    height: 7px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #e5e7eb;
+}
+
+/* Default progress color: orange */
+.sprint-progress-bar > div {
+    height: 100%;
+    border-radius: 10px;
+    background: #f97316;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* Remove extra top gap above task section */
+.sprint-board-section {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.sprint-content-layout {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    gap: 8px;
+    align-items: start;
+}
+
+/* Reduce top space inside the task list */
+.sprint-task-list {
+    margin-top: 0 !important;
+    padding-top: 8px !important;
+}
+
+/* Compact task list heading */
+.sprint-list-header {
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+    padding-top: 0 !important;
+    padding-bottom: 6px !important;
+}
+
+/* Reduce space between table columns */
+.sprint-task-table {
+    width: 100%;
+    table-layout: fixed;
+    border-spacing: 0;
+}
+
+.sprint-task-table th {
+    padding: 6px 3px !important;
+    font-size: 12px !important;
+}
+
+.sprint-task-table td {
+    padding: 7px 3px !important;
+    font-size: 12px !important;
+    line-height: 1.3;
+}
+
+/* Keep task names compact */
+.sprint-task-table td strong {
+    font-size: 12px !important;
+    line-height: 1.3;
+    margin: 0;
+}
+
+/* Reduce progress column width */
+.sprint-progress-cell {
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+}
+
+/* Remove unwanted gaps inside task rows */
+.sprint-task-table tr {
+    margin: 0;
+}
+
+.sprint-board-section > *:first-child {
+    margin-top: 0 !important;
+}
+
+.sprint-board-section h2,
+.sprint-board-section h3 {
+    margin-top: 0;
+}
+
+/* ===== FIX MIDDLE TASK LIST AND RIGHT DETAILS LAYOUT ===== */
+
+.sprint-content-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.85fr);
+    gap: 12px;
+    align-items: start;
+    width: 100%;
+    margin-top: 0 !important;
+}
+
+/* Middle task list: compact and clean */
+.sprint-task-list {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 0;
+}
+
+/* Reduce task table column spacing */
+.sprint-task-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.sprint-task-table th {
+    padding: 7px 4px !important;
+    font-size: 12px !important;
+    white-space: normal;
+}
+
+.sprint-task-table td {
+    padding: 7px 4px !important;
+    font-size: 12px !important;
+    overflow-wrap: anywhere;
+    vertical-align: middle;
+}
+
+/* Give the task name enough room */
+.sprint-task-table th:nth-child(1),
+.sprint-task-table td:nth-child(1) {
+    width: 29%;
+}
+
+/* Status */
+.sprint-task-table th:nth-child(2),
+.sprint-task-table td:nth-child(2) {
+    width: 17%;
+}
+
+/* Assigned To */
+.sprint-task-table th:nth-child(3),
+.sprint-task-table td:nth-child(3) {
+    width: 25%;
+}
+
+/* Progress */
+.sprint-task-table th:nth-child(4),
+.sprint-task-table td:nth-child(4) {
+    width: 29%;
+}
+
+/* ===== RIGHT TASK DETAILS PANEL ===== */
+
+.task-details-panel {
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 14px;
+    margin: 0;
+}
+
+/* Keep task title and close button aligned */
+.task-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.task-details-header h2 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+/* Form controls should fit the panel */
+.task-details-panel input,
+.task-details-panel select,
+.task-details-panel textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Keep status and assigned user fields side by side */
+.task-priority-assignee-row,
+.schedule-date-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+/* Smaller screens */
+@media (max-width: 1000px) {
+    .sprint-content-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .task-details-panel {
+        width: 100%;
+    }
+}
+
+/* Compact Create Sprint form */
+.sprint-form {
+    width: 100%;
+    max-width: 760px;
+    margin: 18px auto;
+    padding: 22px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #e2ddf5;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(76, 29, 149, 0.09);
+}
+
+/* Compact two-column form layout */
+.sprint-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px;
+    align-items: start;
+}
+
+/* Duration field should NOT stretch across both columns */
+.sprint-form-grid > .sprint-duration-field {
+    grid-column: auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    gap: 7px;
+    box-sizing: border-box;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    border-radius: 10px;
+}
+
+.sprint-duration-field label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    color: #5b21b6;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.sprint-duration-field select {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 10px;
+    box-sizing: border-box;
+    background: #fff;
+    color: #4c1d95;
+    border: 1px solid #c4b5fd;
+    border-radius: 7px;
+    font-size: 12px;
+}
+
+/* Inputs stay compact and aligned */
+.sprint-form-grid > label {
+    min-width: 0;
+    font-size: 12px;
+    gap: 7px;
+}
+
+.sprint-form-grid input,
+.sprint-form-grid select,
+.sprint-form-grid textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 11px;
+    box-sizing: border-box;
+    font-size: 12px;
+    border-radius: 8px;
+}
+
+/* Goal takes the full row */
+.sprint-form-grid .sprint-form-full {
+    grid-column: 1 / -1;
+}
+
+/* Form heading */
+.sprint-form h2 {
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+    color: #5b21b6;
+    border-bottom: 1px solid #ede9fe;
+    font-size: 20px;
+}
+
+/* Form action buttons */
+.sprint-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #ede9fe;
+}
+
+@media (max-width: 650px) {
+    .sprint-form {
+        padding: 14px;
+    }
+
+    .sprint-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sprint-form-grid .sprint-form-full {
+        grid-column: auto;
+    }
+}
+
+
+/* Create Sprint form: two-column layout */
+.sprint-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px;
+    align-items: start;
+}
+
+/* Keep Sprint Duration compact */
+.sprint-form-grid > .sprint-duration-field {
+    grid-column: 1;
+    width: 220px;
+    max-width: 100%;
+}
+
+/* Sprint Name in the right column */
+.sprint-form-grid > label:nth-of-type(1) {
+    grid-column: 2;
+}
+
+/* Status on the left */
+.sprint-form-grid > label:nth-of-type(2) {
+    grid-column: 1;
+}
+
+/* Start Date on the left, third label */
+.sprint-form-grid > label:nth-of-type(3) {
+    grid-column: 1;
+}
+
+/* End Date on the right, fourth label */
+.sprint-form-grid > label:nth-of-type(4) {
+    grid-column: 2;
+}
+
+/* Sprint Goal on the right, same row as Status */
+.sprint-form-grid > .sprint-form-full {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+/* Keep all fields within their columns */
+.sprint-form-grid > label,
+.sprint-form-grid > .sprint-duration-field {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 650px) {
+    .sprint-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sprint-form-grid > label,
+    .sprint-form-grid > .sprint-duration-field,
+    .sprint-form-grid > .sprint-form-full {
+        grid-column: 1;
+        grid-row: auto;
+        width: 100%;
+    }
+}
+
+
+/* Wider layout for sprint tasks */
+.sprint-main-content {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.8fr) minmax(0, 2fr);
+    gap: 20px;
+    align-items: start;
+}
+
+/* Task details backdrop */
+.task-details-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.25);
+    z-index: 999;
+}
+
+/* Right-side task details popup */
+.task-details-panel.task-details-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(480px, 92vw);
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 12px 0 0 12px;
+    padding: 10px 16px;
+    box-shadow: -8px 0 30px rgba(15, 23, 42, 0.15);
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.task-details-drawer .task-details-content {
+    overflow: hidden;
+    padding: 0;
+}
+
+.task-details-drawer .task-details-header {
+    margin: 0 0 6px;
+    padding: 0 0 6px;
+}
+
+.task-details-drawer .task-info-section {
+    margin-bottom: 6px;
+}
+
+.task-details-drawer .task-info-section h4 {
+    margin: 0 0 4px;
+    font-size: 12px;
+}
+
+.task-details-drawer .task-description {
+    margin: 0;
+    font-size: 12px;
+}
+
+.task-details-drawer .task-priority-assignee-row {
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.task-details-drawer .schedule-date-grid {
+    gap: 6px;
+}
+
+.task-details-drawer .schedule-field label,
+.task-details-drawer .schedule-time-group label {
+    font-size: 11px;
+    margin-bottom: 2px;
+}
+
+.task-details-drawer .schedule-field input,
+.task-details-drawer .schedule-time-group input {
+    height: 30px;
+    min-height: 30px;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+
+.task-details-drawer .schedule-time-group {
+    margin: 6px 0;
+}
+
+.task-details-drawer .schedule-time-group small {
+    font-size: 10px;
+}
+
+.task-details-drawer .save-schedule-button {
+    margin-top: 6px;
+    padding: 8px 12px;
+}
+
+/* Estimated Time and Actual Time in one row */
+.task-details-drawer .estimated-time-group,
+.task-details-drawer .actual-time-group {
+    display: inline-flex;
+    flex-direction: column;
+    width: calc(50% - 8px);
+    vertical-align: top;
+    box-sizing: border-box;
+}
+
+.task-details-drawer .estimated-time-group {
+    margin-right: 12px;
+}
+
+.task-details-drawer .actual-time-group {
+    margin-right: 0;
+}
+
+.task-details-drawer .schedule-time-group input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.task-details-drawer .schedule-time-group label {
+    margin-bottom: 4px;
+}
+
+.sprint-content-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+    gap: 14px;
+    width: 100%;
+    align-items: start;
+}
+
+.sprint-content-layout.no-task-selected {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.sprint-content-layout.no-task-selected .sprint-task-list {
+    width: 100%;
+    min-width: 0;
+}
+

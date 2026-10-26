@@ -14,7 +14,7 @@ import {
 
 import api from "../../services/api";
 
-import "./ProjectDetails.css";
+import "./projectdetails.css";
 
 
 const ProjectDetails = () => {
@@ -192,7 +192,7 @@ const ProjectDetails = () => {
         endDate.setHours(0, 0, 0, 0);
 
         if (startDate > today) {
-            return "Upcoming";
+            return "Not Started";
         }
 
         if (startDate <= today && endDate >= today) {
@@ -225,7 +225,42 @@ const ProjectDetails = () => {
             ? Math.round((completedTasks / totalTasks) * 100)
             : 0;
 
+    const handleMemberRoleChange = async (
+    memberId,
+    roleField,
+    checked
+    ) => {
+        // Keep the previous state so we can restore it if saving fails.
+        const previousMembers = members;
 
+        // Update the UI immediately.
+        setMembers((currentMembers) =>
+            currentMembers.map((member) =>
+                String(member.id) === String(memberId)
+                    ? { ...member, [roleField]: checked }
+                    : member
+            )
+        );
+
+        try {
+            await api.patch(
+                `projects/project-members/${memberId}/roles/`,
+                {
+                    [roleField]: checked,
+                }
+            );
+        } catch (error) {
+            console.error("Failed to update member role:", error);
+
+            // Restore the previous state if the API request fails.
+            setMembers(previousMembers);
+
+            alert(
+                error.response?.data?.error ||
+                "Failed to update member role. Please try again."
+            );
+        }
+    };
     return (
 
         <div className="project-details-page">
@@ -424,7 +459,7 @@ const ProjectDetails = () => {
                     onClick={() => navigate(`/projects/${id}/milestones`)}
                 >
                     <Flag size={17} />
-                    Milestones
+                    Modules
                 </button>
 
                 <button
@@ -437,8 +472,6 @@ const ProjectDetails = () => {
                 </button>
 
             </div>
-
-                
 
             {activeSection === "members" && (
                 <div className="project-section-content">
@@ -538,6 +571,42 @@ const ProjectDetails = () => {
                                             <span>
                                                 {memberUser?.email || "Email not available"}
                                             </span>
+                                        </div>
+
+                                        {/* MEMBER ROLE CHECKBOXES */}
+
+                                        <div className="member-role-checkboxes">
+
+                                            <label className="member-role-option">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={Boolean(member.is_team_leader)}
+                                                    onChange={(e) =>
+                                                        handleMemberRoleChange(
+                                                            member.id,
+                                                            "is_team_leader",
+                                                            e.target.checked
+                                                        )
+                                                    }
+                                                />
+                                                <span>Team Leader</span>
+                                            </label>
+
+                                            <label className="member-role-option">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={Boolean(member.is_project_manager)}
+                                                    onChange={(e) => 
+                                                        handleMemberRoleChange(
+                                                            member.id,
+                                                            "is_project_manager",
+                                                            e.target.checked
+                                                        )
+                                                    }
+                                                />
+                                                <span>Project Manager</span>
+                                            </label>
+
                                         </div>
                                     </div>
                                 );
@@ -691,9 +760,9 @@ const ProjectDetails = () => {
                             <div className="overview-card-header">
 
                                 <div>
-                                    <h3>Milestones</h3>
+                                    <h3>Modules</h3>
                                     <p>
-                                        Project milestones
+                                        Project modules
                                     </p>
                                 </div>
 
@@ -704,7 +773,7 @@ const ProjectDetails = () => {
 
                             <div className="overview-list">
                                 <div className="overview-empty">
-                                    View project milestones and manage them from the Milestones page.
+                                    View project modules .
                                 </div>
                             </div>
 
@@ -715,7 +784,7 @@ const ProjectDetails = () => {
                                     navigate(`/projects/${id}/milestones`)
                                 }
                             >
-                                View Milestones →
+                                View Modules →
                             </button>
 
                         </div>
@@ -850,6 +919,4 @@ const ProjectDetails = () => {
     );
 
 };
-
-
 export default ProjectDetails;

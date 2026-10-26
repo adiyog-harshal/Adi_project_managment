@@ -501,7 +501,7 @@
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(79, 70, 229, 0.12);
 }
-
+/* MODULES PAGE FIXING */
 .milestones-title {
     display: flex;
     align-items: center;
@@ -533,4 +533,58 @@
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.milestone-table-header,
+.milestone-table-row {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.milestone-form-date-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.milestone-form-date-row .milestone-form-group {
+    min-width: 0;
+    width: 100%;
+}
+
+.milestone-form-date-row input[type="date"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.milestone-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.milestone-form-group input,
+.milestone-form-group select,
+.milestone-form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.milestone-form {
+    width: 100%;
+    max-width: 520px;
+    box-sizing: border-box;
+    padding: 24px;
+}
+
+.milestone-form form {
+    width: 100%;
 }

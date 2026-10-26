@@ -3,16 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import './Milestones.css';
 import { ArrowLeft, Flag } from "lucide-react";
-import {
-    PMSPageHeader,
-    PMSSearch,
-    PMSActionButton,
-} from "../../components/Common/Common";
 import api from "../../services/api";
 
 const initialFormData = {
     name: '',
-    project: '',
     description: '',
     startDate: '',
     endDate: '',
@@ -87,8 +81,8 @@ function Milestones() {
 
             const formattedMilestones = projectMilestones.map((milestone) => ({
                 id: milestone.id,
-                name: milestone.milestone_name,
                 project: milestone.project,
+                name: milestone.milestone_name || milestone.name || "",
                 description: milestone.description || '',
                 startDate: milestone.start_date || "",
                 endDate: milestone.due_date || '',
@@ -97,7 +91,7 @@ function Milestones() {
                     milestone.status,
             }));
 
-            setMilestones(formattedMilestones);
+            setMilestones(formattedMilestones.reverse());
         } catch (err) {
             console.error('Error loading milestones:', err);
             setError('Unable to load milestones.');
@@ -120,10 +114,9 @@ function Milestones() {
         (item) => Number(item.id) === Number(milestone.project)
     );
 
-    const projectName = project?.project_name || '';
+    
 
     return `${milestone.name}
-        ${projectName}
         ${milestone.description}
         ${milestone.startDate}
         ${milestone.endDate}
@@ -297,10 +290,10 @@ function Milestones() {
                 <div>
                     <h1 className='milestones-title'>
                         <Flag size={16} />
-                        Milestones</h1>
+                        Modules</h1>
 
                     <p>
-                        Manage project milestones and track their progress.
+                        Manage project modules and track their progress.
                     </p>
                 </div>
 
@@ -309,22 +302,11 @@ function Milestones() {
                     className="add-milestone-btn"
                     onClick={openAddForm}
                 >
-                    + Add Milestone
+                    + Add Module
                 </button>
             </div>
 
-            {/* Search */}
-            <div className="milestones-toolbar">
-                <div className="milestones-search-box">
-                    <PMSSearch
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                        }}
-                        placeholder="Search milestones..."
-                    />
-                </div>
-            </div>
+        
 
             {/* Milestones Table */}
             <div className="milestones-card">
@@ -334,7 +316,6 @@ function Milestones() {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Description</th>
                             <th>Start Date</th>
                             <th>End Date</th>
                             <th>Status</th>
@@ -345,7 +326,7 @@ function Milestones() {
                     <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="7" className="empty-milestones">
+                                    <td colSpan="5" className="empty-milestones">
                                         Loading milestones...
                                     </td>
                                 </tr>
@@ -354,26 +335,22 @@ function Milestones() {
                             filteredMilestones.map((milestone) => (
 
                                 <tr key={milestone.id}>
-
+                                    {/* NAME */}
                                     <td className="milestone-name">
                                         {milestone.name || "-"}
                                     </td>
-                                    <td>
-                                        {getProjectName(milestone.project)}
-                                    </td>
 
-                                    <td>
-                                        {milestone.description || "-"}
-                                    </td>
-
+                                    {/* START DATE */}
                                     <td>
                                         {milestone.startDate || "-"}
                                     </td>
 
+                                    {/* END DATE */}
                                     <td>
                                         {milestone.endDate || "-"}
                                     </td>
 
+                                    {/* STATUS */}
                                     <td>
                                         <span className="milestone-status">
                                             {milestone.status || "-"}
@@ -382,16 +359,13 @@ function Milestones() {
 
                                     {/* 3 DOT ACTION MENU */}
                                     <td>
-
-                                        <div className="milestone-actions">
-
+                                       <div className="milestone-actions">
                                             <button
                                                 type="button"
                                                 className="milestone-menu-btn"
                                                 onClick={() =>
                                                     setOpenMenu(
-                                                        openMenu ===
-                                                            milestone.id
+                                                        openMenu === milestone.id
                                                             ? null
                                                             : milestone.id
                                                     )
@@ -409,14 +383,9 @@ function Milestones() {
                                                             : ""
                                                     }`}
                                                 >
-
                                                     <button
                                                         type="button"
-                                                        onClick={() =>
-                                                            openEditForm(
-                                                                milestone
-                                                            )
-                                                        }
+                                                        onClick={() => openEditForm( milestone)}
                                                     >
                                                         Edit
                                                     </button>
@@ -424,26 +393,17 @@ function Milestones() {
                                                     <button
                                                         type="button"
                                                         className="delete-action"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                milestone.id
-                                                            )
-                                                        }
+                                                        onClick={() => handleDelete( milestone.id)}
                                                     >
                                                         Delete
                                                     </button>
 
                                                 </div>
                                             )}
-
                                         </div>
-
                                     </td>
-
                                 </tr>
-
                             ))
-
                         ) : (
 
                             <tr>
@@ -473,8 +433,8 @@ function Milestones() {
                         <div className="milestone-form-header">
                             <h2>
                                 {editingMilestone
-                                    ? "Edit Milestone"
-                                    : "Add Milestone"}
+                                    ? "Edit Module"
+                                    : "Update Module"}
                             </h2>
 
                             <button
@@ -497,13 +457,13 @@ function Milestones() {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    placeholder="Enter milestone name"
+                                    placeholder="Enter module name"
                                     required
                                 />
                             </div>
 
                             {/* Description */}
-                            <div className="milestone-form-group">
+                            {/* <div className="milestone-form-group">
                                 <label>Description</label>
                                 <textarea
                                     name="description"
@@ -512,7 +472,7 @@ function Milestones() {
                                     placeholder="Enter milestone description"
                                     rows={3}
                                 />
-                            </div>
+                            </div> */}
 
                             {/* Dates */}
                             <div className="milestone-form-date-row">
@@ -571,8 +531,8 @@ function Milestones() {
                                     className="milestone-save-button"
                                 >
                                     {editingMilestone
-                                        ? "Update Milestone"
-                                        : "Create Milestone"}
+                                        ? "Update Module"
+                                        : "Create Module"}
                                 </button>
                             </div>
 

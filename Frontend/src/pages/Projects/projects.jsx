@@ -17,8 +17,7 @@ import {
 import { Link, useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import "./projects.css";
-
-
+import CommonSearch from "../../components/Common/Common.jsx";
 const Projects = () => {
 
     const [showForm, setShowForm] = useState(false);
@@ -180,10 +179,16 @@ const Projects = () => {
     };
 
     const filteredProjects = projects.filter((project) =>
-        project.project_name
-            ?.toLowerCase()
-            .includes(search.toLowerCase())
-    );
+    [
+        project.name,
+        project.description,
+        project.status,
+    ]
+        .filter(Boolean)
+        .some((value) =>
+            String(value).toLowerCase().includes(search.trim().toLowerCase())
+        )
+);
 
     const fetchProjects = async () => {
         try {
@@ -359,8 +364,13 @@ const Projects = () => {
                         Project Management
                     </h1>
 
-                    <p>Manage and track your projects</p>
-
+                    <p>Manage your projects</p>
+                    <CommonSearch
+                        search={search}
+                        setSearch={setSearch}
+                        placeholder="Search projects..."
+                    />
+                   
                 </div>
 
                 <div className="project-header-actions">
@@ -426,21 +436,16 @@ const Projects = () => {
 
                     </div>
 
+                    <button
+                            className="add-project-btn"
+                            onClick={() => setShowForm(true)}
+                        >
+                            <Plus size={17} />
+                            Add Project
+                    </button>
 
                     
-
-                    <button
-                        className="add-project-btn"
-                        onClick={() => {
-                            setShowForm(true);
-                            setFormError("");
-                        }}
-                    >
-                        <Plus size={18} />
-                        <span>
-                            Add Project
-                        </span>
-                    </button>
+                   
 
                 </div>
 
@@ -468,7 +473,7 @@ const Projects = () => {
                     </div>
 
                     <div className="summary-content">
-                        <span>Upcoming Projects</span>
+                        <span>Not Started </span>
                         <strong>{upcomingProjects}</strong>
                     </div>
                 </div>
@@ -657,25 +662,6 @@ const Projects = () => {
             )}
 
             {/* SEARCH */}
-
-            <div className="projects-toolbar">
-
-                <div className="search-box">
-
-                    <Search size={18} />
-
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                            setCurrentPage(1);
-                        }}
-                        placeholder="Search projects...."
-                    />
-
-                </div>
-            </div>
 
             {/* PROJECT TABLE */}
             <div className="projects-card">
