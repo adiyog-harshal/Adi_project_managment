@@ -5,7 +5,7 @@ import api from "../../services/api";
 import "./sprints.css";
 
 const Sprints = () => {
-const { id } = useParams();
+const { id, sprintId } = useParams();
 const navigate = useNavigate();
 
 const [sprints, setSprints] = useState([]);
@@ -124,6 +124,7 @@ const [taskScheduleForm, setTaskScheduleForm] = useState({
     actual_hours: "0",
     actual_minutes: "0",
 });
+
 
 const splitMinutes = (totalMinutes = 0) => {
     const total = Number(totalMinutes) || 0;
@@ -351,24 +352,21 @@ const getNextSprintSuggestion = (sprints) => {
         const match = name?.match(/Sprint\s+(\d+)/i);
         return match ? Number(match[1]) : 0;
     };
-
+    // Find the highest sprint number, even if some numbers are missing
     const nextNumber =
-        sprints.reduce(
-            (max, sprint) =>
-                Math.max(max, getNumber(sprint.sprint_name)),
-            0
-        ) + 1;
+        Math.max(0, ...sprints.map((sprint) => 
+            getNumber(sprint.sprint_name)
+        )) + 1;
 
     // Find the latest sprint end date
     const latestSprint = [...sprints]
         .filter((sprint) => sprint.end_date)
-        .sort(
-            (a, b) =>
-                new Date(b.end_date) - new Date(a.end_date)
+        .sort((a, b) =>
+                b.end_date.localeCompare(a.end_date)
         )[0];
 
     const start = latestSprint
-        ? new Date(latestSprint.end_date + "T12:00:00")
+        ? new Date(`${latestSprint.end_date}T12:00:00`)
         : new Date();
 
     if (latestSprint) {
@@ -376,20 +374,16 @@ const getNextSprintSuggestion = (sprints) => {
     }
 
     const formatDate = (date) =>
-        `${date.getFullYear()}-${String(
-            date.getMonth() + 1
-        ).padStart(2, "0")}-${String(
-            date.getDate()
-        ).padStart(2, "0")}`;
+        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
     // Reuse the latest sprint's duration, or default to 15 days
-    const duration = latestSprint
+    const duration = latestSprint?.start_date
         ? Math.max(
               1,
               Math.round(
-                  (new Date(latestSprint.end_date + "T12:00:00") -
-                      new Date(latestSprint.start_date + "T12:00:00")) /
-                      86400000
+                    (new Date(`${latestSprint.end_date}T12:00:00`) -
+                    new Date(`${latestSprint.start_date}T12:00:00`)) /
+                    86400000
               ) + 1
           )
         : 15;
@@ -404,9 +398,6 @@ const getNextSprintSuggestion = (sprints) => {
         duration,
     };
 };
-
-
-
 
 const loadData = async () => {
     try {
@@ -426,15 +417,17 @@ const loadData = async () => {
             ? taskResponse.data
             : taskResponse.data.results || [];
 
-        const projectSprints = sprintData.filter(sprint => {
-            const sameProject =
+        const allProjectSprints = sprintData.filter(sprint => 
                 String(
                     typeof sprint.project === "object"
-                        ? sprint.project.id
+                        ? sprint.project?.id
                         : sprint.project
-                ) === String(id);
-            const isRunning = 
-                sprint.status?.toLowerCase() === "in progress";
+                ) === String(id)
+            );
+
+            const projectSprints = allProjectSprints.filter(sprint => {
+                const isRunning = 
+                    sprint.status?.toLowerCase() === "in progress";
             
             const hasAssignedTasks = taskData.some(task => 
                 String(
@@ -443,7 +436,7 @@ const loadData = async () => {
                         : task.sprint
                 ) === String(sprint.id)
             );
-            return sameProject && isRunning && hasAssignedTasks;
+            return isRunning && hasAssignedTasks;
     });
 
         const projectTasks = taskData.filter(
@@ -464,6 +457,8 @@ const loadData = async () => {
 
         setSprints(projectSprints);
         setTasks(projectTasks);
+
+        return allProjectSprints;
 
         await loadTimeSummary();
 
@@ -1095,26 +1090,35 @@ return (
             <button
                 type="button"
                 className="sprints-create-button"
-                onClick={() => {
+                onClick={async () => {
                     setError("");
                     setShowAddTasks(false);
                     setEditingSprintId(null);
 
-                    const suggestion = getNextSprintSuggestion(sprints);
+                    try {
+                        const latestSprints = await loadData();
 
-                    setDuration(String(suggestion.duration));
-                    setStartDate(suggestion.start_date);
-                    setEndDate(suggestion.end_date);
+                        const suggestion = getNextSprintSuggestion(
+                            latestSprints || []
+                        );
+                        setDuration(String(suggestion.duration));
+                        setStartDate(suggestion.start_date);
+                        setEndDate(suggestion.end_date); 
 
-                    setSprintForm({
+                        setSprintForm({
                         sprint_name: suggestion.sprint_name,
                         goal: "",
                         start_date: suggestion.start_date,
                         end_date: suggestion.end_date,
                         status: "Planned",
                     });
+
                     setShowForm(true);
-                }}
+                } catch (err) {
+                    console.error("Unable to prepare sprint form:", err);
+                    setError("Unable to load sprint data. Please try again.");
+                }
+            }}
             >
                 <Plus size={18} />
                 Create Sprint

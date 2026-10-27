@@ -87,9 +87,16 @@ const Backlog = () => {
             setTasks(projectTasks);
             setUsers(userData);
 
+            console.log("Loaded task modules:", projectTasks.map((task) => ({
+                task: task.task_name,
+                milestone: task.milestone,
+            })));
+            setUsers(userData);
 
             console.log("PROJECT:", projectResponse.data);
             console.log("BACKLOG TASKS:", projectTasks);
+            console.log("FIRST TASK:", projectTasks[0]);
+            console.log("FIRST TASK MILESTONE:", projectTasks[0]?.milestone);
 
         } catch (error) {
 
@@ -134,9 +141,8 @@ const Backlog = () => {
                 String(currentProjectId)
             );
         });
-
-
             setMilestones(projectMilestones);
+            console.log("Loaded modules:", projectMilestones);
 
         } catch (error) {
             console.error(
@@ -146,8 +152,6 @@ const Backlog = () => {
             );
         }
     };
-
-
     useEffect(() => {
 
         fetchBacklog();
@@ -272,8 +276,6 @@ const Backlog = () => {
             setSaving(false);
         }
     };
-
-
     /* =========================
        DELETE BACKLOG
     ========================= */
@@ -349,8 +351,6 @@ const Backlog = () => {
 
         setShowForm(true);
     };
-
-
     /* =========================
        PROJECT NOT FOUND
     ========================= */
@@ -371,8 +371,6 @@ const Backlog = () => {
 
                     Back to Project
                 </button>
-
-
                 <p>
                     Project not found.
                 </p>
@@ -380,8 +378,6 @@ const Backlog = () => {
             </div>
         );
     }
-
-
     /* =========================
        PAGE
     ========================= */
@@ -444,8 +440,6 @@ const Backlog = () => {
                     setShowForm(true);
                 }}
             />
-
-
             {/* =========================
                 ADD BACKLOG FORM
             ========================= */}
@@ -525,22 +519,22 @@ const Backlog = () => {
                             </div>
                             
                             <div className="backlog-form-group">
-    <label>Module</label>
+                                <label>Module</label>
 
-    <select
-        name="milestone"
-        value={form.milestone}
-        onChange={handleChange}
-    >
-        <option value="">Select Module</option>
+                                <select
+                                    name="milestone"
+                                    value={form.milestone}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select Module</option>
 
-        {milestones.map((milestone) => (
-            <option  key ={milestone.id} value={milestone.id}>
-                {milestone.milestone_name}
-            </option>
-        ))}
-    </select>
-</div>
+                                    {milestones.map((milestone) => (
+                                        <option  key ={milestone.id} value={milestone.id}>
+                                            {milestone.milestone_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
 
                             {/* ASSIGNED TO */}
@@ -651,15 +645,11 @@ const Backlog = () => {
                     </div>
                 </div>
             )}
-
-
             {/* =========================
                 BACKLOG TABLE
             ========================= */}
 
             <div className="backlog-card">
-
-
                 {/* HEADER */}
 
                 <div className="backlog-table-header">
@@ -671,8 +661,6 @@ const Backlog = () => {
                     <div>Actions</div>
 
                 </div>
-
-
                 {/* EMPTY */}
 
                 {tasks.length === 0 ? (
@@ -700,21 +688,25 @@ const Backlog = () => {
                                 user?.last_name || ""
                             }`.trim() ||
                             user?.username ||
-                            "Unassigned";
-
-                        
+                            "Unassigned";                       
 
                         const milestoneId =
                             task.milestone && typeof task.milestone === "object"
                                 ? task.milestone.id
                                 : task.milestone;
 
+                        const matchedMilestone = milestones.find(
+                            (m) => String(m.id) === String(milestoneId)
+                        );
+
                         const milestoneName =
-                            task.milestone && typeof task.milestone === "object"
-                                ? task.milestone.milestone_name
-                                : milestones.find(
-                                    (m) => String(m.id) === String(milestoneId)
-                                )?.milestone_name || "-";
+                            (task.milestone &&
+                                typeof task.milestone === "object" && 
+                                (task.milestone.milestone_name ||
+                                 task.milestone.name)) ||
+                            matchedMilestone?.milestone_name ||
+                            matchedMilestone?.name ||                   
+                            "-"; 
         
                         return (
 
@@ -745,7 +737,6 @@ const Backlog = () => {
                                     {assignedName}
                                 </div>
 
-
                                 {/* ACTIONS */}
 
                                 <div className="backlog-actions">
@@ -758,7 +749,6 @@ const Backlog = () => {
                                         <Pencil size={15} />
                                     </button>
 
-
                                     <button
                                         type="button"
                                         title="Delete"
@@ -768,20 +758,13 @@ const Backlog = () => {
                                     >
                                         <Trash2 size={15} />
                                     </button>
-
                                 </div>
-
-
                             </div>
                         );
                     })
                 )}
-
             </div>
-
         </div>
     );
 };
-
-
 export default Backlog;

@@ -142,7 +142,6 @@ function Users() {
             alert("Failed to delete user.");
         }
     };
-233
 
     useEffect(() => {
         fetchDesignations();
@@ -194,7 +193,7 @@ function Users() {
         const fetchUsers = async () => {
         try {
             // Check whether the JWT access token exists
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("access_token");
 
             if (!token) {
                 console.error(
@@ -259,7 +258,7 @@ function Users() {
     <button
         type="button"
         className="add-user-btn"
-        onClick={() => setShowForm(true)}
+        onClick={openAddForm}
     >
         <Plus size={17} />
         Add User
@@ -379,9 +378,10 @@ function Users() {
 
                             {/* Name */}
                             <div>
-                                <label>Name:</label>
+                                <label htmlFor="user-name">Name:</label>
 
                                 <input
+                                    id="user-name"
                                     type="text"
                                     name="name"
                                     value={formData.name}

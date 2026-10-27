@@ -67,8 +67,6 @@
     box-sizing: border-box;
 }
 
-
-
 /* Table column layout */
 .backlog-table-header,
 .backlog-table-row {
@@ -557,5 +555,69 @@
     color: #c66b75;
     border-color: #ffe4e6;
 }
+
+/* =========================================
+   HIDE SCROLLBARS - BACKLOG PAGE AND FORM
+   Keeps scrolling enabled
+========================================= */
+
+/* Backlog page */
+.backlog-page {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.backlog-page::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+/* Backlog table horizontal scrollbar */
+.backlog-card {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.backlog-card::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+/* Form modal scrollbar */
+.backlog-modal {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.backlog-modal::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+/* Modal overlay scrollbar */
+.backlog-modal-overlay {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.backlog-modal-overlay::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+/* Description: approximately 2 rows */
+.backlog-form-group textarea {
+    height: 56px;
+    min-height: 56px;
+    max-height: 56px;
+    resize: none;
+    overflow-y: auto;
+}
+
+
 
 

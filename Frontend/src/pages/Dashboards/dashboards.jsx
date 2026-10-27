@@ -30,8 +30,6 @@ import {
 } from "recharts";
 
 const Dashboard = () => {
-    console.log("================= Dashboard Render ==============");
-    
     const [projects, setProjects] = useState([]);
     const [teamMembers, setTeamMembers] = useState([]);
 
@@ -116,16 +114,14 @@ const Dashboard = () => {
                     ) {
                         taskProjectId = Number(task.project.id);
                     }
-
-                    console.log(
-                        "TASK:",
-                        task,
-                        "TASK PROJECT ID:",
-                        taskProjectId,
-                        "SELECTED PROJECT ID:",
-                        selectedProjectId
-                    );
-
+                    // console.log(
+                    //     "TASK:",
+                    //     task,
+                    //     "TASK PROJECT ID:",
+                    //     taskProjectId,
+                    //     "SELECTED PROJECT ID:",
+                    //     selectedProjectId
+                    // );
                     return taskProjectId === selectedProjectId;
                 });
 
@@ -151,9 +147,6 @@ const Dashboard = () => {
         fetchProjectTasks();
     }, [selectedProgressProject]);
 
-
-
-
     const fetchProjects = async () => {
         try {
             const response = await api.get("projects/");
@@ -165,42 +158,38 @@ const Dashboard = () => {
             setProjects(projectData);
 
             // Store all team members
-            const allMembers = [];
+    const memberResponses = await Promise.all(
+        projectData.map(async (project) => {
+            try {
+                const response = await api.get(
+                    `projects/${project.id}/members/`
+                );
 
-            for (const project of projectData) {
-
-                try {
-
-                    const memberResponse = await api.get(
-                        `projects/${project.id}/members/`
-                    );
-
-                    console.log(
-                        `MEMBERS FOR PROJECT ${project.id}:`,
-                        memberResponse.data 
-                    );
-
-                    allMembers.push(...memberResponse.data);
-                } catch (error) {
-
-                    console.error(
-                        `Failed to fetch members for project ${project.id}:`,
-                        error
-                    );
-                }
+                return Array.isArray(response.data)
+                    ? response.data
+                    : response.data.results || [];
+            } catch (error) {
+                console.error(
+                    `Failed to fetch members for project ${project.id}:`,
+                    error
+                );
+                return [];
             }
-            setTeamMembers(allMembers);
+        })
+    );
 
-            console.log("ALL TEAM MEMBERS:", allMembers);
+    const allMembers = memberResponses.flat();
+    setTeamMembers(allMembers);
+                console.log("ALL TEAM MEMBERS:", allMembers);
 
-            
-        } catch (error) {
-            console.error(
-                "Dashboard project fetch error:", 
-                error
-            );
-        }
-    };
+                
+            } catch (error) {
+                console.error(
+                    "Dashboard project fetch error:", 
+                    error
+                );
+            }
+        };
 
     const fetchUsers = async () => {
         try {
@@ -761,7 +750,7 @@ const Dashboard = () => {
 
                             </div>
 
-                            <h2>{completedProjects}</h2>
+                            <h2>{completedProjectCount}</h2>
 
                             <div className="stat-bottom">
 
@@ -952,12 +941,6 @@ const Dashboard = () => {
                     </div>
 
                 </div>
-
-
-                {/* =================================
-                    BOTTOM SECTION
-                ================================= */}
-
                 {/* =================================
                     PROJECTS + PROJECT PROGRESS
                 ================================= */}

@@ -119,6 +119,15 @@ function AppRoutes() {
             />
 
             <Route
+                path="/projects/:id/sprints/:sprintId"
+                element={
+                    <ProtectedRoute>
+                        <Sprints />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
                 path="/teams"
                 element={
                     <ProtectedRoute>

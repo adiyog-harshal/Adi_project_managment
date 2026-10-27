@@ -146,11 +146,15 @@ const Sidebar = () => {
 
                 </div>
 
-                <a href="#" className="sidebar-link">
-
+                <NavLink
+                    to="/settings"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
                     <Settings size={20} />
                     <span>Settings</span>
-                </a>
+                </NavLink>
             
             </nav>
         
