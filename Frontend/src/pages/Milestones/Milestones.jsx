@@ -277,11 +277,13 @@ function Milestones() {
             {/* Header */}
             <button
                 type="button"
-                className="back-to-projects-btn"
+                className="backlog-back-button"
                 onClick={() =>
-                    navigate(-1)}
+                    navigate(`/projects/${id}`)
+                }
             >
                 <ArrowLeft size={16} />
+
                 Back to Project
             </button>
 

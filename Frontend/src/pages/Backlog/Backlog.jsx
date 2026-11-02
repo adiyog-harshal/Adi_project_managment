@@ -360,20 +360,7 @@ const Backlog = () => {
         return (
             <div className="backlog-page">
 
-                <button
-                    type="button"
-                    className="backlog-back-button"
-                    onClick={() =>
-                        navigate(`/projects/${id}`)
-                    }
-                >
-                    <ArrowLeft size={16} />
-
-                    Back to Project
-                </button>
-                <p>
-                    Project not found.
-                </p>
+            
 
             </div>
         );

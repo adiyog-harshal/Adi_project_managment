@@ -229,14 +229,7 @@ const ProjectDetails = () => {
         return (
             <div className="project-details-page">
 
-                <button
-                    className="back-project-btn"
-                    onClick={() => navigate("/projects")}
-                >
-                    <ArrowLeft size={16} />
-                    Back to Projects
-                </button>
-
+                
                 <div className="project-not-found">
                     Project not found.
                 </div>
@@ -364,10 +357,9 @@ const handleMemberRoleChange = async (
                 onClick={() => navigate("/projects")}
             >
                 <ArrowLeft size={16} />
-                Back to Projects
+                Back to Project
             </button>
-
-
+            
             {/* PROJECT HEADER */}
 
             <div className="project-details-header">
@@ -398,8 +390,7 @@ const handleMemberRoleChange = async (
                 </span>
 
             </div>
-
-
+            
             {/* PROJECT SUMMARY CARDS */}
 
             <div className="project-summary-grid">

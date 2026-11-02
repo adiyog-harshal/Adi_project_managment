@@ -2772,3 +2772,59 @@
 .projects-page .projects-header .add-project-btn {
     flex: 0 0 auto;
 }
+
+
+/* HEADING TOP HEAD SEARCH ADD PROJECTS */
+.projects-top-header {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(220px, 420px) auto;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+}
+
+.projects-heading {
+    min-width: 0;
+}
+
+.projects-header-search {
+    width: 100%;
+    min-width: 0;
+    justify-self: center;
+}
+
+.projects-header-search .common-search {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.projects-top-header .add-project-btn {
+    justify-self: end;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .projects-top-header {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 14px;
+    }
+
+    .projects-header-search {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+}
+
+
+.projects-heading .page-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.projects-heading .page-title-wrapper h1 {
+    margin: 0;
+}
+
+

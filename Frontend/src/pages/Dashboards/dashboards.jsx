@@ -31,6 +31,7 @@ import {
 
 const Dashboard = () => {
     const [projects, setProjects] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
     const [teamMembers, setTeamMembers] = useState([]);
 
     const [showTotalProjects, setShowTotalProjects] = useState(false);
@@ -49,6 +50,23 @@ const Dashboard = () => {
 
     const [showFilterMenu, setShowFilterMenu] = useState(false)
     const [showSortMenu, setShowSortMenu] = useState(false);
+
+    const now = new Date();
+    const hour = now.getHours();
+
+    const greeting =
+        hour < 12
+            ? "Good morning"
+            : hour < 17
+            ? "Good afternoon"
+            : "Good evening";
+
+    const today = now.toLocaleDateString("en-IN", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
 
     useEffect(() => {
         fetchProjects();
@@ -406,37 +424,41 @@ const Dashboard = () => {
         actualProjectProgress
     });
 
-    const filteredProjects = projects.filter((project) => {
-        if (filterStatus === "all") {
-            return true;
-        }
+   const filteredProjects = projects.filter((project) => {
+    const status = String(project.status || "")
+        .toLowerCase()
+        .replace(/[-_]/g, " ")
+        .trim();
 
-        const status = String(project.status || "")
-            .toLowerCase()
-            .replace(/[-_]/g, " ")
-            .trim();
+    // Existing status filter
+    let matchesStatus = true;
 
-        if (filterStatus === "completed") {
-            return status === "completed";
-        }
+    if (filterStatus === "completed") {
+        matchesStatus = status === "completed";
+    } else if (filterStatus === "running") {
+        matchesStatus =
+            status === "running" || status === "in progress";
+    } else if (filterStatus === "pending") {
+        matchesStatus =
+            status === "pending" ||
+            status === "not started" ||
+            status === "stopped";
+    }
 
-        if (filterStatus === "running") {
-            return (
-                status === "running" ||
-                status === "in progress"
-            );
-        }
+    // New search filter
+    const query = searchQuery.trim().toLowerCase();
 
-        if (filterStatus === "pending") {
-            return (
-                status === "pending" ||
-                status === "not started" ||
-                status === "stopped"
-            );
-        }
+    const matchesSearch = [
+        project.project_name,
+        project.status,
+        project.start_date,
+        project.end_date,
+    ].some((value) =>
+        String(value || "").toLowerCase().includes(query)
+    );
 
-        return true;
-    });
+    return matchesStatus && matchesSearch;
+});
 
     const displayedProjects = [...filteredProjects].sort((a, b) => {
         if (sortBy === "name") {
@@ -633,60 +655,46 @@ const Dashboard = () => {
                 HEADER
             ================================= */}
 
-            <div className="dashboard-header">
+            
+<div className="dashboard-header">
+    <div className="dashboard-header-right">
+        <div className="dashboard-search">
+            <Search size={17} />
 
-                <div className="dashboard-heading">
+            <input
+                type="text"
+                placeholder="Search projects, status, or dates..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+            />
+        </div>
 
-                    <h1>
-                        <LayoutDashboard 
-                            size={22}
-                            color="#D9A21B"
-                        />
-                        Dashboard</h1>
+        <button
+            type="button"
+            className="dashboard-notification"
+            title="Notification"
+        >
+            <Bell size={19} />
+        </button>
+    </div>
+</div>
 
-                    <p>
-                        Monitor all of your projects and tasks here
-                    </p>
+<div className="dashboard-welcome">
+    <div className="welcome-text">
+        <h1>
+            {greeting}! <span>👋</span>
+        </h1>
+        <p>
+            Welcome back! Here's what's happening
+            with your projects today.
+        </p>
+    </div>
 
-                </div>
+    <div className="welcome-date">
+        <span>{today}</span>
+    </div>
+</div>
 
-
-                <div className="dashboard-header-right">
-
-                    {/* SEARCH */}
-
-                    <div className="dashboard-search">
-
-                        <Search size={17} />
-
-                        <input
-                            type="text"
-                            placeholder="Search anything"
-                        />
-
-                    </div>
-
-
-                    {/* NOTIFICATION */}
-
-                    <button
-                        type="button"
-                        className="dashboard-notification"
-                        title="Notification"
-                    >
-                        <Bell size={19} />
-                    </button>
-
-
-                    {/* AVATAR */}
-
-                    <div className="dashboard-avatar">
-                        U
-                    </div>
-
-                </div>
-
-            </div>
 
 
             {/* =================================

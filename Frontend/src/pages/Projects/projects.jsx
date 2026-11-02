@@ -179,16 +179,16 @@ const Projects = () => {
     };
 
     const filteredProjects = projects.filter((project) =>
-    [
-        project.name,
-        project.description,
-        project.status,
-    ]
-        .filter(Boolean)
-        .some((value) =>
-            String(value).toLowerCase().includes(search.trim().toLowerCase())
+        [
+            project.project_name,
+            project.status,
+            project.description,
+        ].some((value) =>
+            String(value || "")
+                .toLowerCase()
+                .includes(search.trim().toLowerCase())
         )
-);
+    );
 
     const fetchProjects = async () => {
         try {
@@ -345,7 +345,7 @@ const Projects = () => {
         return Math.min(Math.max(progress, 0), 100);
     };
 
-
+    
     return (
 
         <div className={`projects-page ${showForm ? "form-open" : "" }`}>
@@ -354,24 +354,33 @@ const Projects = () => {
 
             <div className="projects-header">
 
-                <div className="project-title">
-
-                    <h1>
+                <div className="projects-top-header">
+                    <div className="page-title-wrapper">
                         <FolderKanban
-                            size={22}
-                            color="#D9A21B"
+                            size={27}
+                            className="page-title-icon"
                         />
-                        Project Management
-                    </h1>
+                        <h1>Project Management </h1>
+                        {/* <p>Manage and track all your projects.</p> */}
+                    </div>
 
-                    <p>Manage your projects</p>
-                    <CommonSearch
-                        search={search}
-                        setSearch={setSearch}
-                        placeholder="Search projects..."
-                    />
-                   
+                    <div className="projects-header-search">
+                        <CommonSearch
+                            search={search}
+                            setSearch={setSearch}
+                            placeholder="Search projects..."
+                        />
+                    </div>
+
+                    <button
+                        type="button"
+                        className="add-project-btn"
+                        onClick={() => setShowForm(true)}
+                    >
+                        + Add Project
+                    </button>
                 </div>
+                
 
                 <div className="project-header-actions">
 
@@ -433,20 +442,7 @@ const Projects = () => {
                                 )}
                             </div>
                         )}
-
                     </div>
-
-                    <button
-                            className="add-project-btn"
-                            onClick={() => setShowForm(true)}
-                        >
-                            <Plus size={17} />
-                            Add Project
-                    </button>
-
-                    
-                   
-
                 </div>
 
             </div>

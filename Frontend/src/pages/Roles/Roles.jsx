@@ -6,6 +6,7 @@ import {
     Trash2,
     ShieldCheck,
     Search,
+    MoreVertical,
 } from "lucide-react";
 
 import RoleModal from "./RoleModal";
@@ -23,6 +24,8 @@ function Roles() {
     const [selectedRole, setSelectedRole] = useState(null);
 
     const [search, setSearch] = useState("");
+
+    const [openActionId, setOpenActionId] = useState(null);
 
     const fetchRoles = async () => {
         try {
@@ -44,27 +47,31 @@ function Roles() {
     }, []);
 
     
-    const handleToggleRoleStatus = async (role) => {
-        const newStatus = !role.is_active;
-
-        try {
+    const handleToggleRoleStatus = async (role, newStatus) => {
+         try {
             await api.patch(`roles/${role.id}/`, {
-                is_active: newStatus
+                is_active: newStatus,
             });
 
+            setOpenStatusId(null);
             await fetchRoles();
-
         } catch (error) {
             console.error(
                 "Failed to update role status:",
                 error.response?.data || error
             );
-
             alert("Failed to update role status.");
         }
     };
 
+    const handleSelectStatus = async (role, isActive) => {
+        if (role.is_active === isActive){
+            setOpenStatusId(null);
+            return;
+        } 
 
+        await handleToggleRoleStatus(role, isActive);
+    };
     // Open Add Role modal
     const handleAddRole = () => {
         setSelectedRole(null);
@@ -75,9 +82,7 @@ function Roles() {
         setSelectedRole(role);
         setIsModalOpen(true);
     };
-
-
-    
+   
     const handleDeleteRole = async (id) => {
 
         const confirmed = window.confirm(
@@ -143,13 +148,10 @@ function Roles() {
         );
     });
 
-    
-
     return (
         <div className="roles-page">
 
             {/* Header */}
-
             <div className="page-header">
 
                 <div>
@@ -160,11 +162,9 @@ function Roles() {
                             size={27}
                             className="page-title-icon"
                         />
-
                         <h1>
                             Role Management
                         </h1>
-
                     </div>
 
                     <p className="page-description">
@@ -183,15 +183,11 @@ function Roles() {
 
             </div>
 
-
             <div className="roles-card">
-
-
 
                 <div className="card-header">
 
                     <div>
-
                         <h2>
                             Roles
                         </h2>
@@ -211,37 +207,22 @@ function Roles() {
                     <table>
 
                         <thead>
-
                             <tr>
-
-                                <th>
-                                    Role Name
-                                </th>
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Actions
-                                </th>
-
+                                <th>Role Name</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
-
                         </thead>
-
                         <tbody>
 
                             {filteredRoles.length === 0 ? (
-
-                                <tr>
-
+                               <tr>
                                     <td
                                         colSpan="5"
                                         className="empty-state"
                                     >
                                         No roles found
                                     </td>
-
                                 </tr>
 
                             ) : (
@@ -261,9 +242,7 @@ function Roles() {
 
                                             </div>
 
-                                        </td>
-
-                                       
+                                        </td>                                      
                                     <td>
                                         <div className="status-dropdown-wrapper">
                                             <button
@@ -278,64 +257,55 @@ function Roles() {
                                                 }
                                             >
                                                 {role.is_active ? "Active" : "Inactive"}
-                                                <span className="status-arrow">▼</span>
                                             </button>
 
-                                            {openStatusId === role.id && (
-                                                <div className="status-dropdown-menu">
-                                                    <button
-                                                        type="button"
-                                                        className={role.is_active ? "selected-status" : ""}
-                                                        onClick={() => handleSelectStatus(role, true)}
-                                                    >
-                                                        Active {role.is_active ? "✓" : ""}
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        className={!role.is_active ? "selected-status" : ""}
-                                                        onClick={() => handleSelectStatus(role, false)}
-                                                    >
-                                                        Inactive {!role.is_active ? "✓" : ""}
-                                                    </button>
-                                                </div>
-                                            )}
+                                        
                                         </div>
                                     </td>
-
-
                                         <td>
-
-                                            <div className="action-buttons">
-
+                                            <div className="role-actions-menu">
                                                 <button
-                                                    className="edit-button"
-                                                    title="Edit Role"
+                                                    type="button"
+                                                    className="role-actions-trigger"
+                                                    title="Actions"
+                                                    aria-label={`Actions for ${role.name}`}
                                                     onClick={() =>
-                                                        handleEditRole(role)
+                                                        setOpenActionId(
+                                                            openActionId === role.id ? null : role.id
+                                                        )
                                                     }
                                                 >
-                                                    <Pencil size={17} />
+                                                    <MoreVertical size={20} />
                                                 </button>
+                                                 
+                                                 {openActionId === role.id && (
+                                                    <div className="role-actions-dropdown">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setOpenActionId(null);
+                                                                handleEditRole(role);
+                                                            }}
+                                                        >
+                                                            Edit
+                                                        </button>
 
-                                                <button
-                                                    className="delete-button"
-                                                    title="Delete Role"
-                                                    onClick={() =>
-                                                        handleDeleteRole(role.id)
-                                                    }
-                                                >
-                                                    <Trash2 size={17} />
-                                                </button>
-
+                                                        <button
+                                                            type="button"
+                                                            className="role-delete-action"
+                                                            onClick={() => {
+                                                                setOpenActionId(null);
+                                                                handleDeleteRole(role.id);
+                                                            }}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                 )}
                                             </div>
-
                                         </td>
-
                                     </tr>
-
                                 ))
-
                             )}
 
                         </tbody>
@@ -361,5 +331,4 @@ function Roles() {
         </div>
     );
 }
-
 export default Roles;
