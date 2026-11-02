@@ -13,24 +13,26 @@
 ========================================= */
 .dashboard-header {
     width: 100%;
-    min-width: 0;
+    min-width: 52;
 
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
 
-    gap: 25px;
+    gap: 45cpx;
 
-    margin-bottom: 26px;
+    margin-bottom: 35px;
 
     box-sizing: border-box;
 }
 .dashboard-heading {
-    min-width: 0;
+    min-width: 5;
 }
 .dashboard-heading h1 {
-    margin: 0;
-
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 2px 0 0;
     font-size: 28px;
     line-height: 34px;
 
@@ -43,7 +45,7 @@
 
     font-size: 14px;
     line-height: 20px;
-
+      
     color: #969696;
 }
 /* =========================================
@@ -121,7 +123,7 @@
     height: 40px;
 
     display: flex;
-    align-items: center;
+    align-items: right;
     justify-content: center;
 
     border-radius: 50%;
@@ -129,7 +131,8 @@
     background: #eee6ff;
 
     color: #6638df;
-
+      
+    gap:54px ;
     font-size: 14px;
     font-weight: 600;
 }
