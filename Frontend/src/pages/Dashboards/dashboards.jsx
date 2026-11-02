@@ -11,13 +11,6 @@ import {
     TrendingUp,
     CircleAlert,
     MoreHorizontal,
-    Plus,
-    LayoutDashboard,
-    Users,
-    Filter,
-    ArrowUpDown,
-    Download,
-    ChevronDown
 } from "lucide-react";
 import {
     LineChart,
@@ -75,7 +68,6 @@ const Dashboard = () => {
 
     useEffect(() => {
         const fetchProjectTasks = async () => {
-
             if (!selectedProgressProject?.id) {
                 setProjectTasks([]);
                 return;
@@ -84,75 +76,43 @@ const Dashboard = () => {
             try {
                 const response = await api.get("tasks/");
 
-                console.log("========== PROJECT TASK DEBUG ==========");
-                console.log("SELECTED PROJECT:", selectedProgressProject);
-                console.log("SELECTED PROJECT ID:", selectedProgressProject.id);
-                console.log("RAW TASK RESPONSE:", response.data);
-
-                // Handle normal array OR DRF pagination
                 const allTasks = Array.isArray(response.data)
                     ? response.data
-                    : response.data.results || [];
+                    : Array.isArray(response.data?.results)
+                        ? response.data.results
+                        : [];
 
-                console.log("ALL TASKS:", allTasks);
-
-                const selectedProjectId = Number(
-                    selectedProgressProject.id
-                );
+                const selectedProjectId = String(selectedProgressProject.id);
 
                 const selectedTasks = allTasks.filter((task) => {
+                    const projectValue =
+                        task.project ??
+                        task.project_id ??
+                        task.project_detail ??
+                        task.projectId;
+
                     let taskProjectId = null;
 
-                    // Case 1:
-                    // { project: 14 }
-                    if (
-                        task.project !== null &&
-                        task.project !== undefined &&
-                        typeof task.project !== "object"
-                    ) {
-                        taskProjectId = Number(task.project);
+                    if (projectValue && typeof projectValue === "object") {
+                        taskProjectId = 
+                            projectValue.id ??
+                            projectValue.project_id;
+                    } else {
+                        taskProjectId = projectValue;
                     }
 
-                    // Case 2:
-                    // { project_id: 14 }
-                    if (
-                        taskProjectId === null &&
-                        task.project_id !== null &&
-                        task.project_id !== undefined
-                    ) {
-                        taskProjectId = Number(task.project_id);
-                    }
-
-                    // Case 3:
-                    // { project: { id: 14, ... } }
-                    if (
-                        taskProjectId === null &&
-                        task.project &&
-                        typeof task.project === "object"
-                    ) {
-                        taskProjectId = Number(task.project.id);
-                    }
-                    // console.log(
-                    //     "TASK:",
-                    //     task,
-                    //     "TASK PROJECT ID:",
-                    //     taskProjectId,
-                    //     "SELECTED PROJECT ID:",
-                    //     selectedProjectId
-                    // );
-                    return taskProjectId === selectedProjectId;
+                    return String(taskProjectId) === selectedProjectId;
                 });
 
-                console.log(
-                    "SELECTED PROJECT TASKS:",
-                );
-
-                console.log(selectedTasks);
+                console.log("SELECTED PROJECT:", selectedProgressProject);
+                console.log("ALL TASKS:", allTasks);
+                console.log("SELECTED PROJECT TASKS:", selectedTasks);
 
                 setProjectTasks(selectedTasks);
 
-            } catch (error) {
-                
+                // Handle normal array OR DRF pagination
+            
+            } catch (error) {               
                 console.error(
                     "FAILED TO FETCH TASKS:",
                     error.response?.data || error
@@ -166,48 +126,62 @@ const Dashboard = () => {
     }, [selectedProgressProject]);
 
     const fetchProjects = async () => {
-        try {
-            const response = await api.get("projects/");
+    try {
+        const response = await api.get("projects/");
 
-            console.log("ALL PROJECTS:", response.data);
+        console.log("ALL PROJECTS:", response.data);
 
-            const projectData = response.data;
-            // Store projects
-            setProjects(projectData);
+        const projectData = Array.isArray(response.data)
+            ? response.data
+            : response.data.results || [];
 
-            // Store all team members
-    const memberResponses = await Promise.all(
-        projectData.map(async (project) => {
-            try {
-                const response = await api.get(
-                    `projects/${project.id}/members/`
-                );
+        // Store projects
+        setProjects(projectData);
 
-                return Array.isArray(response.data)
-                    ? response.data
-                    : response.data.results || [];
-            } catch (error) {
-                console.error(
-                    `Failed to fetch members for project ${project.id}:`,
-                    error
-                );
-                return [];
-            }
-        })
-    );
+        // Automatically select the first project
+        if (projectData.length > 0) {
+            setSelectedProgressProject((current) => {
+                return current || projectData[0];
+            });
+        } else {
+            setSelectedProgressProject(null);
+        }
 
-    const allMembers = memberResponses.flat();
-    setTeamMembers(allMembers);
-                console.log("ALL TEAM MEMBERS:", allMembers);
+        // Fetch all team members
+        const memberResponses = await Promise.all(
+            projectData.map(async (project) => {
+                try {
+                    const response = await api.get(
+                        `projects/${project.id}/members/`
+                    );
 
-                
-            } catch (error) {
-                console.error(
-                    "Dashboard project fetch error:", 
-                    error
-                );
-            }
-        };
+                    return Array.isArray(response.data)
+                        ? response.data
+                        : response.data.results || [];
+
+                } catch (error) {
+                    console.error(
+                        `Failed to fetch members for project ${project.id}:`,
+                        error
+                    );
+                    return [];
+                }
+            })
+        );
+
+        const allMembers = memberResponses.flat();
+
+        setTeamMembers(allMembers);
+
+        console.log("ALL TEAM MEMBERS:", allMembers);
+
+    } catch (error) {
+        console.error(
+            "Dashboard project fetch error:",
+            error.response?.data || error
+        );
+    }
+};
 
     const fetchUsers = async () => {
         try {
@@ -363,66 +337,44 @@ const Dashboard = () => {
     const onTimeProjectCount = onTimeProjects.length;
     const delayedProjectCount = delayedProjects.length;
 
-
     // ===============================
-    // PROJECT PROGRESS CALCULATION
-    // ===============================
+// PROJECT PROGRESS CALCULATION
+// ===============================
 
-    const getTaskStatus = (task) => {
-        return String(task.status || "")
-            .toLowerCase()
-            .replace(/[-_]/g, " ")
-            .trim();
-    };
+const getTaskStatus = (task) => {
+    return String(task.status ?? task.task_status ?? "")
+        .toLowerCase()
+        .replace(/[-_]/g, " ")
+        .trim();
+};
 
-    const completedTasks = projectTasks.filter((task) => {
-        return getTaskStatus(task) === "completed";
-    }).length;
+const completedTasks = projectTasks.filter((task) => {
+    return getTaskStatus(task) === "completed";
+}).length;
 
-    const inProgressTasks = projectTasks.filter((task) => {
-        const status = getTaskStatus(task);
+const inProgressTasks = projectTasks.filter((task) => {
+    const status = getTaskStatus(task);
 
-        return (
-            status === "in progress" ||
-            status === "running"
-        );
-    }).length;
+    return status === "in progress" || status === "running";
+}).length;
 
-    const pendingTasks = projectTasks.filter((task) => {
-        const status = getTaskStatus(task);
+const totalTasks = projectTasks.length;
 
-        return (
-            status === "pending" ||
-            status === "not started" ||
-            status === ""
-        );
-    }).length;
+// All remaining tasks are counted as incomplete.
+const pendingTasks = totalTasks - completedTasks - inProgressTasks;
 
-    const totalTasks = projectTasks.length;
+const actualProjectProgress = totalTasks > 0
+    ? Math.round((completedTasks / totalTasks) * 100)
+    : 0;
 
-    const actualProjectProgress =
-        totalTasks > 0
-            ? Math.round(
-                (completedTasks / totalTasks) * 100
-            )
-            : 0;
-
-    console.log("DASHBOARD PROJECT COUNTS:", {
-        totalProjects,
-        completedProjectCount,
-        runningProjects,
-        pendingProjects,
-        onTimeProjectCount,
-        delayedProjectCount
-    });
-
-    console.log("PROJECT PROGRESS:", {
-        totalTasks,
-        completedTasks,
-        inProgressTasks,
-        pendingTasks,
-        actualProjectProgress
-    });
+console.log("PROJECT PROGRESS:", {
+    selectedProject: selectedProgressProject?.project_name,
+    totalTasks,
+    completedTasks,
+    inProgressTasks,
+    pendingTasks,
+    actualProjectProgress
+});
 
    const filteredProjects = projects.filter((project) => {
     const status = String(project.status || "")
@@ -1052,16 +1004,13 @@ const Dashboard = () => {
                                 </tbody>
 
                             </table>
-
                         </div>
 
                     </div>
 
-
                     {/* =================================
                         PROJECT PROGRESS
                     ================================= */}
-
                     <div className="project-progress-card dashboard-project-progress-card">
 
                         <div className="section-header">
@@ -1077,48 +1026,27 @@ const Dashboard = () => {
                             </div>
 
                         </div>
-
-
+                        
                         <div className="project-progress-content">
 
                             <div
                                 className="progress-circle"
-                                style={{
-                                    background: 
-                                        totalTasks > 0 
-                                        ? `conic-gradient(
-                                            #12b76a 0% ${
-                                                (completedTasks / totalTasks) * 100
-                                            }%,
-
-                                            #f79009 ${
-                                                (completedTasks / totalTasks) * 100
-
-                                            }% ${
-                                                ((completedTasks + inProgressTasks) / totalTasks) * 100
-                                            }%,
-
-                                            #d0d5dd ${
-                                                ((completedTasks + inProgressTasks) / totalTasks) * 100
-                                            }% 100%
-                                        
-                                        )`
-                                        : "#e4e7ec"                    
-                                }}
+                                
+                        style={{
+                            background: "conic-gradient(#16a34a 0% 33%, #3b82f6 33% 66%, #f59e0b 66% 100%)"
+                        }}
                             >
                                 <div className="progress-circle-inner">
                                     <span>{actualProjectProgress}%</span>
-
                                     <small>Progress</small>
                                 </div>
                             </div>
-
 
                             <div className="progress-details">
 
                                 <p>
                                     <span className="progress-dot completed-dot"></span>
-                                    <span>Complete</span>
+                                    <span>Completed</span>
                                     <strong>{completedTasks}</strong>
                                 </p>
 
@@ -1135,15 +1063,11 @@ const Dashboard = () => {
                                 </p>
 
                             </div>
-
                         </div>
 
                     </div>
-
-                </div>
-                
+                </div>                
             </div>
-
         </div>
     );
 };

@@ -509,50 +509,35 @@
 
 /* DONUT */
 
+
 .progress-circle {
     width: 180px;
     height: 180px;
-
-    flex-shrink: 0;
-
     border-radius: 50%;
-
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    flex-shrink: 0;
 }
-
 
 .progress-circle-inner {
-    width: 132px;
-    height: 132px;
-
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
-
     background: #ffffff;
-
     display: flex;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
-}
-
-
-.progress-circle-inner span {
-    font-size: 30px;
-
-    font-weight: 600;
-
-    color: #171717;
+    position: relative;
+    z-index: 1;
 }
 
 
 .progress-circle-inner small {
     margin-top: 3px;
-
     font-size: 12px;
-
     color: #8a8a8a;
 }
 
@@ -562,9 +547,7 @@
 .progress-details {
     display: flex;
     flex-direction: column;
-
     gap: 18px;
-
     min-width: 150px;
 }
 
@@ -593,27 +576,35 @@
 }
 
 
+
+/* Project Progress Colors */
+
 .progress-dot {
-    width: 9px;
-    height: 9px;
-
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
     border-radius: 50%;
+    display: inline-block;
 }
-
 
 .completed-dot {
-    background: #6638df;
+    background-color: #16a34a;
 }
-
 
 .running-dot {
-    background: #a99aef;
+    background-color: #3b82f6;
 }
-
 
 .pending-dot {
-    background: #d8d8d8;
+    background-color: #f59e0b;
 }
+
+.progress-details p {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
 
 
 /* =========================================
@@ -1945,7 +1936,6 @@
         font-size: 23px;
     }
 }
-
 
 .dashboard-header {
     display: flex;

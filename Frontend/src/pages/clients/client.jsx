@@ -14,9 +14,8 @@ import "./client.css";
 
 const emptyClient = {
     client_name: "",
-    project_name: "",
+    email: "",
     phone_number: "",
-    contract: "",
     address: "",
 };
 
@@ -106,7 +105,7 @@ export default function Clients() {
     }, []);
 
     const filteredClients = clients.filter((client) =>
-        [client.client_name, client.project_name, client.phone_number]
+        [client.client_name, client.phone_number]
             .join(" ")
             .toLowerCase()
             .includes(search.trim().toLowerCase())
@@ -123,9 +122,8 @@ export default function Clients() {
         setEditingClient(client);
         setForm({
             client_name: client.client_name || "",
-            project_name: client.project_name || "",
+            email: client.email || "",
             phone_number: client.phone_number || "",
-            contract: client.contract || "",
             address: client.address || "",
         });
         setOpenMenuId(null);
@@ -221,7 +219,7 @@ export default function Clients() {
                         <thead>
                             <tr>
                                 <th>Client Name</th>
-                                <th>Project Name</th>
+                                <th>Email</th>
                                 <th>Contact</th>
                                 <th>Action</th>
                             </tr>
@@ -242,8 +240,9 @@ export default function Clients() {
                                                 {client.client_name}
                                             </span>
                                         </td>
-                                        <td>{client.project_name}</td>
+                                        <td>{client.email || "—"}</td>
                                         <td>{client.phone_number || "—"}</td>
+                                        
                                         <td className="client-action-cell">
                                             <div
                                                 className="client-action-wrap"
@@ -336,16 +335,19 @@ export default function Clients() {
                                     required
                                 />
                             </label>
+
                             <label>
-                                Project Name
+                                Email Address 
                                 <input
-                                    type="text"
-                                    maxLength="200"
-                                    value={form.project_name}
-                                    onChange={(event) => setForm({ ...form, project_name: event.target.value })}
-                                    required
-                                />
+                                    type={form.email}
+                                    value={form.email}
+                                    onChange={(event) =>
+                                        setForm({ ...form, email: event.target.value })
+                                    }
+                                    placeholder="Enter email address"
+                                    />
                             </label>
+                        
                             <label>
                                 Contact Number
                                 <input
@@ -355,16 +357,7 @@ export default function Clients() {
                                     onChange={(event) => setForm({ ...form, phone_number: event.target.value })}
                                 />
                             </label>
-                            {/* <label>
-                                Contract
-                                <input
-                                    type="text"
-                                    maxLength="225"
-                                    value={form.contract}
-                                    onChange={(event) => setForm({ ...form, contract: event.target.value })}
-                                    required
-                                />
-                            </label> */}
+                        
                             <label>
                                 Address
                                 <textarea

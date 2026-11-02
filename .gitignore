@@ -1,7 +1,20 @@
-venv
-venv/*
+
+# Python / Django
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
 # Backend
 Backend/venv/
+Backend/.venv/
 Backend/__pycache__/
 Backend/**/*.pyc
 Backend/.env
@@ -10,3 +23,22 @@ Backend/db.sqlite3
 # Frontend
 Frontend/node_modules/
 Frontend/dist/
+Frontend/.env
+Frontend/.env.*
+!Frontend/.env.example
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Archives
+*.zip
+
+
+# Salesforce local files
+.sf/
+
+# Windows shortcuts
+*.lnk

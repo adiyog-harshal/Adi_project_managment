@@ -9,8 +9,8 @@ class ClientAdmin(admin.ModelAdmin):
         "id",
         "client_name",
         "project_name",
+        "email",
         "phone_number",
-        "contract",
         "created_at",
     )
 
@@ -18,7 +18,6 @@ class ClientAdmin(admin.ModelAdmin):
         "client_name",
         "project_name",
         "phone_number",
-        "contract",
         "address",
     )
 

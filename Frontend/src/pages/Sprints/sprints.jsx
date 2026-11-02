@@ -1572,138 +1572,137 @@ return (
                     </div>
                
                 </div>
-
                 
-{showAddTasks && selectedSprint && (
-    <div
-        className="sprint-modal-overlay"
-        onClick={() => {
-            setShowAddTasks(false);
-            setSelectedTaskIds([]);
-        }}
-    >
-        <div
-            className="add-sprint-tasks sprint-modal"
-            onClick={(e) => e.stopPropagation()}
-        >
-            <div className="sprint-modal-header">
-                <div>
-                    <h3>
-                        Add Backlog Tasks to {selectedSprint.sprint_name}
-                    </h3>
-                    <p>Select multiple tasks to include in this sprint.</p>
-                </div>
+                {showAddTasks && selectedSprint && (
+                    <div
+                        className="sprint-modal-overlay"
+                        onClick={() => {
+                            setShowAddTasks(false);
+                            setSelectedTaskIds([]);
+                        }}
+                    >
+                        <div
+                            className="add-sprint-tasks sprint-modal"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="sprint-modal-header">
+                                <div>
+                                    <h3>
+                                        Add Backlog Tasks to {selectedSprint.sprint_name}
+                                    </h3>
+                                    <p>Select multiple tasks to include in this sprint.</p>
+                                </div>
 
-                <button
-                    type="button"
-                    className="sprint-modal-close"
-                    onClick={() => {
-                        setShowAddTasks(false);
-                        setSelectedTaskIds([]);
-                    }}
-                    aria-label="Close popup"
-                >
-                    &times;
-                </button>
-            </div>
-
-            {tasks.filter(task => {
-                const sprintId =
-                    typeof task.sprint === "object"
-                        ? task.sprint?.id
-                        : task.sprint;
-
-                return !sprintId;
-            }).length === 0 ? (
-                <p className="no-sprint-tasks">
-                    No unassigned backlog tasks are available.
-                </p>
-            ) : (
-                <div className="availabe-sprint-tasks">
-                    {tasks
-                        .filter(task => {
-                            const sprintId =
-                                typeof task.sprint === "object"
-                                    ? task.sprint?.id
-                                    : task.sprint;
-
-                            return !sprintId;
-                        })
-                        .map(task => (
-                            <label
-                                key={task.id}
-                                className="available-sprint-task"
-                                htmlFor={`sprint-task-${task.id}`}
-                            >
-                                <input
-                                    id={`sprint-task-${task.id}`}
-                                    type="checkbox"
-                                    checked={selectedTaskIds.includes(
-                                        Number(task.id)
-                                    )}
-                                    onChange={(e) => {
-                                        const taskId = Number(task.id);
-
-                                        setSelectedTaskIds(previous => {
-                                            if (e.target.checked) {
-                                                return previous.includes(taskId)
-                                                    ? previous
-                                                    : [...previous, taskId];
-                                            }
-
-                                            return previous.filter(
-                                                id => id !== taskId
-                                            );
-                                        });
+                                <button
+                                    type="button"
+                                    className="sprint-modal-close"
+                                    onClick={() => {
+                                        setShowAddTasks(false);
+                                        setSelectedTaskIds([]);
                                     }}
-                                />
+                                    aria-label="Close popup"
+                                >
+                                    &times;
+                                </button>
+                            </div>
 
-                                <span>
-                                    <strong>
-                                        {task.task_name ||
-                                            task.title ||
-                                            `Task ${task.id}`}
-                                    </strong>
+                            {tasks.filter(task => {
+                                const sprintId =
+                                    typeof task.sprint === "object"
+                                        ? task.sprint?.id
+                                        : task.sprint;
 
-                                    <small>
-                                        TASK-{task.id} · {task.status || "To Do"}
-                                    </small>
-                                </span>
-                            </label>
-                        ))}
-                </div>
-            )}
+                                return !sprintId;
+                            }).length === 0 ? (
+                                <p className="no-sprint-tasks">
+                                    No unassigned backlog tasks are available.
+                                </p>
+                            ) : (
+                                <div className="availabe-sprint-tasks">
+                                    {tasks
+                                        .filter(task => {
+                                            const sprintId =
+                                                typeof task.sprint === "object"
+                                                    ? task.sprint?.id
+                                                    : task.sprint;
 
-            <div className="add-sprint-tasks-actions">
-                <span>{selectedTaskIds.length} selected</span>
+                                            return !sprintId;
+                                        })
+                                        .map(task => (
+                                            <label
+                                                key={task.id}
+                                                className="available-sprint-task"
+                                                htmlFor={`sprint-task-${task.id}`}
+                                            >
+                                                <input
+                                                    id={`sprint-task-${task.id}`}
+                                                    type="checkbox"
+                                                    checked={selectedTaskIds.includes(
+                                                        Number(task.id)
+                                                    )}
+                                                    onChange={(e) => {
+                                                        const taskId = Number(task.id);
 
-                <button
-                    type="button"
-                    className="sprint-cancel-button"
-                    onClick={() => {
-                        setShowAddTasks(false);
-                        setSelectedTaskIds([]);
-                    }}
-                >
-                    Cancel
-                </button>
+                                                        setSelectedTaskIds(previous => {
+                                                            if (e.target.checked) {
+                                                                return previous.includes(taskId)
+                                                                    ? previous
+                                                                    : [...previous, taskId];
+                                                            }
 
-                <button
-                    type="button"
-                    className="sprint-create-button"
-                    onClick={handleAssignTasks}
-                    disabled={
-                        assigningTasks || selectedTaskIds.length === 0
-                    }
-                >
-                    {assigningTasks
-                        ? "Adding..."
-                        : "Add Selected Tasks"}
-                </button>
-            </div>
-        </div>
-    </div>
-)}             
+                                                            return previous.filter(
+                                                                id => id !== taskId
+                                                            );
+                                                        });
+                                                    }}
+                                                />
+
+                                                <span>
+                                                    <strong>
+                                                        {task.task_name ||
+                                                            task.title ||
+                                                            `Task ${task.id}`}
+                                                    </strong>
+
+                                                    <small>
+                                                        TASK-{task.id} · {task.status || "To Do"}
+                                                    </small>
+                                                </span>
+                                            </label>
+                                        ))}
+                                </div>
+                            )}
+
+                            <div className="add-sprint-tasks-actions">
+                                <span>{selectedTaskIds.length} selected</span>
+
+                                <button
+                                    type="button"
+                                    className="sprint-cancel-button"
+                                    onClick={() => {
+                                        setShowAddTasks(false);
+                                        setSelectedTaskIds([]);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="sprint-create-button"
+                                    onClick={handleAssignTasks}
+                                    disabled={
+                                        assigningTasks || selectedTaskIds.length === 0
+                                    }
+                                >
+                                    {assigningTasks
+                                        ? "Adding..."
+                                        : "Add Selected Tasks"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}             
                 <div className={`sprint-content-layout ${!selectedTask ? "no-task-selected" : ""}`}>
 
                 {/* LEFT: TASK TABLE */}
@@ -2124,10 +2123,7 @@ return (
                         {scheduleMessage}
                     </p>
                 )}
-            </section>
-
-
-                                                        
+            </section>                                                        
                                                         
                                                     </div>
                                                 </>

@@ -4,7 +4,7 @@ from .views import (
     ProjectMemberListCreateView,
     ProjectMemberDetailView,
 )
-
+from .views import ProjectMemberRoleUpdateView
 
 urlpatterns = [
 
@@ -18,6 +18,12 @@ urlpatterns = [
         "<int:pk>/",
         ProjectMemberDetailView.as_view(),
         name="project-member-detail"
+    ),
+
+    path(
+        'roles/<int:pk>/',
+        ProjectMemberRoleUpdateView.as_view(),
+        name='project-member-role-update',
     ),
 
 ]

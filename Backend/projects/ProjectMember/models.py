@@ -16,9 +16,18 @@ class ProjectMember(models.Model):
         related_name="project_memberships"
     )
 
-    joined_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    is_team_leader = models.BooleanField(default=False)
+    is_project_manager = models.BooleanField(default=False)
 
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta: 
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "project"],
+                name="unique_user_per_project"
+            )
+        ]
+        
     def __str__(self):
         return f"{self.project} - {self.user.username}"
