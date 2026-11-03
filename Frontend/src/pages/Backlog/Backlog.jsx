@@ -87,9 +87,16 @@ const Backlog = () => {
             setTasks(projectTasks);
             setUsers(userData);
 
+            console.log("Loaded task modules:", projectTasks.map((task) => ({
+                task: task.task_name,
+                milestone: task.milestone,
+            })));
+            setUsers(userData);
 
             console.log("PROJECT:", projectResponse.data);
             console.log("BACKLOG TASKS:", projectTasks);
+            console.log("FIRST TASK:", projectTasks[0]);
+            console.log("FIRST TASK MILESTONE:", projectTasks[0]?.milestone);
 
         } catch (error) {
 
@@ -118,7 +125,7 @@ const Backlog = () => {
                 ? data
                 : data.results || [];
 
-            // GET THE CURRENT PROJECT'S ID 
+            // GET THE CURRENT PROJECT'S ID
             const currentProjectId = id;
 
             const projectMilestones = allMilestones.filter((milestone) => {
@@ -134,9 +141,8 @@ const Backlog = () => {
                 String(currentProjectId)
             );
         });
-
-
             setMilestones(projectMilestones);
+            console.log("Loaded modules:", projectMilestones);
 
         } catch (error) {
             console.error(
@@ -146,8 +152,6 @@ const Backlog = () => {
             );
         }
     };
-
-
     useEffect(() => {
 
         fetchBacklog();
@@ -188,7 +192,7 @@ const Backlog = () => {
             alert("Please select priority.")
             return;
         }
-        
+
         try {
             setSaving(true);
 
@@ -215,11 +219,11 @@ const Backlog = () => {
             if (editingTask) {
                 // Edit
                 const response = await api.put(
-                    `tasks/${editingTask.id}/`, 
+                    `tasks/${editingTask.id}/`,
                     payload
                 );
                 console.log("UPDATE RESPONSE:", response.data);
-                
+
             } else {
                 // Create
                 const response = await api.post(
@@ -272,8 +276,6 @@ const Backlog = () => {
             setSaving(false);
         }
     };
-
-
     /* =========================
        DELETE BACKLOG
     ========================= */
@@ -340,17 +342,15 @@ const Backlog = () => {
                 ? task.assigned_to.id
                 : task.assigned_to || "",
             priority: task.priority || "",
-            milestone: 
+            milestone:
                 task.milestone && typeof task.milestone === "object"
-                ? task.milestone.id 
+                ? task.milestone.id
                 : task.milestone || "",
-            
+
         });
 
         setShowForm(true);
     };
-
-
     /* =========================
        PROJECT NOT FOUND
     ========================= */
@@ -360,28 +360,11 @@ const Backlog = () => {
         return (
             <div className="backlog-page">
 
-                <button
-                    type="button"
-                    className="backlog-back-button"
-                    onClick={() =>
-                        navigate(`/projects/${id}`)
-                    }
-                >
-                    <ArrowLeft size={16} />
 
-                    Back to Project
-                </button>
-
-
-                <p>
-                    Project not found.
-                </p>
 
             </div>
         );
     }
-
-
     /* =========================
        PAGE
     ========================= */
@@ -444,8 +427,6 @@ const Backlog = () => {
                     setShowForm(true);
                 }}
             />
-
-
             {/* =========================
                 ADD BACKLOG FORM
             ========================= */}
@@ -523,24 +504,24 @@ const Backlog = () => {
                                     rows={2}
                                 />
                             </div>
-                            
+
                             <div className="backlog-form-group">
-    <label>Module</label>
+                                <label>Module</label>
 
-    <select
-        name="milestone"
-        value={form.milestone}
-        onChange={handleChange}
-    >
-        <option value="">Select Module</option>
+                                <select
+                                    name="milestone"
+                                    value={form.milestone}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select Module</option>
 
-        {milestones.map((milestone) => (
-            <option  key ={milestone.id} value={milestone.id}>
-                {milestone.milestone_name}
-            </option>
-        ))}
-    </select>
-</div>
+                                    {milestones.map((milestone) => (
+                                        <option  key ={milestone.id} value={milestone.id}>
+                                            {milestone.milestone_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
 
                             {/* ASSIGNED TO */}
@@ -561,12 +542,12 @@ const Backlog = () => {
                                     </option>
 
                                     {users.map((user) => {
-                                        const fullName = 
+                                        const fullName =
                                             `${user.first_name || ""} ${
                                                 user.last_name || ""
                                             }`.trim() || user.username;
- 
-                                        const designation = 
+
+                                        const designation =
                                             typeof user.designation === "object"
                                                 ? user.designation?.name
                                                 : user.designation;
@@ -651,15 +632,11 @@ const Backlog = () => {
                     </div>
                 </div>
             )}
-
-
             {/* =========================
                 BACKLOG TABLE
             ========================= */}
 
             <div className="backlog-card">
-
-
                 {/* HEADER */}
 
                 <div className="backlog-table-header">
@@ -671,8 +648,6 @@ const Backlog = () => {
                     <div>Actions</div>
 
                 </div>
-
-
                 {/* EMPTY */}
 
                 {tasks.length === 0 ? (
@@ -694,7 +669,7 @@ const Backlog = () => {
                             (item) =>
                                 String(item.id) === String(assignedUserId)
                         );
-                        
+
                         const assignedName =
                             `${user?.first_name || ""} ${
                                 user?.last_name || ""
@@ -702,23 +677,27 @@ const Backlog = () => {
                             user?.username ||
                             "Unassigned";
 
-                        
-
                         const milestoneId =
                             task.milestone && typeof task.milestone === "object"
                                 ? task.milestone.id
                                 : task.milestone;
 
+                        const matchedMilestone = milestones.find(
+                            (m) => String(m.id) === String(milestoneId)
+                        );
+
                         const milestoneName =
-                            task.milestone && typeof task.milestone === "object"
-                                ? task.milestone.milestone_name
-                                : milestones.find(
-                                    (m) => String(m.id) === String(milestoneId)
-                                )?.milestone_name || "-";
-        
+                            (task.milestone &&
+                                typeof task.milestone === "object" &&
+                                (task.milestone.milestone_name ||
+                                 task.milestone.name)) ||
+                            matchedMilestone?.milestone_name ||
+                            matchedMilestone?.name ||
+                            "-";
+
                         return (
 
-                            <div 
+                            <div
                                 className="backlog-table-row"
                                 key={task.id}
                             >
@@ -733,18 +712,17 @@ const Backlog = () => {
                                 <div className="backlog-milestone">
                                     {milestoneName}
                                 </div>
-                                
+
                                {/* PRIORITY */}
                                <span className={`backlog-priority ${(task.priority || "").toLowerCase()}`}>
                                     {task.priority}
                                 </span>
-                                
+
                                 {/* ASSIGNED */}
 
                                 <div className="backlog-assigned">
                                     {assignedName}
                                 </div>
-
 
                                 {/* ACTIONS */}
 
@@ -758,7 +736,6 @@ const Backlog = () => {
                                         <Pencil size={15} />
                                     </button>
 
-
                                     <button
                                         type="button"
                                         title="Delete"
@@ -768,20 +745,13 @@ const Backlog = () => {
                                     >
                                         <Trash2 size={15} />
                                     </button>
-
                                 </div>
-
-
                             </div>
                         );
                     })
                 )}
-
             </div>
-
         </div>
     );
 };
-
-
 export default Backlog;

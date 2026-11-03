@@ -5,7 +5,7 @@ import api from "../../services/api";
 import "./sprints.css";
 
 const Sprints = () => {
-const { id } = useParams();
+const { id, sprintId } = useParams();
 const navigate = useNavigate();
 
 const [sprints, setSprints] = useState([]);
@@ -108,7 +108,7 @@ const [scheduleForm, setScheduleForm] = useState({
     actual_end_date: "",
     estimated_time: "",
     actual_time: "",
-    
+
 });
 
 const [savingSchedule, setSavingSchedule] = useState(false);
@@ -124,6 +124,7 @@ const [taskScheduleForm, setTaskScheduleForm] = useState({
     actual_hours: "0",
     actual_minutes: "0",
 });
+
 
 const splitMinutes = (totalMinutes = 0) => {
     const total = Number(totalMinutes) || 0;
@@ -277,14 +278,14 @@ const handleSaveSchedule = async () => {
             ...selectedTask,
             ...response.data,
         };
-        // updated the selected task details 
+        // updated the selected task details
         setSelectedTask(updatedTask);
 
-        setSprintTasks((previous) => 
-            previous.map((task) => 
+        setSprintTasks((previous) =>
+            previous.map((task) =>
                 String(task.id) === String(updatedTask.id)
                     ? {...task, ...response.data }
-                    : task   
+                    : task
         ));
 
         setScheduleForm((previous) => ({
@@ -351,24 +352,21 @@ const getNextSprintSuggestion = (sprints) => {
         const match = name?.match(/Sprint\s+(\d+)/i);
         return match ? Number(match[1]) : 0;
     };
-
+    // Find the highest sprint number, even if some numbers are missing
     const nextNumber =
-        sprints.reduce(
-            (max, sprint) =>
-                Math.max(max, getNumber(sprint.sprint_name)),
-            0
-        ) + 1;
+        Math.max(0, ...sprints.map((sprint) =>
+            getNumber(sprint.sprint_name)
+        )) + 1;
 
     // Find the latest sprint end date
     const latestSprint = [...sprints]
         .filter((sprint) => sprint.end_date)
-        .sort(
-            (a, b) =>
-                new Date(b.end_date) - new Date(a.end_date)
+        .sort((a, b) =>
+                b.end_date.localeCompare(a.end_date)
         )[0];
 
     const start = latestSprint
-        ? new Date(latestSprint.end_date + "T12:00:00")
+        ? new Date(`${latestSprint.end_date}T12:00:00`)
         : new Date();
 
     if (latestSprint) {
@@ -376,20 +374,16 @@ const getNextSprintSuggestion = (sprints) => {
     }
 
     const formatDate = (date) =>
-        `${date.getFullYear()}-${String(
-            date.getMonth() + 1
-        ).padStart(2, "0")}-${String(
-            date.getDate()
-        ).padStart(2, "0")}`;
+        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
     // Reuse the latest sprint's duration, or default to 15 days
-    const duration = latestSprint
+    const duration = latestSprint?.start_date
         ? Math.max(
               1,
               Math.round(
-                  (new Date(latestSprint.end_date + "T12:00:00") -
-                      new Date(latestSprint.start_date + "T12:00:00")) /
-                      86400000
+                    (new Date(`${latestSprint.end_date}T12:00:00`) -
+                    new Date(`${latestSprint.start_date}T12:00:00`)) /
+                    86400000
               ) + 1
           )
         : 15;
@@ -406,17 +400,17 @@ const getNextSprintSuggestion = (sprints) => {
 };
 
 
-
-
 const loadData = async () => {
     try {
         setLoading(true);
         setError("");
 
-        const [sprintResponse, taskResponse] = await Promise.all([
-            api.get("sprints/"),
-            api.get("tasks/")
-        ]);
+        const [sprintResponse, taskResponse, usersResponse] =
+            await Promise.all([
+                api.get("sprints/"),
+                api.get("tasks/"),
+                api.get("users/")
+            ]);
 
         const sprintData = Array.isArray(sprintResponse.data)
             ? sprintResponse.data
@@ -426,58 +420,64 @@ const loadData = async () => {
             ? taskResponse.data
             : taskResponse.data.results || [];
 
-        const projectSprints = sprintData.filter(sprint => {
-            const sameProject =
-                String(
-                    typeof sprint.project === "object"
-                        ? sprint.project.id
-                        : sprint.project
-                ) === String(id);
-            const isRunning = 
-                sprint.status?.toLowerCase() === "in progress";
-            
-            const hasAssignedTasks = taskData.some(task => 
-                String(
-                    typeof task.sprint === "object"
-                        ? task.sprint?.id
-                        : task.sprint
-                ) === String(sprint.id)
-            );
-            return sameProject && isRunning && hasAssignedTasks;
-    });
+        const usersData = Array.isArray(usersResponse.data)
+            ? usersResponse.data
+            : usersResponse.data.results || [];
 
-        const projectTasks = taskData.filter(
-            task => String(
+        // Get ALL sprints belonging to this project,
+        // including future/planned sprints.
+        const allProjectSprints = sprintData.filter(sprint => {
+            const projectId =
+                typeof sprint.project === "object"
+                    ? sprint.project?.id
+                    : sprint.project;
+
+            return String(projectId) === String(id);
+        });
+
+        // Get all tasks belonging to this project.
+        const projectTasks = taskData.filter(task => {
+            const projectId =
                 typeof task.project === "object"
-                    ? task.project.id
-                    : task.project
-            ) === String(id)
-        );
+                    ? task.project?.id
+                    : task.project;
 
-        const usersResponse = await api.get("users/");
+            return String(projectId) === String(id);
+        });
 
-        setUsers(
-            Array.isArray(usersResponse.data)
-                ? usersResponse.data
-                : usersResponse.data.results || []
-        );
-
-        setSprints(projectSprints);
+        setUsers(usersData);
+        setSprints(allProjectSprints);
         setTasks(projectTasks);
 
+        // Load time summary before returning.
         await loadTimeSummary();
 
-        setSelectedSprint(current => {
-            if (current) {
-                const stillExists = projectSprints.find(
-                    sprint => sprint.id === current.id
-                );
-                if (stillExists) return stillExists;
-            }
-            return projectSprints[0] || null;
-        });
+        // Select the sprint clicked on the Overview page.
+        const clickedSprint = allProjectSprints.find(
+            sprint => String(sprint.id) === String(sprintId)
+        );
+
+        const activeSprint = allProjectSprints.find(
+            sprint => (sprint.status || "").toLowerCase() === "in progress"
+        );
+
+        const plannedSprint = allProjectSprints.find(
+            sprint => (sprint.status || "").toLowerCase() === "planned"
+        );
+
+        const defaultSprint =
+            clickedSprint || activeSprint || plannedSprint || null;
+
+        setSelectedSprint(defaultSprint);
+
+        return allProjectSprints;
+
     } catch (err) {
-        console.error("Failed to load sprints:", err.response?.data || err);
+        console.error(
+            "Failed to load sprints:",
+            err.response?.data || err
+        );
+
         setError(
             err.response?.status === 401
                 ? "Your session may have expired. Please log in again."
@@ -487,7 +487,6 @@ const loadData = async () => {
         setLoading(false);
     }
 };
-
 
 // FETCH ACTUAL TIME SUMMARIES
 const loadTimeSummary = async () => {
@@ -571,8 +570,18 @@ const handleCreateSprint = async (e) => {
                 `sprints/${editingSprintId}/`,
                 payload
             );
+
+            setToast({
+                message: "Sprint updated sucessfully!",
+                type: "success"
+            });
         } else {
             await api.post("sprints/", payload);
+
+            setToast({
+                message: "Sprint created successfully!",
+                type: "success"
+            });
         }
 
         setShowForm(false);
@@ -665,7 +674,19 @@ const handleAssignTasks = async () => {
     }
 };
 
+
+
+
 const handleStartSprint = async (sprintId, startChoice) => {
+    if (getSprintTaskCount(sprintId) === 0) {
+        setShowStartSprintModal(false);
+        setToast({
+            message: "Please assign at least one task before starting the sprint.",
+            type: "error",
+        });
+        return;
+    }
+
     try {
         setStartingSprint(true);
 
@@ -674,35 +695,44 @@ const handleStartSprint = async (sprintId, startChoice) => {
             { start_choice: startChoice }
         );
 
-        await fetchSprints();
+        const updatedSprint = response.data.sprint;
 
-        // Update the selected sprint with the latest backend data.
-        if (response.data.sprint) {
-            setSelectedSprint(response.data.sprint);
-        } else {
-            setSelectedSprint(response.data);
+        if (updatedSprint) {
+            setSelectedSprint(updatedSprint);
+
+            setSprints((previousSprints) =>
+                previousSprints.map((sprint) =>
+                    String(sprint.id) === String(updatedSprint.id)
+                        ? updatedSprint
+                        : sprint
+                )
+            );
         }
 
         setShowStartSprintModal(false);
 
-        alert(
-            response.data.message ||
-            "Sprint updated successfully."
-        );
+        setToast({
+            message: response.data.message || "Sprint started successfully!",
+            type: "success",
+        });
     } catch (error) {
         console.error(
             "Sprint start error:",
             error.response?.data || error
         );
 
-        alert(
-            error.response?.data?.detail ||
-            "Unable to update sprint."
-        );
+        setToast({
+            message:
+                error.response?.data?.detail ||
+                "Unable to start sprint.",
+            type: "error",
+        });
     } finally {
         setStartingSprint(false);
     }
 };
+
+
 
 const sprintTasks = tasks.filter(task =>
     String(
@@ -940,7 +970,7 @@ const handleCarryOver = async (task, targetSprintId) => {
         );
 
         setError(
-            error.response?.data?.detail || 
+            error.response?.data?.detail ||
             "Unable to carry over this task."
         );
     }
@@ -1073,16 +1103,29 @@ const handleTaskAssigneeChange = async (task, userId) => {
     }
 };
 
+const getSprintTaskCount = (sprintId) => {
+    return tasks.filter((task) => {
+        const taskSprintId =
+            typeof task.sprint === "object"
+                ? task.sprint?.id
+                : task.sprint;
 
-
+        return String(taskSprintId) === String(sprintId);
+    }).length;
+};
 
 return (
     <div className="sprints-page">
         <button
-            className="sprints-back-button"
-            onClick={() => navigate(`/projects/${id}`)}
+            type="button"
+            className="backlog-back-button"
+            onClick={() =>
+                navigate(`/projects/${id}`)
+            }
         >
-            <ArrowLeft size={17} /> Back to Project
+            <ArrowLeft size={16} />
+
+            Back to Project
         </button>
 
         <div className="sprints-header">
@@ -1095,182 +1138,257 @@ return (
             <button
                 type="button"
                 className="sprints-create-button"
-                onClick={() => {
+                onClick={async () => {
                     setError("");
                     setShowAddTasks(false);
                     setEditingSprintId(null);
 
-                    const suggestion = getNextSprintSuggestion(sprints);
+                    try {
+                        const latestSprints = await loadData();
 
-                    setDuration(String(suggestion.duration));
-                    setStartDate(suggestion.start_date);
-                    setEndDate(suggestion.end_date);
+                        const suggestion = getNextSprintSuggestion(
+                            latestSprints || []
+                        );
+                        setDuration(String(suggestion.duration));
+                        setStartDate(suggestion.start_date);
+                        setEndDate(suggestion.end_date);
 
-                    setSprintForm({
+                        setSprintForm({
                         sprint_name: suggestion.sprint_name,
                         goal: "",
                         start_date: suggestion.start_date,
                         end_date: suggestion.end_date,
                         status: "Planned",
                     });
+
                     setShowForm(true);
-                }}
+                } catch (err) {
+                    console.error("Unable to prepare sprint form:", err);
+                    setError("Unable to load sprint data. Please try again.");
+                }
+            }}
             >
                 <Plus size={18} />
                 Create Sprint
-            </button>     
+            </button>
         </div>
+        {toast.message && (
+    <div
+        className={`pms-toast pms-toast-${toast.type}`}
+        role="status"
+    >
+        <span>{toast.message}</span>
+
+        <button
+            type="button"
+            onClick={() =>
+                setToast({ message: "", type: "success" })
+            }
+            aria-label="Close notification"
+        >
+            ×
+        </button>
+    </div>
+)}
 
         {error && <div className="sprints-error">{error}</div>}
 
-        {showForm && (
-            <form className="sprint-form" onSubmit={handleCreateSprint}>
-                <h2>
-                    {editingSprintId !== null
-                        ? "Edit Sprint" : 
-                        "Create New Sprint"}
-                </h2>
 
-                <div className="sprint-form-grid">
-                    
-                    <div className="sprint-duration-field">
-                        <label htmlFor="sprint-duration">
-                            <span className="duration-icon">
-                                <CalendarDays size={15} />
-                            </span>
-                            Sprint Duration
-                        </label>
+{showForm && (
+    <div
+        className="sprint-modal-overlay"
+        onClick={() => setShowForm(false)}
+    >
+        <form
+            className="sprint-form sprint-create-modal"
+            onSubmit={handleCreateSprint}
+            onClick={(e) => e.stopPropagation()}
+        >
+            <div className="sprint-create-modal-header">
+                <div>
+                    <h2>
+                        {editingSprintId !== null
+                            ? "Edit Sprint"
+                            : "Create New Sprint"}
+                    </h2>
+                    <p>
+                        Configure your sprint duration, dates, status, and goal.
+                    </p>
 
-                        <select
-                            id="sprint-duration"
-                            value={duration}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setDuration(value);
+                    {editingSprintId === null && (
+                        <small className="sprint-suggestion-node">
+                            Suggested sprint name and dates are based on your previous sprint.
+                            You can change them before saving.
+                        </small>
+                    )}
+                </div>
 
-                                const newEndDate = calculateEndDate(
-                                    sprintForm.start_date,
-                                    value
-                                );
+                <button
+                    type="button"
+                    className="sprint-modal-close"
+                    aria-label="Close form"
+                    onClick={() => setShowForm(false)}
+                >
+                    &times;
+                </button>
+            </div>
 
-                                setEndDate(newEndDate);
+            <div className="sprint-form-grid">
+                <div className="sprint-duration-field">
+                    <label htmlFor="sprint-duration">
+                        <span className="duration-icon">
+                            <CalendarDays size={15} />
+                        </span>
+                        Sprint Duration
+                    </label>
 
-                                setSprintForm((prev) => ({
-                                    ...prev,
-                                    end_date: newEndDate,
-                                }));
-                            }}
-                        >
-                            <option value="7">7 Days</option>
-                            <option value="15">15 Days</option>
-                            <option value="30">30 Days</option>
-                        </select>
+                    <select
+                        id="sprint-duration"
+                        value={duration}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setDuration(value);
 
-                    </div>
-                    <label>
-                        Sprint Name *
-                        <input
-                            required
-                            value={sprintForm.sprint_name}
-                            placeholder="e.g. Sprint 1"
-                            onChange={(e) => 
-                                setSprintForm({
+                            const newEndDate = calculateEndDate(
+                                sprintForm.start_date,
+                                value
+                            );
+
+                            setEndDate(newEndDate);
+
+                            setSprintForm((prev) => ({
+                                ...prev,
+                                end_date: newEndDate,
+                            }));
+                        }}
+                    >
+                        {![7, 15, 30]. includes(Number(duration)) && (
+                            <option value={duration}>
+                                {duration} Days
+                            </option>
+                        )}
+                        <option value="7">7 Days</option>
+                        <option value="15">15 Days</option>
+                        <option value="30">30 Days</option>
+                    </select>
+                </div>
+
+                <label>
+                    Sprint Name *
+                    <input
+                        required
+                        value={sprintForm.sprint_name}
+                        placeholder="e.g. Sprint 1"
+                        onChange={(e) =>
+                            setSprintForm({
                                 ...sprintForm,
                                 sprint_name: e.target.value,
-                            })}
-                        />
-                    </label>
+                            })
+                        }
+                    />
+                </label>
 
-                    <label>
-                        Status
-                        <select
-                            value={sprintForm.status}
-                            onChange={(e) => setSprintForm({
+                <label>
+                    Status
+                    <select
+                        value={sprintForm.status}
+                        onChange={(e) =>
+                            setSprintForm({
                                 ...sprintForm,
-                                status: e.target.value
-                            })}
-                        >
-                            <option value="Planned">Planned</option>
-                            <option value="Active">Active</option>
-                            <option value="Completed">Completed</option>
-                            <option value="On Hold">On Hold</option>
-
-                        </select>
-                    </label>
-
-                    <label>
-                        Start Date *
-                        <input
-                            required
-                            type="date"
-                            value={sprintForm.start_date}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                const newEndDate = calculateEndDate(value, duration);
-
-                                setStartDate(value);
-                                setEndDate(newEndDate);
-
-                                setSprintForm((prev) => ({
-                                    ...prev,
-                                    start_date: value,
-                                    end_date: newEndDate,
-                                }));
-                            }}
-                        />
-                    </label>
-
-                    <label>
-                        End Date *
-                        <input
-                            required
-                            type="date"
-                            min={sprintForm.start_date || undefined}
-                            value={sprintForm.end_date}
-                            onChange={(e )=> setSprintForm({
-                                ...sprintForm,
-                                end_date: e.target.value
-                            })}
-                        />
-                    </label>
-
-                    <label className="sprint-form-full">
-                        Sprint Goal *
-                        <textarea
-                            required
-                            rows="3"
-                            value={sprintForm.goal}
-                            placeholder="What should this sprint achieve?"
-                            onChange={e => setSprintForm({
-                                ...sprintForm,
-                                goal: e.target.value
-                            })}
-                        />
-                    </label>
-                </div>
-
-                <div className="sprint-form-actions">
-                    <button
-                        type="button"
-                        className="sprint-cancel-button"
-                        onClick={() => setShowForm(false)}
+                                status: e.target.value,
+                            })
+                        }
                     >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="sprints-create-button"
-                        disabled={saving}
-                    >
-                        {saving 
-                            ? "Saving..." 
-                            : editingSprintId !== null
-                                ? "Update Sprint"
-                                : "Save Sprint"}
-                    </button>
-                </div>
-            </form>
-        )}
+                        <option value="Planned">Planned</option>
+                        <option value="Active">Active</option>
+                        <option value="Completed">Completed</option>
+                        <option value="On Hold">On Hold</option>
+                    </select>
+                </label>
+
+                <label>
+                    Start Date *
+                    <input
+                        required
+                        type="date"
+                        value={sprintForm.start_date}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            const newEndDate = calculateEndDate(
+                                value,
+                                duration
+                            );
+
+                            setStartDate(value);
+                            setEndDate(newEndDate);
+
+                            setSprintForm((prev) => ({
+                                ...prev,
+                                start_date: value,
+                                end_date: newEndDate,
+                            }));
+                        }}
+                    />
+                </label>
+
+                <label>
+                    End Date *
+                    <input
+                        required
+                        type="date"
+                        min={sprintForm.start_date || undefined}
+                        value={sprintForm.end_date}
+                        onChange={(e) =>
+                            setSprintForm({
+                                ...sprintForm,
+                                end_date: e.target.value,
+                            })
+                        }
+                    />
+                </label>
+
+                <label className="sprint-form-full">
+                    Sprint Goal *
+                    <textarea
+                        required
+                        rows="3"
+                        value={sprintForm.goal}
+                        placeholder="What should this sprint achieve?"
+                        onChange={(e) =>
+                            setSprintForm({
+                                ...sprintForm,
+                                goal: e.target.value,
+                            })
+                        }
+                    />
+                </label>
+            </div>
+
+            <div className="sprint-form-actions">
+                <button
+                    type="button"
+                    className="sprint-cancel-button"
+                    onClick={() => setShowForm(false)}
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    className="sprints-create-button"
+                    disabled={saving}
+                >
+                    {saving
+                        ? "Saving..."
+                        : editingSprintId !== null
+                            ? "Update Sprint"
+                            : "Save Sprint"}
+                </button>
+            </div>
+        </form>
+    </div>
+)}
+
 
         <div className="sprint-list-heading">
             <div>
@@ -1287,7 +1405,20 @@ return (
             </div>
         ) : (
             <div className="sprint-cards">
-                {sprints.map(sprint => (
+                {sprints
+                    .filter(sprint => {
+                    const status = sprint.status?.toLowerCase();
+
+                    const isActive =
+                        status === "in progress" || status === "active";
+
+                    const isClickedSprint =
+                        String(sprint.id) === String(sprintId);
+
+                    // Always show active sprints and only the
+                    // future sprint clicked from Project Overview.
+                    return isActive || isClickedSprint;
+                }).map(sprint => (
                     <div
                         key={sprint.id}
                         className={`sprint-card ${
@@ -1318,7 +1449,7 @@ return (
                                 </span>
 
                                 {/* Start sprint Button */}
-                                
+
                                 <button
                                     type="button"
                                     className="edit-sprint-button"
@@ -1347,11 +1478,11 @@ return (
                                     <Pencil size={16} />
                                 </button>
                             </span>
-                            
+
                         </div>
 
                         <h3>{sprint.sprint_name}</h3>
-                        
+
 
                         <div className="sprint-card-dates">
                             <CalendarDays size={15} />
@@ -1371,7 +1502,7 @@ return (
                             {(sprint.task_ids || []).length} assigned tasks
                         </button>
 
-                        
+
                     </div>
                 ))}
             </div>
@@ -1387,7 +1518,6 @@ return (
                     </div>
 
                     <div className="sprint-board-actions">
-
                         <button
                             type="button"
                             className="sprints-create-button"
@@ -1398,15 +1528,39 @@ return (
                                 setShowAddTasks(true);
                             }}
                             disabled={
-                               ( selectedSprint.status || "").toLowerCase() === "completed"
+                                (selectedSprint.status || "").toLowerCase() === "completed"
                             }
                         >
                             <Plus size={18} />
                             Add Tasks
                         </button>
 
-                        {selectedSprint.status !== "Completed" &&
-                            selectedSprint.status !== "Cancelled" && (
+                        {selectedSprint && (
+                            <button
+                                type="button"
+                                className="start-sprint-button"
+                                onClick={() => {
+                                    if (getSprintTaskCount(selectedSprint.id) === 0) {
+                                        alert(
+                                            "Please assign at least one task before starting this sprint."
+                                        );
+                                        return;
+                                    }
+
+                                    setSprintStartChoice("today");
+                                    setShowStartSprintModal(true);
+                                }}
+                                disabled={startingSprint || assigningTasks}
+                            >
+                                <Play size={16} />
+                                Start Sprint
+                            </button>
+                        )}
+
+                        {selectedSprint &&
+                            !["completed", "cancelled"].includes(
+                                (selectedSprint.status || "").toLowerCase()
+                            ) && (
                                 <button
                                     type="button"
                                     className="complete-sprint-button"
@@ -1414,119 +1568,141 @@ return (
                                 >
                                     End Sprint
                                 </button>
-                            )} 
-                    </div>                   
+                            )}
+                    </div>
+
                 </div>
 
-                {showAddTasks && (
-                    <div className="add-sprint-tasks">
-                        <h3>Add Backlog Tasks to {selectedSprint.sprint_name}</h3>
-                        <p>Select multiple tasks to include in this sprint.</p>
+                {showAddTasks && selectedSprint && (
+                    <div
+                        className="sprint-modal-overlay"
+                        onClick={() => {
+                            setShowAddTasks(false);
+                            setSelectedTaskIds([]);
+                        }}
+                    >
+                        <div
+                            className="add-sprint-tasks sprint-modal"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="sprint-modal-header">
+                                <div>
+                                    <h3>
+                                        Add Backlog Tasks to {selectedSprint.sprint_name}
+                                    </h3>
+                                    <p>Select multiple tasks to include in this sprint.</p>
+                                </div>
 
-                        {tasks.filter(task => {
-                            const sprintId = 
-                                typeof task.sprint === "object"
-                                    ? task.sprint?.id
-                                    : task.sprint;
-
-                            return !sprintId;
-                        }).length === 0 ? (
-                            <p>No unassigned backlog tasks are available</p>
-                        ) : (
-                            <div className="availabe-sprint-tasks">
-                                {tasks
-                                    .filter(task => {
-                                        const sprintId = 
-                                            typeof task.sprint === "object"
-                                                ? task.sprint?.id
-                                                : task.sprint;
-
-                                            return !sprintId;
-                                    })
-                                    .map(task => (
-                                        <label
-                                            key={task.id}
-                                            className="available-sprint-task"
-                                            htmlFor={`sprint-task-${task.id}`}
-                                        >
-                                            <input
-                                                id={`sprint-task-${task.id}`}
-                                                type="checkbox"
-                                                checked={selectedTaskIds.includes(Number(task.id))}
-                                                onChange={(e) =>{
-                                                    const taskId = Number(task.id);
-
-                                                    setSelectedTaskIds(previous => {
-                                                        if (e.target.checked) {
-                                                            return previous.includes(taskId)
-                                                                ? previous
-                                                                : [...previous, taskId];
-                                                           }
-                                                           return previous.filter(id => id !== taskId);
-                                                    });
-                                                }}
-                                            />
-
-                                            <span>
-                                                <strong>
-                                                    {task.task_name || task.title || `Task ${task.id}`}
-                                                </strong>
-                                                <small>
-                                                    TASK-{task.id} . {task.status || "To Do"}
-                                                </small>
-                                            </span>
-
-                                            
-                                        </label>
-                                    ))}
-                            </div>
-                        )}
-
-                        <div className="add-sprint-tasks-actions">
-                            <span>{selectedTaskIds.length} selected</span>
-
-                            <button
-                                type="button"
-                                className="sprint-cancel-button"
-                                onClick={() => {
-                                    setShowAddTasks(false);
-                                    setSelectedTaskIds([]);
-                                }}
-                            >
-                                Cancel
-                            </button>
-
-                            <button
-                                type="button"
-                                className="sprint-create-button"
-                                onClick={handleAssignTasks}
-                                disabled={
-                                    assigningTasks || selectedTaskIds.length === 0
-                                }
-                            >
-                                {assigningTasks ? "Adding..." : "Add Selected Tasks"}
-                            </button>
-
-                        {/* START SPRINT BUTTON */}
-                        {selectedSprint &&
-                            selectedSprint.status?.toLowerCase() === "planned" && (
                                 <button
                                     type="button"
-                                    className="start-sprint-button"
+                                    className="sprint-modal-close"
                                     onClick={() => {
-                                        setSprintStartChoice("today");
-                                        setShowStartSprintModal(true);
+                                        setShowAddTasks(false);
+                                        setSelectedTaskIds([]);
                                     }}
-                                    disabled={startingSprint || assigningTasks}
+                                    aria-label="Close popup"
                                 >
-                                    <Play size={16} />
-                                    Start Sprint
+                                    &times;
                                 </button>
+                            </div>
+
+                            {tasks.filter(task => {
+                                const sprintId =
+                                    typeof task.sprint === "object"
+                                        ? task.sprint?.id
+                                        : task.sprint;
+
+                                return !sprintId;
+                            }).length === 0 ? (
+                                <p className="no-sprint-tasks">
+                                    No unassigned backlog tasks are available.
+                                </p>
+                            ) : (
+                                <div className="availabe-sprint-tasks">
+                                    {tasks
+                                        .filter(task => {
+                                            const sprintId =
+                                                typeof task.sprint === "object"
+                                                    ? task.sprint?.id
+                                                    : task.sprint;
+
+                                            return !sprintId;
+                                        })
+                                        .map(task => (
+                                            <label
+                                                key={task.id}
+                                                className="available-sprint-task"
+                                                htmlFor={`sprint-task-${task.id}`}
+                                            >
+                                                <input
+                                                    id={`sprint-task-${task.id}`}
+                                                    type="checkbox"
+                                                    checked={selectedTaskIds.includes(
+                                                        Number(task.id)
+                                                    )}
+                                                    onChange={(e) => {
+                                                        const taskId = Number(task.id);
+
+                                                        setSelectedTaskIds(previous => {
+                                                            if (e.target.checked) {
+                                                                return previous.includes(taskId)
+                                                                    ? previous
+                                                                    : [...previous, taskId];
+                                                            }
+
+                                                            return previous.filter(
+                                                                id => id !== taskId
+                                                            );
+                                                        });
+                                                    }}
+                                                />
+
+                                                <span>
+                                                    <strong>
+                                                        {task.task_name ||
+                                                            task.title ||
+                                                            `Task ${task.id}`}
+                                                    </strong>
+
+                                                    <small>
+                                                        TASK-{task.id} · {task.status || "To Do"}
+                                                    </small>
+                                                </span>
+                                            </label>
+                                        ))}
+                                </div>
                             )}
+
+                            <div className="add-sprint-tasks-actions">
+                                <span>{selectedTaskIds.length} selected</span>
+
+                                <button
+                                    type="button"
+                                    className="sprint-cancel-button"
+                                    onClick={() => {
+                                        setShowAddTasks(false);
+                                        setSelectedTaskIds([]);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="sprint-create-button"
+                                    onClick={handleAssignTasks}
+                                    disabled={
+                                        assigningTasks || selectedTaskIds.length === 0
+                                    }
+                                >
+                                    {assigningTasks
+                                        ? "Adding..."
+                                        : "Add Selected Tasks"}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
-                
                 <div className={`sprint-content-layout ${!selectedTask ? "no-task-selected" : ""}`}>
 
                 {/* LEFT: TASK TABLE */}
@@ -1643,7 +1819,7 @@ return (
                                 className="task-details-backdrop"
                                 onClick={() => setSelectedTask(null)}
                             />
-                        
+
                             <aside className="task-details-panel task-details-drawer">
                                 {!selectedTask ? (
                                     <div className="task-details-empty">
@@ -1678,7 +1854,7 @@ return (
                                                 savedMinutes +
                                                 (timerRunning ? Math.floor(timerSeconds / 60) : 0);
 
-                                        
+
                                             return (
                                                 <>
                                                     {/* HEADER */}
@@ -1715,7 +1891,7 @@ return (
                                                             </p>
                                                         </section>
 
-                                                        <div className="task-priority-assignee-row">                                          
+                                                        <div className="task-priority-assignee-row">
 
                                                         {/* STATUS */}
                                                             <section className="task-info-section">
@@ -1756,7 +1932,7 @@ return (
                                                                                 e.target.value
                                                                             );
                                                                         }
-                                                                    }}     
+                                                                    }}
                                                                 >
                                                                     <option value="">Select user</option>
 
@@ -1770,7 +1946,7 @@ return (
                                                                 </select>
                                                             </section>
                                                         </div>
-                                                        
+
                                                         <div className="task-priority-assignee-row">
 
                                                             {/* PRIORITY */}
@@ -1795,7 +1971,7 @@ return (
                                                                             selectedTask.assigned_to?.first_name ||
                                                                             "Assigned user"
                                                                             : users.find(
-                                                                                (user) => 
+                                                                                (user) =>
                                                                                     String(user.id) ===
                                                                                     String(selectedTask.assigned_to)
                                                                             )
@@ -1804,7 +1980,7 @@ return (
                                                                                         (user) =>
                                                                                             String(user.id) ===
                                                                                             String(selectedTask.assigned_to)
-                                                                                
+
                                                                                     );
 
                                                                                     return user.first_name
@@ -1817,8 +1993,8 @@ return (
                                                         </div>
 
                                                         {/* TIME SUMMARY */}
-                                                                                                
-                                                    
+
+
                                                     {/* TASK SCHEDULE AND MANUAL TIME */}
             <section className="task-info-section task-schedule-section">
                 <h4>Task Schedule</h4>
@@ -1897,7 +2073,7 @@ return (
                         setScheduleForm({
                             ...scheduleForm,
                             estimated_time: e.target.value
-                        }) 
+                        })
                     }
                     placeholder="e.g. 2h 30m"
                 />
@@ -1914,13 +2090,13 @@ return (
                 <input
                     id="actual-time"
                     type="text"
-                    
+
                     value={scheduleForm.actual_time}
                     onChange={(e) =>
                         setScheduleForm({
                             ...scheduleForm,
                             actual_time: e.target.value
-                        }) 
+                        })
                     }
                     placeholder="e.g. 1h 45m"
                 />
@@ -1949,9 +2125,6 @@ return (
                 )}
             </section>
 
-
-                                                        
-                                                        
                                                     </div>
                                                 </>
                                             );
@@ -2200,7 +2373,7 @@ return (
             </select>
         </div>
     )}
-                        
+
                     </div>
 
                     {sprintTasks.filter(

@@ -1145,3 +1145,67 @@
     color: #b91c1c !important;
     border: 1px solid #fecaca;
 }
+
+
+
+.role-actions-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.role-actions-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.role-actions-trigger:hover {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.role-actions-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 100;
+    min-width: 120px;
+    padding: 5px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.role-actions-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: #334155;
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.role-actions-dropdown button:hover {
+    background: #f1f5f9;
+}
+
+.role-actions-dropdown .role-delete-action {
+    color: #dc2626;
+}
+
+.role-actions-dropdown .role-delete-action:hover {
+    background: #fef2f2;
+}

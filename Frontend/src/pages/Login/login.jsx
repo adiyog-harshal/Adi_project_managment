@@ -34,7 +34,7 @@ const Login = () => {
             }
 
             // Save JWT tokens
-            localStorage.setItem("token", accessToken);
+            localStorage.setItem("access_token", accessToken);
 
             if (refreshToken) {
                 localStorage.setItem("refresh_token", refreshToken);

@@ -516,3 +516,35 @@
     font-weight: 600;
     color: #1f2937;
 }
+
+
+.common-page-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.common-page-title > svg {
+    flex-shrink: 0;
+    display: block;
+    color: #D9A21B;
+}
+
+.common-page-title-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.common-page-title-text h1 {
+    margin: 0;
+}
+
+.common-page-title-text p {
+    margin: 0;
+}
+
+.user-form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

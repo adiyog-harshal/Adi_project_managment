@@ -38,7 +38,8 @@ class SprintSerializer(serializers.ModelSerializer):
             'end_date',
             'status',
             'created_at',
-            'updated_at'
+            'updated_at',
+            'actual_start_date'
         ]
 
         read_only_fields = [

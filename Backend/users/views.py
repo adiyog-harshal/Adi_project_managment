@@ -1,13 +1,16 @@
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 
 from .serializers import UserSerializer
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+
+User = get_user_model()
 
 
 class ProfileView(APIView):
@@ -62,7 +65,6 @@ class ProfileView(APIView):
 
         return self.get(request)
 
-
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -114,38 +116,27 @@ class PasswordChangeView(APIView):
 
 
 class UserListCreateView(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-
         users = User.objects.all()
-
-        serializer = UserSerializer(
-            users,
-            many=True
-        )
-
+        serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-
-        serializer = UserSerializer(
-            data=request.data
-        )
+        serializer = UserSerializer(data=request.data)
 
         if serializer.is_valid():
-
             user = serializer.save()
-
             return Response(
                 UserSerializer(user).data,
-                status=201
+                status=201,
             )
 
-        return Response(
-            serializer.errors,
-            status=400
-        )
+        return Response(serializer.errors, status=400)
 
 
+class UserDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]

@@ -4006,3 +4006,337 @@ text-align: center;
     min-width: 0;
 }
 
+/* VALIDATION MESSAGE */
+
+.pms-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 280px;
+    max-width: 420px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1f2937;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+    border-left: 4px solid #16a34a;
+}
+
+.pms-toast-error {
+    border-left-color: #dc2626;
+}
+
+.pms-toast button {
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+    color: inherit;
+}
+
+
+/* Reusable Back to Project button */
+.backlog-back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 9px 16px;
+    border: 1px solid #dbe2ea;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+    color: #334155;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.backlog-back-button:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #4f46e5;
+}
+
+.backlog-back-button:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+.backlog-back-button:active {
+    background-color: #e8edf5;
+}
+
+.backlog-back-button svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* ADD SELECTED TASK FORM */
+/* Dark overlay behind the popup */
+.sprint-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 9999;
+    overflow-y: auto;
+}
+
+/* Popup container */
+.sprint-modal {
+    width: 100%;
+    max-width: 650px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    margin: auto;
+}
+
+/* Popup title and close button */
+.sprint-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.sprint-modal-header h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    color: #172033;
+}
+.sprint-modal-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.sprint-modal-close {
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #64748b;
+    padding: 0 4px;
+}
+
+.sprint-modal-close:hover {
+    color: #111827;
+}
+
+/* Available task list */
+.sprint-modal .availabe-sprint-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 350px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.sprint-modal .available-sprint-task {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #ffffff;
+}
+
+.sprint-modal .available-sprint-task:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.sprint-modal .available-sprint-task input {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.sprint-modal .available-sprint-task span {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.sprint-modal .available-sprint-task strong {
+    color: #1e293b;
+    overflow-wrap: anywhere;
+}
+
+.sprint-modal .available-sprint-task small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.sprint-modal .no-sprint-tasks {
+    padding: 20px 0;
+    color: #64748b;
+}
+
+/* Popup footer */
+.sprint-modal .add-sprint-tasks-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.sprint-modal .add-sprint-tasks-actions span {
+    margin-right: auto;
+    color: #475569;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .sprint-modal {
+        padding: 18px;
+        max-height: 90vh;
+    }
+
+    .sprint-modal .add-sprint-tasks-actions {
+        justify-content: stretch;
+    }
+
+    .sprint-modal .add-sprint-tasks-actions button {
+        flex: 1;
+    }
+}
+
+/* CREATE SPRINT FORM  */
+/* Centered Create/Edit Sprint popup */
+.sprint-create-modal {
+    width: 100%;
+    max-width: 720px;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: auto;
+    padding: 26px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal heading */
+.sprint-create-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.sprint-create-modal-header h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    color: #172033;
+}
+
+.sprint-create-modal-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* Form fields */
+.sprint-create-modal .sprint-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.sprint-create-modal .sprint-form-full {
+    grid-column: 1 / -1;
+}
+
+.sprint-create-modal .sprint-duration-field {
+    min-width: 0;
+}
+
+.sprint-create-modal label {
+    min-width: 0;
+}
+
+.sprint-create-modal input,
+.sprint-create-modal select,
+.sprint-create-modal textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Footer buttons */
+.sprint-create-modal .sprint-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+    .sprint-create-modal {
+        padding: 18px;
+        max-height: 92vh;
+    }
+
+    .sprint-create-modal .sprint-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sprint-create-modal .sprint-form-full {
+        grid-column: auto;
+    }
+
+    .sprint-create-modal .sprint-form-actions button {
+        flex: 1;
+    }
+}
+
+
+/* NEXT DATE AND SPRINT NAME SUGGESTION */
+.sprint-suggestion-note {
+    display: block;
+    margin-top: 8px;
+    color: #16834a;
+    font-size: 13px;
+    line-height: 1.5;
+}

@@ -24,7 +24,7 @@ const ProjectDetails = () => {
 
     const [project, setProject] = useState(null);
     const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
 
     const [members, setMembers] = useState([]);
     const [tasks, setTasks] = useState([]);
@@ -32,11 +32,18 @@ const ProjectDetails = () => {
     const [selectedUser, setSelectedUser] = useState("");
     const [showAddMember, setShowAddMember] = useState(false);
 
+    const [projectSprints, setProjectSprints] = useState([]);
+    const [sprintLoading, setSprintLoading] = useState(true);
+
+    const [projectModules, setProjectModules] = useState([]);
+    const [modulesLoading, setModulesLoading] = useState(true);
+
 
     useEffect(() => {
         fetchProject();
+        fetchProjectSprints();
+        fetchProjectModules();
     }, [id]);
-
 
     const fetchProject = async () => {
 
@@ -68,9 +75,9 @@ const ProjectDetails = () => {
 
             // ONLY TASKS BELONGING TO THIS PROJECT
             const projectTasks = allTasks.filter((task) => {
-                const taskProjectId = 
+                const taskProjectId =
                     task.project && typeof task.project === "object"
-                    ? task.project.id 
+                    ? task.project.id
                     : task.project;
                 return String(taskProjectId) === String(id);
             });
@@ -80,7 +87,7 @@ const ProjectDetails = () => {
         console.log("USERS:", userData);
         console.log("MEMBERS:", memberData);
         console.log("TASKS:", projectTasks);
-        
+
         // SET STATE
         setProject(projectResponse.data);
         setUsers(userData);
@@ -92,6 +99,67 @@ const ProjectDetails = () => {
             console.error("Backend response:", error.response?.data);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // FETCH SPRINTS FOR THIS PROJECT
+    const fetchProjectSprints = async () => {
+        setSprintLoading(true);
+
+        try{
+            const response = await api.get("sprints/");
+
+            const data = Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+
+            // keep sprints belonging to this project
+            const projectData = data.filter((sprint) => {
+                const sprintProjectId =
+                    typeof sprint.project === "object"
+                        ? sprint.project?.id
+                        : sprint.project;
+                return String(sprintProjectId) === String(id);
+            });
+
+            setProjectSprints(projectData);
+        } catch (error) {
+            console.error("Failed to fetch project sprints:",
+                error.response?.data || error.message);
+            setProjectSprints([]);
+        } finally {
+            setSprintLoading(false);
+        }
+    };
+
+    const fetchProjectModules = async () => {
+        try {
+            setModulesLoading(true);
+
+            const response = await api.get("milestones/");
+
+            const data = Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+
+            const filteredModules = data
+                .filter((module) =>
+                    String(
+                        typeof module.project === "object"
+                            ? module.project?.id
+                            : module.project
+                    ) === String(id)
+                )
+                .reverse();
+            setProjectModules(filteredModules);
+        } catch (error) {
+            console.error(
+                "Error fetching project modules:",
+                error.response?.data || error
+            );
+            setProjectModules([]);
+        } finally {
+            setModulesLoading(false);
         }
     };
 
@@ -126,7 +194,7 @@ const ProjectDetails = () => {
             // Close popop
             setSelectedUser("");
             setShowAddMember(false);
-        
+
         } catch (error) {
             console.error("Failed to add team member:", error);
             console.error("Backend response:", error.response?.data);
@@ -142,7 +210,7 @@ const ProjectDetails = () => {
     const projectManager = users.find(
         (user) => user.id === project?.project_manager
     );
-    
+
 
 
     if (loading) {
@@ -161,13 +229,6 @@ const ProjectDetails = () => {
         return (
             <div className="project-details-page">
 
-                <button
-                    className="back-project-btn"
-                    onClick={() => navigate("/projects")}
-                >
-                    <ArrowLeft size={16} />
-                    Back to Projects
-                </button>
 
                 <div className="project-not-found">
                     Project not found.
@@ -225,42 +286,65 @@ const ProjectDetails = () => {
             ? Math.round((completedTasks / totalTasks) * 100)
             : 0;
 
-    const handleMemberRoleChange = async (
+
+const handleMemberRoleChange = async (
     memberId,
     roleField,
     checked
-    ) => {
-        // Keep the previous state so we can restore it if saving fails.
-        const previousMembers = members;
+) => {
+    const previousMembers = members;
 
-        // Update the UI immediately.
-        setMembers((currentMembers) =>
-            currentMembers.map((member) =>
-                String(member.id) === String(memberId)
-                    ? { ...member, [roleField]: checked }
-                    : member
-            )
+    setMembers((currentMembers) =>
+        currentMembers.map((member) => {
+            if (String(member.id) === String(memberId)) {
+                return { ...member, [roleField]: checked };
+            }
+            //  if assigning a role, uncheck it for other members.
+            if (checked) {
+                return { ...member, [roleField]: false};
+            }
+
+            return member;
+        })
+    );
+
+    try {
+        const response = await api.patch(
+            `projects/${id}/members/roles/${memberId}/`,
+            {
+                [roleField]: checked,
+            }
         );
 
-        try {
-            await api.patch(
-                `projects/project-members/${memberId}/roles/`,
-                {
-                    [roleField]: checked,
-                }
-            );
-        } catch (error) {
-            console.error("Failed to update member role:", error);
-
-            // Restore the previous state if the API request fails.
-            setMembers(previousMembers);
-
-            alert(
-                error.response?.data?.error ||
-                "Failed to update member role. Please try again."
+        // Sync the updated member with the backend response.
+        if (response.data && typeof response.data === "object") {
+            setMembers((currentMembers) =>
+                currentMembers.map((member) =>
+                    String(member.id) === String(memberId)
+                        ? { ...member, ...response.data }
+                        : member
+                )
             );
         }
-    };
+    } catch (error) {
+        console.error(
+            "Failed to update member role:",
+            error.response?.status,
+            error.response?.data || error.message
+        );
+
+        setMembers(previousMembers);
+
+        alert(
+            JSON.stringify(
+                error.response?.data ||
+                error.message ||
+                "Failed to update member role."
+            )
+        );
+    }
+};
+
     return (
 
         <div className="project-details-page">
@@ -273,9 +357,8 @@ const ProjectDetails = () => {
                 onClick={() => navigate("/projects")}
             >
                 <ArrowLeft size={16} />
-                Back to Projects
+                Back to Project
             </button>
-
 
             {/* PROJECT HEADER */}
 
@@ -286,19 +369,12 @@ const ProjectDetails = () => {
                     <div className="project-details-icon">
                         <FileText size={10} />
                     </div>
-
                     <div>
-
                         <h1>
                                 {project.project_name}
-                            
                         </h1>
-
                     </div>
-
                 </div>
-
-
                 <span
                     className={`project-detail-status ${
                         getProjectStatus() === "Upcoming"
@@ -314,7 +390,6 @@ const ProjectDetails = () => {
                 </span>
 
             </div>
-
 
             {/* PROJECT SUMMARY CARDS */}
 
@@ -398,9 +473,9 @@ const ProjectDetails = () => {
 
 
                 <div className="project-information-grid">
-                    
+
                     <div className="project-description">
-                        
+
                         <div className="description-header">
                             <h3>Description</h3>
                         </div>
@@ -477,7 +552,7 @@ const ProjectDetails = () => {
                 <div className="project-section-content">
 
                     <div className="team-members-header">
-                    
+
                         <div className="section-title">
                             <Users size={19} />
                             <h2>Team Members</h2>
@@ -497,7 +572,7 @@ const ProjectDetails = () => {
                     </div>
 
                     {members.length === 0 ? (
-                        
+
                         <p className="empty-section-message">
                             No team members assigned to this project.
                         </p>
@@ -509,7 +584,7 @@ const ProjectDetails = () => {
 
                                 // GET USER ID FROM MEMBER OBJECT
                                 if (
-                                    member.user && 
+                                    member.user &&
                                     typeof member.user === "object"
                                 ) {
                                     memberUserId = member.user.id;
@@ -526,7 +601,7 @@ const ProjectDetails = () => {
 
                                 // FIND COMPLETE USER DETAILS
                                 const memberUser = users.find(
-                                    (item) => 
+                                    (item) =>
                                         String(item.id) === String(memberUserId)
                                 );
 
@@ -542,7 +617,7 @@ const ProjectDetails = () => {
                                 const designation =
                                     typeof memberUser?.designation === "object"
                                         ? memberUser?.designation?.name
-                                        : memberUser?.designation;                               
+                                        : memberUser?.designation;
 
                                 return (
                                     <div
@@ -596,7 +671,7 @@ const ProjectDetails = () => {
                                                 <input
                                                     type="checkbox"
                                                     checked={Boolean(member.is_project_manager)}
-                                                    onChange={(e) => 
+                                                    onChange={(e) =>
                                                         handleMemberRoleChange(
                                                             member.id,
                                                             "is_project_manager",
@@ -678,11 +753,72 @@ const ProjectDetails = () => {
 
                     </div>
 
+                    {/* ALL PROJECTS SPRINTS */}
+                    <div className="overview-sprints-card">
+                        <div className="overview-card-header">
+                            <div>
+                                <h3>Project Sprints</h3>
+                                <p>{projectSprints.length} total sprints</p>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="overview-view-button"
+                                onClick={() => navigate(`/projects/${id}/sprints`)}
+                            >
+                                Manage Sprints
+                            </button>
+                        </div>
+
+                        {sprintLoading ? (
+                            <div className="overview-empty">Loading sprints...</div>
+                        ) : projectSprints.length === 0 ? (
+                            <div className="overview-empty">
+                                No sprints created for this project.
+                            </div>
+                        ) : (
+
+<div className="overview-sprints-list">
+    {projectSprints.map((sprint) => (
+        <div
+            className="overview-sprint-item clickable-sprint"
+            key={sprint.id}
+            role="button"
+            tabIndex={0}
+            onClick={() =>
+                navigate(`/projects/${id}/sprints/${sprint.id}`)
+            }
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(`/projects/${id}/sprints/${sprint.id}`);
+                }
+            }}
+        >
+            <div className="overview-sprint-info">
+                <strong>{sprint.sprint_name}</strong>
+
+                <span>
+                    {sprint.start_date || "No start date"}
+                    {" - "}
+                    {sprint.end_date || "No end date"}
+                </span>
+
+                {sprint.goal && <span>{sprint.goal}</span>}
+            </div>
+
+            <span className="overview-sprint-status">
+                {sprint.status || "Upcoming"}
+            </span>
+        </div>
+    ))}
+</div>
+
+                        )}
+                    </div>
 
                     <div className="overview-grid">
-
                         {/* BACKLOG */}
-
                         <div className="overview-card">
 
                             <div className="overview-card-header">
@@ -701,7 +837,7 @@ const ProjectDetails = () => {
 
                             <div className="overview-list">
 
-                                
+
 <div className="overview-list backlog-scroll-list">
     {tasks.map((task) => (
         <div
@@ -767,14 +903,27 @@ const ProjectDetails = () => {
                                 </div>
 
                                 <Flag size={20} />
-
                             </div>
 
-
-                            <div className="overview-list">
-                                <div className="overview-empty">
-                                    View project modules .
-                                </div>
+                            <div className="overview-list overview-modules-lest">
+                                {modulesLoading ? (
+                                    <div className="overview-empty">
+                                        Loading modules...
+                                    </div>
+                                ) : projectModules.length === 0 ? (
+                                    <div className="overview-empty">
+                                        No modules created for this project.
+                                    </div>
+                                ) : (
+                                    projectModules.map((module) => (
+                                        <div
+                                            className="overview-module-item"
+                                            key={module.id}
+                                        >
+                                            {module.milestone_name || module.name || "Untitled Module"}
+                                        </div>
+                                    ))
+                                )}
                             </div>
 
                             <button
@@ -788,7 +937,6 @@ const ProjectDetails = () => {
                             </button>
 
                         </div>
-
                     </div>
 
                 </div>
@@ -824,33 +972,38 @@ const ProjectDetails = () => {
                             <select
                                 value={selectedUser}
                                 onChange={(e) => setSelectedUser(e.target.value)}
-                            > 
+                            >
                                 <option value="">
                                     Select user
                                 </option>
 
-                                {users.map((user) => {
+                            {users.map((user) => {
+                                const fullname =
+                                    `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+                                    user.username ||
+                                    "Unknown User";
 
-                                    const fullname = 
-                                        `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-                                        user.username ||
-                                        "Unknown User";
+                                const designationId =
+                                    typeof user.designation === "object"
+                                        ? user.designation?.id
+                                        : user.designation;
 
-                                    const designation =
-                                        typeof user.designation === "object"
-                                            ? user.designation?.name
-                                            : user.designation;      
-                                        
+                                const designation =
+                                    typeof user.designation === "object"
+                                        ? user.designation?.name ||
+                                        user.designation?.designation_name
+                                        : user.designation_name ||
+                                          user.designation ||
+                                          "No Designation";
 
-                                    return (
-                                        <option
-                                            key={user.id} value={user.id}>
-                                            {user.username || fullname}
-                                            {"-"}
-                                            {designation || "No Designation"}
-                                        </option>
-                                    );
-                                })}
+                                return (
+                                    <option key={user.id} value={user.id}>
+                                        {user.username || fullname}
+                                        {" - "}
+                                        {designation}
+                                    </option>
+                                );
+                            })}
 
                             </select>
                         </div>
@@ -858,11 +1011,11 @@ const ProjectDetails = () => {
                         {selectedUser && (() => {
 
                             const selectedUserData = users.find(
-                                (user) => 
+                                (user) =>
                                     String(user.id) ===
                                     String(selectedUser)
                             );
-                            const designation = 
+                            const designation =
                                 typeof selectedUserData?.designation === "object"
                                     ? selectedUserData?.designation?.name
                                     : selectedUserData?.designation;
@@ -882,7 +1035,7 @@ const ProjectDetails = () => {
                                         <p>
                                             {designation || "-"}
                                         </p>
-                                    </div>                               
+                                    </div>
 
                                 </div>
                             );

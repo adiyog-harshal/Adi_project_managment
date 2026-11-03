@@ -1,6 +1,9 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import (
     Project,
@@ -20,19 +23,54 @@ from .serializers import (
 
 from helpers import mark_notification_as_read
 
+from projects.ProjectMember.models import ProjectMember
+from projects.ProjectMember.serializers import ProjectMemberSerializer
+
+from django.shortcuts import render, get_object_or_404
+
+from django.db import models
 
 class ProjectListCreateView(generics.ListCreateAPIView):
-
-    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        #Superusers can see all projects
+        if user.is_superuser:
+            return Project.objects.all()
+
+        # Employess see projects they are member of.
+        # Project managers see projects they manage or are assigned to.
+        return Project.objects.filter(
+            models.Q(project_members__user=user) |
+            models.Q(project_manager=user),
+            models.Q(
+                project_members__user=user,
+                project_members__is_project_manager=True
+            )
+        ).distinct()
 
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
-
-    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+       user = self.request.user
+
+       if user.is_superuser:
+           return Project.objects.all()
+
+       return Project.objects.filter(
+           models.Q(project_members__user=user) |
+           models.Q(project_manager=user),
+           models.Q(
+                project_members__user=user,
+                project_members__is_project_manager=True
+            )
+       ).distinct()
 
 
 class ProjectCommentListCreateView(generics.ListCreateAPIView):
@@ -191,4 +229,7 @@ class AttachmentDetailView(generics.RetrieveDestroyAPIView):
     )
 
     serializer_class = AttachmentSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProjectMemberRoleUpdateView(APIView):
     permission_classes = [IsAuthenticated]

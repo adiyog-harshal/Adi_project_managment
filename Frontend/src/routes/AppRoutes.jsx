@@ -12,10 +12,8 @@ import Designations from "../pages/Designations/designations";
 import Backlog from "../pages/Backlog/Backlog";
 import Sprints from "../pages/Sprints/sprints";
 import Profile from "../pages/Profile/Profile";
-
 import Settings from "../pages/Settings/Settings";
-
-
+import Clients from "../pages/clients/client";
 function AppRoutes() {
     return (
         <Routes>
@@ -96,6 +94,15 @@ function AppRoutes() {
             />
 
             <Route
+                path="/clients"
+                element={
+                    <ProtectedRoute>
+                        <Clients />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
                 path="/projects/:id/milestones"
                 element={
                     <ProtectedRoute>
@@ -115,6 +122,15 @@ function AppRoutes() {
 
             <Route
                 path="/projects/:id/sprints"
+                element={
+                    <ProtectedRoute>
+                        <Sprints />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/projects/:id/sprints/:sprintId"
                 element={
                     <ProtectedRoute>
                         <Sprints />

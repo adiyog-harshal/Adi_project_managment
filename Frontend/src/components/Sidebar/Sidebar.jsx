@@ -12,7 +12,9 @@ import {
     ShieldCheck,
     ChevronRight,
     ClipboardList,
-    LogOut
+    LogOut,
+    User,
+    Handshake,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -22,16 +24,13 @@ const Sidebar = () => {
 
     const masterActive =
         location.pathname === "/roles" ||
-        location.pathname === "/designations";
-
-
+        location.pathname === "/designations" ||
+        location.pathname === "/clients";
 
     return (
 
         <aside className="sidebar">
-
             {/* LOGO */}
-
             <div className="sidebar-logo">
 
                 <div className="logo-icon">
@@ -69,7 +68,6 @@ const Sidebar = () => {
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
                 >
-
                     <FolderKanban size={20} />
 
                     <span>Projects</span>
@@ -123,7 +121,6 @@ const Sidebar = () => {
 
                     </button>
 
-
                     {masterOpen && (
 
                         <div className="master-submenu">
@@ -140,7 +137,6 @@ const Sidebar = () => {
                                 <span>Roles</span>
                             </NavLink>
 
-
                             <NavLink
                                 to="/designations"
                                 className={({ isActive }) =>
@@ -153,32 +149,34 @@ const Sidebar = () => {
                                 <span>Designations</span>
                             </NavLink>
 
-                        </div>
+                            <NavLink
+                                to="/clients"
+                                className={({ isActive }) =>
+                                    `master-submenu-link ${
+                                        isActive ? "active" : ""
+                                    }`
+                                }
+                            >
+                                <Handshake size={18} />
+                                <span>Clients</span>
+                            </NavLink>
 
+                        </div>
                     )}
 
                 </div>
-
-               
-                            <NavLink
-                                to="/settings"
-                                className={({ isActive }) =>
-                                    `sidebar-link ${isActive ? "active" : ""}`
-                                }
-                            >
-                                <Settings size={20} />
-                                <span>Settings</span>
-                            </NavLink>
-
-
-            </nav>
-
-
+                <NavLink
+                    to="/settings"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <Settings size={20} />
+                    <span>Settings</span>
+                </NavLink>
+                       </nav>
         </aside>
-
-
     );
-
 };
 
 export default Sidebar;

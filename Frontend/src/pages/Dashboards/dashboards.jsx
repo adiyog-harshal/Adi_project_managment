@@ -11,13 +11,6 @@ import {
     TrendingUp,
     CircleAlert,
     MoreHorizontal,
-    Plus,
-    LayoutDashboard,
-    Users,
-    Filter,
-    ArrowUpDown,
-    Download,
-    ChevronDown
 } from "lucide-react";
 import {
     LineChart,
@@ -30,9 +23,8 @@ import {
 } from "recharts";
 
 const Dashboard = () => {
-    console.log("================= Dashboard Render ==============");
-    
     const [projects, setProjects] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
     const [teamMembers, setTeamMembers] = useState([]);
 
     const [showTotalProjects, setShowTotalProjects] = useState(false);
@@ -52,6 +44,23 @@ const Dashboard = () => {
     const [showFilterMenu, setShowFilterMenu] = useState(false)
     const [showSortMenu, setShowSortMenu] = useState(false);
 
+    const now = new Date();
+    const hour = now.getHours();
+
+    const greeting =
+        hour < 12
+            ? "Good morning"
+            : hour < 17
+            ? "Good afternoon"
+            : "Good evening";
+
+    const today = now.toLocaleDateString("en-IN", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
+
     useEffect(() => {
         fetchProjects();
         fetchUsers();
@@ -59,7 +68,6 @@ const Dashboard = () => {
 
     useEffect(() => {
         const fetchProjectTasks = async () => {
-
             if (!selectedProgressProject?.id) {
                 setProjectTasks([]);
                 return;
@@ -68,77 +76,43 @@ const Dashboard = () => {
             try {
                 const response = await api.get("tasks/");
 
-                console.log("========== PROJECT TASK DEBUG ==========");
-                console.log("SELECTED PROJECT:", selectedProgressProject);
-                console.log("SELECTED PROJECT ID:", selectedProgressProject.id);
-                console.log("RAW TASK RESPONSE:", response.data);
-
-                // Handle normal array OR DRF pagination
                 const allTasks = Array.isArray(response.data)
                     ? response.data
-                    : response.data.results || [];
+                    : Array.isArray(response.data?.results)
+                        ? response.data.results
+                        : [];
 
-                console.log("ALL TASKS:", allTasks);
-
-                const selectedProjectId = Number(
-                    selectedProgressProject.id
-                );
+                const selectedProjectId = String(selectedProgressProject.id);
 
                 const selectedTasks = allTasks.filter((task) => {
+                    const projectValue =
+                        task.project ??
+                        task.project_id ??
+                        task.project_detail ??
+                        task.projectId;
+
                     let taskProjectId = null;
 
-                    // Case 1:
-                    // { project: 14 }
-                    if (
-                        task.project !== null &&
-                        task.project !== undefined &&
-                        typeof task.project !== "object"
-                    ) {
-                        taskProjectId = Number(task.project);
+                    if (projectValue && typeof projectValue === "object") {
+                        taskProjectId =
+                            projectValue.id ??
+                            projectValue.project_id;
+                    } else {
+                        taskProjectId = projectValue;
                     }
 
-                    // Case 2:
-                    // { project_id: 14 }
-                    if (
-                        taskProjectId === null &&
-                        task.project_id !== null &&
-                        task.project_id !== undefined
-                    ) {
-                        taskProjectId = Number(task.project_id);
-                    }
-
-                    // Case 3:
-                    // { project: { id: 14, ... } }
-                    if (
-                        taskProjectId === null &&
-                        task.project &&
-                        typeof task.project === "object"
-                    ) {
-                        taskProjectId = Number(task.project.id);
-                    }
-
-                    console.log(
-                        "TASK:",
-                        task,
-                        "TASK PROJECT ID:",
-                        taskProjectId,
-                        "SELECTED PROJECT ID:",
-                        selectedProjectId
-                    );
-
-                    return taskProjectId === selectedProjectId;
+                    return String(taskProjectId) === selectedProjectId;
                 });
 
-                console.log(
-                    "SELECTED PROJECT TASKS:",
-                );
-
-                console.log(selectedTasks);
+                console.log("SELECTED PROJECT:", selectedProgressProject);
+                console.log("ALL TASKS:", allTasks);
+                console.log("SELECTED PROJECT TASKS:", selectedTasks);
 
                 setProjectTasks(selectedTasks);
 
+                // Handle normal array OR DRF pagination
+
             } catch (error) {
-                
                 console.error(
                     "FAILED TO FETCH TASKS:",
                     error.response?.data || error
@@ -151,56 +125,63 @@ const Dashboard = () => {
         fetchProjectTasks();
     }, [selectedProgressProject]);
 
-
-
-
     const fetchProjects = async () => {
-        try {
-            const response = await api.get("projects/");
+    try {
+        const response = await api.get("projects/");
 
-            console.log("ALL PROJECTS:", response.data);
+        console.log("ALL PROJECTS:", response.data);
 
-            const projectData = response.data;
-            // Store projects
-            setProjects(projectData);
+        const projectData = Array.isArray(response.data)
+            ? response.data
+            : response.data.results || [];
 
-            // Store all team members
-            const allMembers = [];
+        // Store projects
+        setProjects(projectData);
 
-            for (const project of projectData) {
+        // Automatically select the first project
+        if (projectData.length > 0) {
+            setSelectedProgressProject((current) => {
+                return current || projectData[0];
+            });
+        } else {
+            setSelectedProgressProject(null);
+        }
 
+        // Fetch all team members
+        const memberResponses = await Promise.all(
+            projectData.map(async (project) => {
                 try {
-
-                    const memberResponse = await api.get(
+                    const response = await api.get(
                         `projects/${project.id}/members/`
                     );
 
-                    console.log(
-                        `MEMBERS FOR PROJECT ${project.id}:`,
-                        memberResponse.data 
-                    );
+                    return Array.isArray(response.data)
+                        ? response.data
+                        : response.data.results || [];
 
-                    allMembers.push(...memberResponse.data);
                 } catch (error) {
-
                     console.error(
                         `Failed to fetch members for project ${project.id}:`,
                         error
                     );
+                    return [];
                 }
-            }
-            setTeamMembers(allMembers);
+            })
+        );
 
-            console.log("ALL TEAM MEMBERS:", allMembers);
+        const allMembers = memberResponses.flat();
 
-            
-        } catch (error) {
-            console.error(
-                "Dashboard project fetch error:", 
-                error
-            );
-        }
-    };
+        setTeamMembers(allMembers);
+
+        console.log("ALL TEAM MEMBERS:", allMembers);
+
+    } catch (error) {
+        console.error(
+            "Dashboard project fetch error:",
+            error.response?.data || error
+        );
+    }
+};
 
     const fetchUsers = async () => {
         try {
@@ -356,98 +337,80 @@ const Dashboard = () => {
     const onTimeProjectCount = onTimeProjects.length;
     const delayedProjectCount = delayedProjects.length;
 
-
     // ===============================
-    // PROJECT PROGRESS CALCULATION
-    // ===============================
+// PROJECT PROGRESS CALCULATION
+// ===============================
 
-    const getTaskStatus = (task) => {
-        return String(task.status || "")
-            .toLowerCase()
-            .replace(/[-_]/g, " ")
-            .trim();
-    };
+const getTaskStatus = (task) => {
+    return String(task.status ?? task.task_status ?? "")
+        .toLowerCase()
+        .replace(/[-_]/g, " ")
+        .trim();
+};
 
-    const completedTasks = projectTasks.filter((task) => {
-        return getTaskStatus(task) === "completed";
-    }).length;
+const completedTasks = projectTasks.filter((task) => {
+    return getTaskStatus(task) === "completed";
+}).length;
 
-    const inProgressTasks = projectTasks.filter((task) => {
-        const status = getTaskStatus(task);
+const inProgressTasks = projectTasks.filter((task) => {
+    const status = getTaskStatus(task);
 
-        return (
-            status === "in progress" ||
-            status === "running"
-        );
-    }).length;
+    return status === "in progress" || status === "running";
+}).length;
 
-    const pendingTasks = projectTasks.filter((task) => {
-        const status = getTaskStatus(task);
+const totalTasks = projectTasks.length;
 
-        return (
+// All remaining tasks are counted as incomplete.
+const pendingTasks = totalTasks - completedTasks - inProgressTasks;
+
+const actualProjectProgress = totalTasks > 0
+    ? Math.round((completedTasks / totalTasks) * 100)
+    : 0;
+
+console.log("PROJECT PROGRESS:", {
+    selectedProject: selectedProgressProject?.project_name,
+    totalTasks,
+    completedTasks,
+    inProgressTasks,
+    pendingTasks,
+    actualProjectProgress
+});
+
+   const filteredProjects = projects.filter((project) => {
+    const status = String(project.status || "")
+        .toLowerCase()
+        .replace(/[-_]/g, " ")
+        .trim();
+
+    // Existing status filter
+    let matchesStatus = true;
+
+    if (filterStatus === "completed") {
+        matchesStatus = status === "completed";
+    } else if (filterStatus === "running") {
+        matchesStatus =
+            status === "running" || status === "in progress";
+    } else if (filterStatus === "pending") {
+        matchesStatus =
             status === "pending" ||
             status === "not started" ||
-            status === ""
-        );
-    }).length;
+            status === "stopped";
+    }
 
-    const totalTasks = projectTasks.length;
+    // New search filter
+    const query = searchQuery.trim().toLowerCase();
 
-    const actualProjectProgress =
-        totalTasks > 0
-            ? Math.round(
-                (completedTasks / totalTasks) * 100
-            )
-            : 0;
+    const matchesSearch = [
+        project.project_name,
+        project.status,
+        project.start_date,
+        project.end_date,
+    ].some((value) =>
+        String(value || "").toLowerCase().includes(query)
+    );
 
-    console.log("DASHBOARD PROJECT COUNTS:", {
-        totalProjects,
-        completedProjectCount,
-        runningProjects,
-        pendingProjects,
-        onTimeProjectCount,
-        delayedProjectCount
-    });
-
-    console.log("PROJECT PROGRESS:", {
-        totalTasks,
-        completedTasks,
-        inProgressTasks,
-        pendingTasks,
-        actualProjectProgress
-    });
-
-    const filteredProjects = projects.filter((project) => {
-        if (filterStatus === "all") {
-            return true;
-        }
-
-        const status = String(project.status || "")
-            .toLowerCase()
-            .replace(/[-_]/g, " ")
-            .trim();
-
-        if (filterStatus === "completed") {
-            return status === "completed";
-        }
-
-        if (filterStatus === "running") {
-            return (
-                status === "running" ||
-                status === "in progress"
-            );
-        }
-
-        if (filterStatus === "pending") {
-            return (
-                status === "pending" ||
-                status === "not started" ||
-                status === "stopped"
-            );
-        }
-
-        return true;
-    });
+    return matchesStatus && matchesSearch;
+});
 
     const displayedProjects = [...filteredProjects].sort((a, b) => {
         if (sortBy === "name") {
@@ -458,7 +421,7 @@ const Dashboard = () => {
 
         if (sortBy === "start_date") {
 
-            return new Date(a.start_date || 0) - 
+            return new Date(a.start_date || 0) -
                 new Date(b.start_date || 0);
         }
 
@@ -530,7 +493,7 @@ const Dashboard = () => {
         });
     };
 
-    const completedProjectsData = 
+    const completedProjectsData =
         getCompletedProjectsCumulative(projects);
 
     /* =========================
@@ -601,7 +564,7 @@ const Dashboard = () => {
         headers,
         ...rows
     ]
-        .map((row) => 
+        .map((row) =>
             row
                 .map((value) =>
                     `"${String(value).replace(/"/g, '""')}"`
@@ -609,7 +572,7 @@ const Dashboard = () => {
                 .join(",")
         )
         .join("/n");
-    
+
     const blob = new Blob(
         [csvContent],
         {
@@ -644,60 +607,46 @@ const Dashboard = () => {
                 HEADER
             ================================= */}
 
-            <div className="dashboard-header">
 
-                <div className="dashboard-heading">
+<div className="dashboard-header">
+    <div className="dashboard-header-right">
+        <div className="dashboard-search">
+            <Search size={17} />
 
-                    <h1>
-                        <LayoutDashboard 
-                            size={22}
-                            color="#D9A21B"
-                        />
-                        Dashboard</h1>
+            <input
+                type="text"
+                placeholder="Search projects, status, or dates..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+            />
+        </div>
 
-                    <p>
-                        Monitor all of your projects and tasks here
-                    </p>
+        <button
+            type="button"
+            className="dashboard-notification"
+            title="Notification"
+        >
+            <Bell size={19} />
+        </button>
+    </div>
+</div>
 
-                </div>
+<div className="dashboard-welcome">
+    <div className="welcome-text">
+        <h1>
+            {greeting}! <span>👋</span>
+        </h1>
+        <p>
+            Welcome back! Here's what's happening
+            with your projects today.
+        </p>
+    </div>
 
+    <div className="welcome-date">
+        <span>{today}</span>
+    </div>
+</div>
 
-                <div className="dashboard-header-right">
-
-                    {/* SEARCH */}
-
-                    <div className="dashboard-search">
-
-                        <Search size={17} />
-
-                        <input
-                            type="text"
-                            placeholder="Search anything"
-                        />
-
-                    </div>
-
-
-                    {/* NOTIFICATION */}
-
-                    <button
-                        type="button"
-                        className="dashboard-notification"
-                        title="Notification"
-                    >
-                        <Bell size={19} />
-                    </button>
-
-
-                    {/* AVATAR */}
-
-                    <div className="dashboard-avatar">
-                        U
-                    </div>
-
-                </div>
-
-            </div>
 
 
             {/* =================================
@@ -761,7 +710,7 @@ const Dashboard = () => {
 
                             </div>
 
-                            <h2>{completedProjects}</h2>
+                            <h2>{completedProjectCount}</h2>
 
                             <div className="stat-bottom">
 
@@ -835,7 +784,7 @@ const Dashboard = () => {
 
                                 <button className="card-more">
                                     <MoreHorizontal size={17} />
-                                </button>                                                   
+                                </button>
                             </div>
 
                             <h2>{onTimeProjectCount}</h2>
@@ -952,12 +901,6 @@ const Dashboard = () => {
                     </div>
 
                 </div>
-
-
-                {/* =================================
-                    BOTTOM SECTION
-                ================================= */}
-
                 {/* =================================
                     PROJECTS + PROJECT PROGRESS
                 ================================= */}
@@ -990,7 +933,7 @@ const Dashboard = () => {
 
                                 <thead>
                                     <tr>
-                                    
+
                                         <th>Project Name</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
@@ -1061,16 +1004,13 @@ const Dashboard = () => {
                                 </tbody>
 
                             </table>
-
                         </div>
 
                     </div>
 
-
                     {/* =================================
                         PROJECT PROGRESS
                     ================================= */}
-
                     <div className="project-progress-card dashboard-project-progress-card">
 
                         <div className="section-header">
@@ -1087,47 +1027,26 @@ const Dashboard = () => {
 
                         </div>
 
-
                         <div className="project-progress-content">
 
                             <div
                                 className="progress-circle"
-                                style={{
-                                    background: 
-                                        totalTasks > 0 
-                                        ? `conic-gradient(
-                                            #12b76a 0% ${
-                                                (completedTasks / totalTasks) * 100
-                                            }%,
 
-                                            #f79009 ${
-                                                (completedTasks / totalTasks) * 100
-
-                                            }% ${
-                                                ((completedTasks + inProgressTasks) / totalTasks) * 100
-                                            }%,
-
-                                            #d0d5dd ${
-                                                ((completedTasks + inProgressTasks) / totalTasks) * 100
-                                            }% 100%
-                                        
-                                        )`
-                                        : "#e4e7ec"                    
-                                }}
+                        style={{
+                            background: "conic-gradient(#16a34a 0% 33%, #3b82f6 33% 66%, #f59e0b 66% 100%)"
+                        }}
                             >
                                 <div className="progress-circle-inner">
                                     <span>{actualProjectProgress}%</span>
-
                                     <small>Progress</small>
                                 </div>
                             </div>
-
 
                             <div className="progress-details">
 
                                 <p>
                                     <span className="progress-dot completed-dot"></span>
-                                    <span>Complete</span>
+                                    <span>Completed</span>
                                     <strong>{completedTasks}</strong>
                                 </p>
 
@@ -1144,15 +1063,11 @@ const Dashboard = () => {
                                 </p>
 
                             </div>
-
                         </div>
 
                     </div>
-
                 </div>
-                
             </div>
-
         </div>
     );
 };

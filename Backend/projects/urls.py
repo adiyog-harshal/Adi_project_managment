@@ -11,6 +11,7 @@ from .views import (
     AttachmentDetailView,
     ProjectCommentListCreateView,
     ProjectCommentDetailView,
+    ProjectMemberRoleUpdateView,
 )
 
 
@@ -78,5 +79,11 @@ urlpatterns = [
         'attachments/<int:pk>/',
         AttachmentDetailView.as_view(),
         name='attachment-detail'
+    ),
+
+     path(
+        'roles/<int:pk>/',
+         ProjectMemberRoleUpdateView.as_view(),
+        name='project-member-role-update',
     ),
 ]
