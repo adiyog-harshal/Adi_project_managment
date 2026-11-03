@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
     Handshake,
@@ -8,16 +9,20 @@ import {
     Trash2,
     X,
 } from "lucide-react";
+
 import { PMSPageHeader } from "../../components/Common/Common";
 import api from "../../services/api";
 import "./client.css";
 
+
 const emptyClient = {
     client_name: "",
+    project_name: "",
     email: "",
     phone_number: "",
     address: "",
 };
+
 
 function getErrorMessage(error) {
     const responseData = error.response?.data;
@@ -31,12 +36,16 @@ function getErrorMessage(error) {
     if (responseData && typeof responseData === "object") {
         const messages = Object.entries(responseData).flatMap(([field, value]) => {
             const details = Array.isArray(value) ? value : [value];
+
             return details.map((detail) =>
                 `${field.replaceAll("_", " ")}: ${
-                    typeof detail === "string" ? detail : JSON.stringify(detail)
+                    typeof detail === "string"
+                        ? detail
+                        : JSON.stringify(detail)
                 }`
             );
         });
+
         if (messages.length) {
             return messages.join(" ");
         }
@@ -53,6 +62,7 @@ function getErrorMessage(error) {
     }`;
 }
 
+
 export default function Clients() {
     const [clients, setClients] = useState([]);
     const [search, setSearch] = useState("");
@@ -63,6 +73,7 @@ export default function Clients() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState("");
+
 
     const fetchClients = async () => {
         try {
@@ -77,6 +88,7 @@ export default function Clients() {
         }
     };
 
+
     useEffect(() => {
         let isCurrent = true;
 
@@ -89,6 +101,7 @@ export default function Clients() {
             })
             .catch((requestError) => {
                 console.error("Failed to fetch clients:", requestError);
+
                 if (isCurrent) {
                     setError(getErrorMessage(requestError));
                 }
@@ -104,12 +117,19 @@ export default function Clients() {
         };
     }, []);
 
+
     const filteredClients = clients.filter((client) =>
-        [client.client_name, client.phone_number]
+        [
+            client.client_name,
+            client.project_name,
+            client.email,
+            client.phone_number,
+        ]
             .join(" ")
             .toLowerCase()
             .includes(search.trim().toLowerCase())
     );
+
 
     const openAddForm = () => {
         setEditingClient(null);
@@ -118,18 +138,23 @@ export default function Clients() {
         setIsModalOpen(true);
     };
 
+
     const openEditForm = (client) => {
         setEditingClient(client);
+
         setForm({
             client_name: client.client_name || "",
+            project_name: client.project_name || "",
             email: client.email || "",
             phone_number: client.phone_number || "",
             address: client.address || "",
         });
+
         setOpenMenuId(null);
         setError("");
         setIsModalOpen(true);
     };
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -137,7 +162,10 @@ export default function Clients() {
         setError("");
 
         const payload = Object.fromEntries(
-            Object.entries(form).map(([key, value]) => [key, value.trim()])
+            Object.entries(form).map(([key, value]) => [
+                key,
+                value.trim(),
+            ])
         );
 
         try {
@@ -150,6 +178,7 @@ export default function Clients() {
             setIsModalOpen(false);
             setEditingClient(null);
             setForm(emptyClient);
+
             await fetchClients();
         } catch (requestError) {
             console.error("Failed to save client:", requestError);
@@ -159,13 +188,18 @@ export default function Clients() {
         }
     };
 
+
     const handleDelete = async (client) => {
         setOpenMenuId(null);
-        if (!window.confirm(`Delete ${client.client_name}? This cannot be undone.`)) {
+
+        if (!window.confirm(
+            `Delete ${client.client_name}? This cannot be undone.`
+        )) {
             return;
         }
 
         setError("");
+
         try {
             await api.delete(`clients/${client.id}/`);
             await fetchClients();
@@ -175,6 +209,7 @@ export default function Clients() {
         }
     };
 
+
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingClient(null);
@@ -182,8 +217,12 @@ export default function Clients() {
         setError("");
     };
 
+
     return (
-        <section className="clients-page" onClick={() => setOpenMenuId(null)}>
+        <section
+            className="clients-page"
+            onClick={() => setOpenMenuId(null)}
+        >
             <PMSPageHeader
                 title="Clients"
                 subtitle="Manage clients and their projects."
@@ -193,21 +232,30 @@ export default function Clients() {
             />
 
             {error && !isModalOpen && (
-                <div className="clients-error" role="alert">{error}</div>
+                <div className="clients-error" role="alert">
+                    {error}
+                </div>
             )}
 
             <div className="clients-panel">
                 <div className="clients-toolbar">
                     <div>
                         <h2>Client Directory</h2>
-                        <p>{clients.length} client{clients.length === 1 ? "" : "s"}</p>
+                        <p>
+                            {clients.length} client
+                            {clients.length === 1 ? "" : "s"}
+                        </p>
                     </div>
+
                     <label className="clients-search">
                         <Search size={17} aria-hidden="true" />
+
                         <input
                             type="search"
                             value={search}
-                            onChange={(event) => setSearch(event.target.value)}
+                            onChange={(event) =>
+                                setSearch(event.target.value)
+                            }
                             placeholder="Search clients or projects"
                             aria-label="Search clients or projects"
                         />
@@ -219,15 +267,22 @@ export default function Clients() {
                         <thead>
                             <tr>
                                 <th>Client Name</th>
+                                <th>Project Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             {isLoading ? (
                                 <tr>
-                                    <td className="clients-empty" colSpan="4">Loading clients...</td>
+                                    <td
+                                        className="clients-empty"
+                                        colSpan="5"
+                                    >
+                                        Loading clients...
+                                    </td>
                                 </tr>
                             ) : filteredClients.length ? (
                                 filteredClients.map((client) => (
@@ -235,43 +290,67 @@ export default function Clients() {
                                         <td>
                                             <span className="client-name">
                                                 <span className="client-icon">
-                                                    <Handshake className="client-icon"  />
+                                                    <Handshake size={17} />
                                                 </span>
                                                 {client.client_name}
                                             </span>
                                         </td>
-                                        <td>{client.email || "—"}</td>
-                                        <td>{client.phone_number || "—"}</td>
-                                        
+
+                                        <td>
+                                            {client.project_name || "—"}
+                                        </td>
+
+                                        <td>
+                                            {client.email || "—"}
+                                        </td>
+
+                                        <td>
+                                            {client.phone_number || "—"}
+                                        </td>
+
                                         <td className="client-action-cell">
                                             <div
                                                 className="client-action-wrap"
-                                                onClick={(event) => event.stopPropagation()}
+                                                onClick={(event) =>
+                                                    event.stopPropagation()
+                                                }
                                             >
                                                 <button
                                                     type="button"
                                                     className="client-action-button"
                                                     aria-label={`Actions for ${client.client_name}`}
-                                                    aria-expanded={openMenuId === client.id}
-                                                    onClick={() => setOpenMenuId(
-                                                        openMenuId === client.id ? null : client.id
-                                                    )}
+                                                    aria-expanded={
+                                                        openMenuId === client.id
+                                                    }
+                                                    onClick={() =>
+                                                        setOpenMenuId(
+                                                            openMenuId === client.id
+                                                                ? null
+                                                                : client.id
+                                                        )
+                                                    }
                                                 >
                                                     <MoreVertical size={19} />
                                                 </button>
+
                                                 {openMenuId === client.id && (
                                                     <div className="client-action-menu">
                                                         <button
                                                             type="button"
-                                                            onClick={() => openEditForm(client)}
+                                                            onClick={() =>
+                                                                openEditForm(client)
+                                                            }
                                                         >
                                                             <Pencil size={16} />
                                                             Edit
                                                         </button>
+
                                                         <button
                                                             type="button"
                                                             className="client-delete-action"
-                                                            onClick={() => handleDelete(client)}
+                                                            onClick={() =>
+                                                                handleDelete(client)
+                                                            }
                                                         >
                                                             <Trash2 size={16} />
                                                             Delete
@@ -284,7 +363,10 @@ export default function Clients() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td className="clients-empty" colSpan="4">
+                                    <td
+                                        className="clients-empty"
+                                        colSpan="5"
+                                    >
                                         {search
                                             ? "No matching clients found."
                                             : "No clients yet. Add a client to get started."}
@@ -297,21 +379,32 @@ export default function Clients() {
             </div>
 
             {isModalOpen && (
-                <div className="client-modal-backdrop" onMouseDown={closeModal}>
+                <div
+                    className="client-modal-backdrop"
+                    onMouseDown={closeModal}
+                >
                     <section
                         className="client-modal"
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="client-modal-title"
-                        onMouseDown={(event) => event.stopPropagation()}
+                        onMouseDown={(event) =>
+                            event.stopPropagation()
+                        }
                     >
                         <div className="client-modal-header">
                             <div>
                                 <h2 id="client-modal-title">
-                                    {editingClient ? "Edit Client" : "Add Client"}
+                                    {editingClient
+                                        ? "Edit Client"
+                                        : "Add Client"}
                                 </h2>
-                                <p>Enter the client and project details.</p>
+
+                                <p>
+                                    Enter the client and project details.
+                                </p>
                             </div>
+
                             <button
                                 type="button"
                                 className="client-modal-close"
@@ -322,59 +415,119 @@ export default function Clients() {
                             </button>
                         </div>
 
-                        {error && <div className="clients-error" role="alert">{error}</div>}
+                        {error && (
+                            <div className="clients-error" role="alert">
+                                {error}
+                            </div>
+                        )}
 
-                        <form className="client-form" onSubmit={handleSubmit}>
+                        <form
+                            className="client-form"
+                            onSubmit={handleSubmit}
+                        >
                             <label>
                                 Client Name
+
                                 <input
                                     type="text"
                                     maxLength="200"
                                     value={form.client_name}
-                                    onChange={(event) => setForm({ ...form, client_name: event.target.value })}
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            client_name: event.target.value,
+                                        })
+                                    }
                                     required
                                 />
                             </label>
 
                             <label>
-                                Email Address 
+                                Project Name
+
                                 <input
-                                    type={form.email}
-                                    value={form.email}
+                                    type="text"
+                                    maxLength="200"
+                                    value={form.project_name}
                                     onChange={(event) =>
-                                        setForm({ ...form, email: event.target.value })
+                                        setForm({
+                                            ...form,
+                                            project_name: event.target.value,
+                                        })
                                     }
-                                    placeholder="Enter email address"
-                                    />
-                            </label>
-                        
-                            <label>
-                                Contact Number
-                                <input
-                                    type="tel"
-                                    maxLength="30"
-                                    value={form.phone_number}
-                                    onChange={(event) => setForm({ ...form, phone_number: event.target.value })}
+                                    placeholder="Enter project name"
                                 />
                             </label>
-                        
+
+                            <label>
+                                Email Address
+
+                                <input
+                                    type="email"
+                                    maxLength="254"
+                                    value={form.email}
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            email: event.target.value,
+                                        })
+                                    }
+                                    placeholder="Enter email address"
+                                />
+                            </label>
+
+                            <label>
+                                Contact Number
+
+                                <input
+                                    type="tel"
+                                    maxLength="10"
+                                    value={form.phone_number}
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            phone_number: event.target.value,
+                                        })
+                                    }
+                                    placeholder="Enter 10-digit phone number"
+                                />
+                            </label>
+
                             <label>
                                 Address
+
                                 <textarea
                                     rows="3"
                                     value={form.address}
-                                    onChange={(event) => setForm({ ...form, address: event.target.value })}
-                                    required
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            address: event.target.value,
+                                        })
+                                    }
+                                    placeholder="Enter address"
                                 />
                             </label>
+
                             <div className="client-form-actions">
-                                <button type="button" className="client-cancel-button" onClick={closeModal}>
+                                <button
+                                    type="button"
+                                    className="client-cancel-button"
+                                    onClick={closeModal}
+                                >
                                     Cancel
                                 </button>
-                                <button type="submit" className="client-save-button" disabled={isSaving}>
+
+                                <button
+                                    type="submit"
+                                    className="client-save-button"
+                                    disabled={isSaving}
+                                >
                                     {isSaving
                                         ? "Saving..."
-                                        : editingClient ? "Save Changes" : "Add Client"}
+                                        : editingClient
+                                            ? "Save Changes"
+                                            : "Add Client"}
                                 </button>
                             </div>
                         </form>

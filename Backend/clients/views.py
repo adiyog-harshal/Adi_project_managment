@@ -11,6 +11,5 @@ class ClientViewSet(viewsets.ModelViewSet):
     search_fields = [
         "client_name",
         "project_name",
-        "contract",
         "address",
     ]

@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 from .models import Client
 import re
@@ -23,15 +24,21 @@ class ClientSerializer(serializers.ModelSerializer):
         value = value.strip()
 
         if not value:
-            raise serializers.ValidationError("Client name is required.")
+            raise serializers.ValidationError(
+                "Client name is required."
+            )
 
         return value
 
     def validate_email(self, value):
         value = value.strip()
 
-        if value and not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", value):
-            raise serializers.ValidationError("Enter a valid email address.")
+        if value and not re.match(
+            r"^[^@\s]+@[^@\s]+\.[^@\s]+$", value
+        ):
+            raise serializers.ValidationError(
+                "Enter a valid email address."
+            )
 
         return value
 
