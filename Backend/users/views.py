@@ -49,3 +49,25 @@ class UserDetailView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+
+        if user.is_superuser:
+            return Response(
+                {"error" "Superuser account cannot be edited."},
+                status=403
+            )
+
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        user = self.get_object()
+
+        if user.is_superuser:
+            return Response(
+                {"error": "Superuser account cannot be deleted."},
+                status=403
+            )
+
+        return super().destroy(request, *args, **kwargs)

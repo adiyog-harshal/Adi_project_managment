@@ -62,6 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
             "role_name",
             "is_active",
             "status",
+            "is_superuser",
         ]
         read_only_fields = [
             "id",
@@ -70,6 +71,7 @@ class UserSerializer(serializers.ModelSerializer):
             "designation_name",
             "role_id",
             "role_name",
+            "is_superuser",
         ]
 
     def get_designation_id(self, obj):
@@ -98,9 +100,18 @@ class UserSerializer(serializers.ModelSerializer):
         except UserProfile.DoesNotExist:
             return ""
 
+    def validate(self, attrs):
+        if self.instance and self.instance.is_superuser:
+            raise serializers.ValidationError(
+                "Superuser account cannot be edited."
+            )
+
+        return attrs
+
     def create(self, validated_data):
         name = validated_data.pop("name", "").strip()
         designation = validated_data.pop("designation", None)
+        role = validated_data.pop("role", None)
         password = validated_data.pop("password", None)
         status = validated_data.pop("status", "Active")
 
@@ -136,7 +147,10 @@ class UserSerializer(serializers.ModelSerializer):
 
         UserProfile.objects.update_or_create(
             user=user,
-            defaults={"designation": designation}
+            defaults={
+                "designation": designation,
+                "role": role,
+            }
         )
 
         return user
