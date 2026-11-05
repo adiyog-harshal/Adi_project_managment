@@ -156,9 +156,22 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
+
+        # Never allow editing a superuser
+        if instance.is_superuser:
+            raise serializers.ValidationError(
+                "Superuser account is protected."
+            )
+        
         name = validated_data.pop("name", None)
+
         designation = validated_data.pop(
             "designation",
+            serializers.empty
+        )
+
+        role = validated_data.pop(
+            "role",
             serializers.empty
         )
         password = validated_data.pop("password", None)
@@ -180,10 +193,20 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        if designation is not serializers.empty:
-            UserProfile.objects.update_or_create(
-                user=instance,
-                defaults={"designation": designation}
+        if (
+            designation is not serializers.empty
+            or role is not serializers.empty
+        ):
+            profile, created = UserProfile.objects.get_or_create(
+                user=instance
             )
+
+            if designation is not serializers.empty:
+                profile.designation = designation
+
+            if role is not serializers.empty:
+                profile.role = role
+
+            profile.save()
 
         return instance

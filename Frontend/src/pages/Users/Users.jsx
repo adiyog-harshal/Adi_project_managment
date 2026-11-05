@@ -32,7 +32,7 @@ function Users() {
     });
 
     const filteredUsers = users.filter((user) =>
-        `${user.name} ${user.email} ${user.role} ${user.designation} ${user.status}`
+        `${user.name} ${user.email} ${user.role_name} ${user.designation} ${user.status}`
             .toLowerCase()
             .includes(search.toLowerCase())
     );
@@ -66,7 +66,7 @@ function Users() {
         setFormData({
             name: user.name === "N/A" ? "" : user.name,
             email: user.email || "",
-            role: String(user.roleId || ""),
+            role: String(user.role_id ?? ""),
             designation: String(user.designationId || ""),
             status: user.status || "Active",
         });
@@ -240,7 +240,8 @@ const handleSubmit = async (e) => {
 
             setUsers(
                 data.map((user) => ({
-                id: user.id,
+                    id: user.id,
+
                 name:
                     `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
                     user.username?.replace(/_/g, " ") ||
@@ -249,7 +250,7 @@ const handleSubmit = async (e) => {
                 email: user.email || "",
 
                 role_id: user.role_id ?? "",
-                role_name: user.role_name || "Not Assigned",
+                role_name: user.role_name || "",
 
                 designationId: user.designation_id ?? "",
                 designation: user.designation_name || "Not Assigned",
@@ -338,11 +339,8 @@ const handleSubmit = async (e) => {
                                     <td>
                                         {user.role_name ||
                                             roles.find(
-                                                (role) => String(role.id) === String(user.role)
+                                                (role) => String(role.id) === String(user.role_id)
                                             )?.name ||
-                                            (typeof user.role === "object"
-                                                ? user.role.role_name
-                                                : null) ||
                                             "Not Assigned"}
                                     </td>
                                     <td>{user.designation || "Not Assigned"}</td>
@@ -361,6 +359,11 @@ const handleSubmit = async (e) => {
                                     <td>
                                         <div className="user-actions">
                                             {user.is_superuser ? (
+                                                <span className='protected-user'>
+                                                    <LockKeyhole size={14} />
+                                                    Protected
+                                                </span>
+                                            ) : (
                                                 <>
                                                    <button
                                                         type="button"
@@ -381,12 +384,7 @@ const handleSubmit = async (e) => {
                                                     >
                                                         Delete
                                                     </button>
-                                                </>
-                                            ) : (
-                                                <span className='protected-user'>
-                                                    <LockKeyhole size={14} />
-                                                    Protected
-                                                </span>
+                                                </>                                        
                                             )}                                          
                                         </div>
                                     </td>

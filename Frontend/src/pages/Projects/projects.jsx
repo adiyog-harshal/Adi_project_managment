@@ -8,7 +8,7 @@ import {
     Trash2,
     FolderKanban,
     Bell,
-    FolderOpen,
+    PauseCircle,
     PlayCircle,
     Clock3,
     CheckCircle2,
@@ -267,6 +267,10 @@ const Projects = () => {
     const currentProjects =
         filteredProjects.slice(startIndex, endIndex);
 
+    const onHoldProjects = projects.filter(
+        (project) => project.status === "On Hold"
+    ).length;
+
     // EDIT PROJECT
     const handleEditProject = (project) => {
 
@@ -344,8 +348,7 @@ const Projects = () => {
 
         return Math.min(Math.max(progress, 0), 100);
     };
-
-    
+   
     return (
 
         <div className={`projects-page ${showForm ? "form-open" : "" }`}>
@@ -469,7 +472,7 @@ const Projects = () => {
                     </div>
 
                     <div className="summary-content">
-                        <span>Not Started </span>
+                        <span>Planning </span>
                         <strong>{upcomingProjects}</strong>
                     </div>
                 </div>
@@ -483,6 +486,17 @@ const Projects = () => {
                     <div className="summary-content">
                         <span>Ongoing Projects</span>
                         <strong>{ongoingProjects}</strong>
+                    </div>
+                </div>
+
+                {/* ON HOLD */}
+                <div className="summary-card">
+                    <div className="summary=icon on-hold-icon">
+                        <PauseCircle size={22} />
+                    </div>
+                    <div className="summary-content">
+                        <span>On Hold</span>
+                        <strong>{onHoldProjects}</strong>
                     </div>
                 </div>
 
@@ -624,7 +638,6 @@ const Projects = () => {
 
                                 </div>
 
-
                             </div>
 
                             <div className="project-form-actions">
@@ -649,8 +662,6 @@ const Projects = () => {
                                 </button>
 
                             </div>
-
-                        
 
                     </div>
                 </div>
@@ -680,7 +691,6 @@ const Projects = () => {
 
                     </div>
 
-                        {/* table rows */}
                     {/* TABLE ROWS */}
         {currentProjects.length > 0 ? (
             currentProjects.map((project) => (
@@ -715,18 +725,18 @@ const Projects = () => {
                          <div className="progress-bar">
                             <div
                                 className={`progress-fill ${
-                                    calculateProgress(project) < 50
+                                    (project.progress|| 0) < 50
                                         ? "progress-orange"
                                         : "progress-green"
                                 }`}
                                 style={{
-                                    width: `${calculateProgress(project)}%`
+                                    width: `${project.progress || 0}%`
                                 }}
                             />
                         </div>
 
                         <span className="progress-percentage">
-                            {calculateProgress(project)}%
+                            {project.progress || 0}%
                         </span>
 
                     </div>
@@ -737,9 +747,7 @@ const Projects = () => {
                     {/* ACTION */}
                     <div 
                         className="action-menu"
-                    >
-
-                        
+                    >                        
                         <button 
                             type="button"
                             className="action-button"
@@ -759,8 +767,6 @@ const Projects = () => {
                                 className="action-dropdown"
                                 
                             >
-
-
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -795,17 +801,16 @@ const Projects = () => {
         )}
 
                 </div> {/* Close projects-table */}
-
-               
-
  
                 {/* PAGINATION - OUTSIDE TABLE */}
                 <div className="project-pagination">
                     <span className="project-pagination-info">
-                        Showing 1 to 1 of 1 projects
+                        Showing {totalProjects === 0 ? 0 : startIndex + 1} to{" "}
+                        {Math.min(endIndex, totalProjects)} of {totalProjects} projects
                     </span>
 
                     <div className="project-pagination-buttons">
+
                         <button
                             type="button"
                             className="project-page-btn"
@@ -815,27 +820,31 @@ const Projects = () => {
                             Previous
                         </button>
 
-                        <button
-                            type="button"
-                            className="project-page-number active"
-                        >
-                            1
-                        </button>
+                        {Array.from({ length: totalPages }, (_, index) => (
+                            <button
+                                key={index + 1}
+                                type="button"
+                                className={`project-page-number ${
+                                    currentPage === index +1 ? "active" : ""
+                                }`}
+                                onClick={() => setCurrentPage(index + 1)}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
 
                         <button
                             type="button"
                             className="project-page-btn"
-                            disabled={currentPage === totalPages}
+                            disabled={currentPage >= totalPages}
                             onClick={() => setCurrentPage(currentPage + 1)}
                         >
                             Next
                         </button>
                     </div>
-                                </div>
+                </div>
             </div>
-        </div>
-      
+        </div>      
     );
 };
-
 export default Projects;
