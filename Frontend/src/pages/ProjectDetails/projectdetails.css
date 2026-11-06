@@ -2072,3 +2072,366 @@
     height: 16px;
     flex-shrink: 0;
 }
+
+
+/* =================================
+   PROJECT WORKSPACE LAYOUT
+================================= */
+
+.project-workspace {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    margin-top: 25px;
+}
+
+/* =================================
+   LEFT PROJECT SIDEBAR
+================================= */
+
+.project-workspace-sidebar {
+    width: 235px;
+    min-width: 235px;
+    min-height: 480px;
+    background: #111936;
+    border-radius: 12px;
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.workspace-sidebar-heading {
+    color: #9CAAC5;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 5px 12px 15px;
+}
+
+.workspace-menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 14px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: #D8DFED;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.workspace-menu-btn svg {
+    flex-shrink: 0;
+}
+
+.workspace-menu-btn:hover {
+    background: #1D2B50;
+    color: #FFFFFF;
+}
+
+.workspace-menu-btn.active {
+    background: #2456A6;
+    color: #FFFFFF;
+    border-left: 4px solid #FFC629;
+    font-weight: 600;
+    padding-left: 10px;
+}
+
+/* =================================
+   RIGHT CONTENT AREA
+================================= */
+
+.project-workspace-content {
+    flex: 1;
+    min-width: 0;
+    min-height: 480px;
+    background: #F8FAFD;
+    border: 1px solid #E8ECF3;
+    border-radius: 12px;
+    padding: 22px;
+}
+
+/* Remove extra top spacing if present */
+
+.project-workspace-content .project-overview {
+    margin-top: 0;
+}
+
+/* =================================
+   RESPONSIVE DESIGN
+================================= */
+
+@media (max-width: 768px) {
+
+    .project-workspace {
+        flex-direction: column;
+    }
+
+    .project-workspace-sidebar {
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .workspace-sidebar-heading {
+        width: 100%;
+        padding-bottom: 8px;
+    }
+
+    .workspace-menu-btn {
+        width: auto;
+        flex: 1 1 130px;
+        justify-content: flex-start;
+    }
+
+    .project-workspace-content {
+        width: 100%;
+        padding: 15px;
+    }
+}
+
+/* =====================================
+   PROJECT WORKSPACE
+===================================== */
+
+.project-workspace {
+    display: grid;
+    grid-template-columns: 235px minmax(0, 1fr);
+    gap: 20px;
+    width: 100%;
+    align-items: stretch;
+    margin-top: 25px;
+}
+
+/* LEFT SIDEBAR */
+
+.project-workspace-sidebar {
+    width: 100%;
+    min-width: 0;
+    min-height: 480px;
+    box-sizing: border-box;
+    background: #232b47;
+    border-radius: 12px;
+    padding: 20px 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.workspace-sidebar-heading {
+    color: #9CAAC5;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 5px 12px 15px;
+}
+
+/* SIDEBAR BUTTONS */
+
+.project-workspace-sidebar .project-section-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 13px 14px;
+    border: none;
+    border-radius: 9px;
+
+    background: transparent;
+    color: #D8DFED;
+
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.project-workspace-sidebar .project-section-btn:hover {
+    background: #465380;
+    color: #FFFFFF;
+}
+
+.project-workspace-sidebar .project-section-btn.active {
+    background: #2456A6;
+    color: #FFFFFF;
+    border-left: 4px solid #FFC629;
+    padding-left: 10px;
+    font-weight: 600;
+}
+
+/* RIGHT CONTENT */
+
+.project-workspace-content {
+    width: 100%;
+    min-width: 0;
+    min-height: 480px;
+    box-sizing: border-box;
+
+    background: #F8FAFD;
+    border: 1px solid #E8ECF3;
+    border-radius: 12px;
+
+    padding: 24px;
+}
+
+/* OVERVIEW */
+
+.project-workspace-content .project-overview {
+    margin-top: 0;
+}
+
+/* CONTENT HEADER */
+
+.project-workspace-content .team-members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+    .project-workspace {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .project-workspace-sidebar {
+        min-height: auto;
+        position: static;
+    }
+
+    .project-workspace-content {
+        min-height: 350px;
+        padding: 15px;
+    }
+}
+
+
+.project-workspace {
+    display: grid;
+    grid-template-columns: 235px minmax(0, 1fr);
+    gap: 20px;
+    align-items: stretch;
+    width: 100%;
+}
+
+.project-workspace-sidebar {
+    background: #111936;
+    border-radius: 12px;
+    padding: 20px 12px;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.project-workspace-content {
+    min-width: 0;
+    width: 100%;
+    min-height: 480px;
+    padding: 24px;
+    background: #F8FAFD;
+    border: 1px solid #E8ECF3;
+    border-radius: 12px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .project-workspace {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Keep the project workspace fixed */
+.project-workspace {
+    display: grid;
+    grid-template-columns: 235px minmax(0, 1fr);
+    gap: 20px;
+    height: calc(100vh - 140px);
+    overflow: hidden;
+}
+
+/* Keep the left project menu fixed */
+.project-workspace-sidebar {
+    height: 100%;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+}
+
+/* Right-side content area */
+.project-workspace-content {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Scroll only the Overview data */
+.overview-scroll-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: #aab4c5 #f1f3f7;
+}
+
+/* Chrome, Edge and other WebKit browsers */
+.overview-scroll-content::-webkit-scrollbar {
+    width: 7px;
+}
+
+.overview-scroll-content::-webkit-scrollbar-thumb {
+    background: #aab4c5;
+    border-radius: 10px;
+}
+
+.overview-scroll-content::-webkit-scrollbar-track {
+    background: #f1f3f7;
+}
+
+
+/* Team Members internal scrolling */
+.members-scroll-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: #aab4c5 #f1f3f7;
+}
+
+.members-scroll-content::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+.members-scroll-content::-webkit-scrollbar-thumb {
+    background: #aab4c5;
+    border-radius: 10px;
+}
+
+.members-scroll-content::-webkit-scrollbar-track {
+    background: #f1f3f7;
+}

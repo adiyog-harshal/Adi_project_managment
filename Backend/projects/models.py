@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.utils import timezone
+
 
 class Project(models.Model):
 
@@ -15,6 +17,8 @@ class Project(models.Model):
     description = models.TextField(blank=True)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
+
+    completed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(
         max_length=50,
         choices=STATUS_CHOICES,
@@ -30,9 +34,30 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+
+        previous_status = None 
+
+        if self.pk:
+            previous_status = Project.objects.filter(
+                pk=self.pk
+            ).values_list('status', flat=True).first()
+
+        if self.status == "Completed":
+            if previous_status != 'Completed' or self.completed_at is None:
+                self.completed_at = timezone.now()
+
+        else:
+            self.completed_at = None
+
+        if kwargs.get('update_fields') is not None:
+            kwargs['update_fields'] = set(kwargs['update_fields']) | {'completed_at'}
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.project_name
-
+                                          
 
 class ProjectComment(models.Model):
 

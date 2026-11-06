@@ -29,6 +29,7 @@ from projects.ProjectMember.serializers import ProjectMemberSerializer
 from django.shortcuts import render, get_object_or_404
 
 from django.db import models
+from django.db.models import Count, Q
 
 class ProjectListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
@@ -36,10 +37,27 @@ class ProjectListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-
         #Superusers can see all projects
         if user.is_superuser:
-            return Project.objects.all()
+            queryset = Project.objects.all()
+        else:
+            queryset = Project.objects.filter(
+                models.Q(project_members__user=user) |
+                models.Q(project_manager=user),
+                models.Q(
+                    project_members__user=user,
+                    project_members__is_project_manager=True
+                )
+            ).distinct()
+            
+        return queryset.annotate(
+            total_tasks=Count('tasks', distinct=True),
+            completed_tasks=Count(
+                'tasks',
+                filter=Q(tasks__status='Completed'),
+                distinct=True
+            )
+        )
 
         # Employess see projects they are member of.
         # Project managers see projects they manage or are assigned to.
@@ -51,7 +69,6 @@ class ProjectListCreateView(generics.ListCreateAPIView):
                 project_members__is_project_manager=True
             )
         ).distinct()
-
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProjectSerializer
@@ -185,7 +202,6 @@ class ResourceListCreateView(generics.ListCreateAPIView):
             "project",
             "task"
         )
-
 
 class ResourceDetailView(generics.RetrieveUpdateDestroyAPIView):
 

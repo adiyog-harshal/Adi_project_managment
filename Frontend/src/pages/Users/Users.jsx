@@ -6,12 +6,10 @@ import CommonSearch from "../../components/Common/Common.jsx";
 
 import {
     Plus,
-    Pencil,
-    Trash2,
     ShieldCheck,
-    Search,
-    Users as UserIcon,
-    UsersIcon,
+    Users as UsersIcon,
+    UserIcon,
+    LockKeyhole,
 } from "lucide-react";
 
 function Users() {
@@ -34,7 +32,7 @@ function Users() {
     });
 
     const filteredUsers = users.filter((user) =>
-        `${user.name} ${user.email} ${user.role} ${user.designation} ${user.status}`
+        `${user.name} ${user.email} ${user.role_name} ${user.designation} ${user.status}`
             .toLowerCase()
             .includes(search.toLowerCase())
     );
@@ -68,7 +66,7 @@ function Users() {
         setFormData({
             name: user.name === "N/A" ? "" : user.name,
             email: user.email || "",
-            role: String(user.roleId || ""),
+            role: String(user.role_id ?? ""),
             designation: String(user.designationId || ""),
             status: user.status || "Active",
         });
@@ -80,9 +78,7 @@ function Users() {
         setShowForm(false);
         setEditingUser(null);
     };
-
-    
-    
+   
 const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -137,8 +133,6 @@ const handleSubmit = async (e) => {
         setIsSaving(false);
     }
 };
-
-
     
     const handleDelete = async (id) => {
         const confirmed = window.confirm(
@@ -162,7 +156,6 @@ const handleSubmit = async (e) => {
             alert("Failed to delete user.");
         }
     };
-
     useEffect(() => {
         console.log("Testing Users page");
 
@@ -224,7 +217,6 @@ const handleSubmit = async (e) => {
         );
     }
 };
-
         const fetchUsers = async () => {
         try {
             // Check whether the JWT access token exists
@@ -248,7 +240,7 @@ const handleSubmit = async (e) => {
 
             setUsers(
                 data.map((user) => ({
-                id: user.id,
+                    id: user.id,
 
                 name:
                     `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
@@ -256,8 +248,14 @@ const handleSubmit = async (e) => {
                     "N/A",
 
                 email: user.email || "",
+
+                role_id: user.role_id ?? "",
+                role_name: user.role_name || "",
+
                 designationId: user.designation_id ?? "",
                 designation: user.designation_name || "Not Assigned",
+
+                is_superuser: user.is_superuser,
                 status: user.is_active === false ? "Inactive" : "Active",
             }))
             );
@@ -269,8 +267,6 @@ const handleSubmit = async (e) => {
             );
         }
     };
-
-
     return (
         <div className="users-page">
 
@@ -303,8 +299,6 @@ const handleSubmit = async (e) => {
     </button>
 
 </div>
-
-
             
             {/* Users Table */}
             <div className="users-card">
@@ -327,21 +321,26 @@ const handleSubmit = async (e) => {
                                     <td>
                                         <div className='user-name'>
                                             <div className='user-icon'>
-                                                <UsersIcon size={18} />
+                                                {user.is_superuser ? (
+                                                    <ShieldCheck size={18} color="#D9A21B" />
+                                                ) : (
+                                                    <UserIcon size={18} />
+                                                )}
                                             </div>
 
                                             <span>{user.name || "N/A"}</span>
+
+                                            {user.is_superuser && (
+                                                <span className='admin-badge'>ADMIN</span>
+                                            )}
                                         </div>
                                     </td>
                                     <td>{user.email || "N/A"}</td>
                                     <td>
                                         {user.role_name ||
                                             roles.find(
-                                                (role) => String(role.id) === String(user.role)
+                                                (role) => String(role.id) === String(user.role_id)
                                             )?.name ||
-                                            (typeof user.role === "object"
-                                                ? user.role.role_name
-                                                : null) ||
                                             "Not Assigned"}
                                     </td>
                                     <td>{user.designation || "Not Assigned"}</td>
@@ -359,27 +358,34 @@ const handleSubmit = async (e) => {
 
                                     <td>
                                         <div className="user-actions">
+                                            {user.is_superuser ? (
+                                                <span className='protected-user'>
+                                                    <LockKeyhole size={14} />
+                                                    Protected
+                                                </span>
+                                            ) : (
+                                                <>
+                                                   <button
+                                                        type="button"
+                                                        className="user-edit-btn"
+                                                        onClick={() =>
+                                                            openEditForm(user)
+                                                        }
+                                                    >
+                                                        Edit
+                                                    </button>
 
-                                            <button
-                                                type="button"
-                                                className="user-edit-btn"
-                                                onClick={() =>
-                                                    openEditForm(user)
-                                                }
-                                            >
-                                                Edit
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className="user-delete-btn"
-                                                onClick={() =>
-                                                    handleDelete(user.id)
-                                                }
-                                            >
-                                                Delete
-                                            </button>
-
+                                                    <button
+                                                        type="button"
+                                                        className="user-delete-btn"
+                                                        onClick={() =>
+                                                            handleDelete(user.id)
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </>                                        
+                                            )}                                          
                                         </div>
                                     </td>
                                 </tr>
@@ -401,9 +407,7 @@ const handleSubmit = async (e) => {
             {/* Add / Edit User Modal */}
             {showForm && (
                 <div className="user-form-overlay">
-
                     <div className="user-form">
-
                         {/* Close Button */}
                         <button
                             type="button"
@@ -529,7 +533,6 @@ const handleSubmit = async (e) => {
                                         : (editingUser ? "Update User" : "Create User")}
                                 </button>
                             </div>
-
                         </form>
                     </div>
                 </div>

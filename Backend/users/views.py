@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework import serializers
 
 from .serializers import UserSerializer
 
@@ -28,8 +29,13 @@ class UserListCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        users = User.objects.all()
+        users = User.objects.select_related(
+            "profile__role",
+            "profile__designation"
+        ).all().order_by("id")
+
         serializer = UserSerializer(users, many=True)
+        
         return Response(serializer.data)
 
     def post(self, request):
@@ -46,6 +52,15 @@ class UserListCreateView(APIView):
 
 
 class UserDetailView(RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    
+    def perform_destroy(self, instance):
+        if instance.is_superuser:
+            raise serializers.ValidationError(
+                "Superuser account is protected and cannot be deleted."
+            )
+
+        instance.delete()
+        

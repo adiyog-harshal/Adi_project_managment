@@ -76,11 +76,25 @@ const Dashboard = () => {
             try {
                 const response = await api.get("tasks/");
 
+                cconsole.log("TASK API URL:", response.config.url);
+                console.log("TASK API RESPONSE:", response.data);
+
                 const allTasks = Array.isArray(response.data)
                     ? response.data
                     : Array.isArray(response.data?.results)
                         ? response.data.results
                         : [];
+
+                console.log("TOTAL TASKS FROM API:", allTasks.length);
+
+                allTasks.forEach((task) => {
+                    console.log("TASK DETAILS:", {
+                        id: task.id,
+                        task_name: task.task_name,
+                        project: task.project,
+                        status: task.status,
+                    });
+                });
 
                 const selectedProjectId = String(selectedProgressProject.id);
 
@@ -90,6 +104,8 @@ const Dashboard = () => {
                         task.project_id ??
                         task.project_detail ??
                         task.projectId;
+
+                    console.log("TASK PROJECT VALUE:", projectValue);
 
                     let taskProjectId = null;
 
@@ -109,6 +125,24 @@ const Dashboard = () => {
                 console.log("SELECTED PROJECT TASKS:", selectedTasks);
 
                 setProjectTasks(selectedTasks);
+
+                console.log("======PROGRESS DEBUG======");
+                console.log("Selected Project ID:", selectedProjectId);
+                console.log("MATCHED TASKS:", selectedTasks);
+                console.log("Total Tasks Received:", allTasks.length);
+                console.log("Tasks Matching Project:", selectedTasks.length);
+
+                selectedTasks.forEach((task, index) => {
+                    console.log(`TASK ${index + 1}:`, {
+                        id: task.id,
+                        project: task.project,
+                        project_id: task.project_id,
+                        status: task.status,
+                        task_status: task.task_status,
+                    });
+                });
+
+                console.log("===========================");
 
                 // Handle normal array OR DRF pagination
             
@@ -367,6 +401,15 @@ const actualProjectProgress = totalTasks > 0
     ? Math.round((completedTasks / totalTasks) * 100)
     : 0;
 
+console.log("========== FINAL PROGRESS ==========");
+console.log("Project:", selectedProgressProject?.project_name);
+console.log("Total Tasks:", totalTasks);
+console.log("Completed Tasks:", completedTasks);
+console.log("In Progress Tasks:", inProgressTasks);
+console.log("Pending Tasks:", pendingTasks);
+console.log("Progress:", actualProjectProgress + "%");
+console.log("====================================");
+
 console.log("PROJECT PROGRESS:", {
     selectedProject: selectedProgressProject?.project_name,
     totalTasks,
@@ -447,11 +490,18 @@ console.log("PROJECT PROGRESS:", {
         const monthlyCounts = Array(12).fill(0);
 
         projects.forEach((project) => {
-            if (!project.end_date) {
+            // Only comleted projects
+            if (
+                String(project.status || "").toLowerCase().trim() !== "completed"
+            ) {
+                return;
+            }
+            // Project must have an actual comption date
+            if (!project.completed_at) {
                 return;
             }
 
-            const completionDate = new Date(project.end_date);
+            const completionDate = new Date(project.completed_at);
 
             if (Number.isNaN(completionDate.getTime())) {
                 return;

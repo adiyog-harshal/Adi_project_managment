@@ -13,9 +13,7 @@ import {
 } from "lucide-react";
 
 import api from "../../services/api";
-
 import "./projectdetails.css";
-
 
 const ProjectDetails = () => {
 
@@ -28,7 +26,7 @@ const ProjectDetails = () => {
 
     const [members, setMembers] = useState([]);
     const [tasks, setTasks] = useState([]);
-    const [activeSection, setActiveSection] = useState("");
+    const [activeSection, setActiveSection] = useState("details");
     const [selectedUser, setSelectedUser] = useState("");
     const [showAddMember, setShowAddMember] = useState(false);
 
@@ -211,8 +209,6 @@ const ProjectDetails = () => {
         (user) => user.id === project?.project_manager
     );
     
-
-
     if (loading) {
 
         return (
@@ -228,7 +224,6 @@ const ProjectDetails = () => {
 
         return (
             <div className="project-details-page">
-
                 
                 <div className="project-not-found">
                     Project not found.
@@ -346,602 +341,616 @@ const handleMemberRoleChange = async (
 };
 
     return (
-
         <div className="project-details-page">
 
-            {/* BACK BUTTON */}
+            <div className="project-workspace">
+                {/* LEFT SIDEBAR */}
 
-            <button
-                type="button"
-                className="back-project-btn"
-                onClick={() => navigate("/projects")}
-            >
-                <ArrowLeft size={16} />
-                Back to Project
-            </button>
+                <aside className="project-workspace-sidebar">
+                    <div className="workspace-sidebar-heading">
+                        PROJECT MENU
+                    </div>
+
+                    <div className="section-title">
+                        <FileText size={19} />
+                        <h2>Project Details</h2>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        className={`project-section-btn ${
+                            activeSection === "overview" ? "active" : ""
+                        }`}
+                        onClick={() => setActiveSection("overview")}
+                    >
+                        <FileText size={17} />
+                        Overview
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`project-section-btn ${
+                            activeSection === "members" ? "active" : ""
+                        }`}
+                        onClick={() => setActiveSection("members")}
+                    >
+                        <Users size={17} />
+                        Team Members
+                    </button>
             
-            {/* PROJECT HEADER */}
+                    <button
+                        type="button"
+                        className="project-section-btn"
+                        onClick={() =>
+                            navigate(`/projects/${id}/backlog`)
+                        }
+                    >
+                        <ListTodo size={17} />
+                        Backlog
+                    </button>
 
-            <div className="project-details-header">
+                    <button
+                        type="button"
+                        className="project-section-btn"
+                        onClick={() => navigate(`/projects/${id}/milestones`)}
+                    >
+                        <Flag size={17} />
+                        Modules
+                    </button>
 
-                <div className="project-title-section">
+                    <button
+                        type="button"
+                        className="project-section-btn"
+                        onClick={() => navigate(`/projects/${id}/sprints`)}
+                    >
+                        <Layers size={17} />
+                        Sprints
+                    </button>
 
-                    <div className="project-details-icon">
-                        <FileText size={10} />
-                    </div>
-                    <div>
-                        <h1>
-                                {project.project_name}                            
-                        </h1>
-                    </div>
-                </div>
-                <span
-                    className={`project-detail-status ${
-                        getProjectStatus() === "Upcoming"
-                            ? "status-upcoming"
-                            : getProjectStatus() === "Ongoing"
-                            ? "status-ongoing"
-                            : getProjectStatus() === "Completed"
-                            ? "status-completed"
-                            : ""
-                    }`}
-                >
-                    {getProjectStatus()}
-                </span>
+                </aside>
 
-            </div>
-            
-            {/* PROJECT SUMMARY CARDS */}
+                {/* RIGHT SIDE CONTENT */}
+                <main className="project-workspace-content">
+                {/* OVERVIEW SECTION PAGE  */}
 
-            <div className="project-summary-grid">
+                {activeSection === "details" && (
+                    <div className="project-details-content">
 
-                <div className="project-summary-card">
-
-                    <div className="summary-icon manager-icon">
-                        <User size={18} />
-                    </div>
-
-                    <div>
-                        <span>Project Manager</span>
-                        <strong>
-                            {projectManager?.username || "-"}
-                        </strong>
-                    </div>
-
-                </div>
-
-
-                <div className="project-summary-card">
-
-                    <div className="summary-icon start-date-icon">
-                        <CalendarDays size={18} />
-                    </div>
-
-                    <div>
-                        <span>Start Date</span>
-                        <strong>
-                            {project.start_date || "-"}
-                        </strong>
-                    </div>
-
-                </div>
-
-
-                <div className="project-summary-card">
-
-                    <div className="summary-icon end-date-icon">
-                        <CalendarDays size={18} />
-                    </div>
-
-                    <div>
-                        <span>End Date</span>
-                        <strong>
-                            {project.end_date || "-"}
-                        </strong>
-                    </div>
-
-                </div>
-
-
-                <div className="project-summary-card">
-
-                    <div className="summary-icon status-icon">
-                        <CircleCheck size={18} />
-                    </div>
-
-                    <div>
-                        <span>Status</span>
-                        <strong>
-                            {getProjectStatus()}
-                        </strong>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {/* PROJECT INFORMATION */}
-
-            <div className="project-information-card">
-
-                <div className="section-title">
-                    <FileText size={19} />
-                    <h2>Project Details</h2>
-
-                </div>
-
-
-                <div className="project-information-grid">
-                    
-                    <div className="project-description">
-                        
-                        <div className="description-header">
-                            <h3>Description</h3>
-                        </div>
-
-                        <p>{project.description || "No description available."}</p>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {/* PROJECT SECTIONS */}
-
-            <div className="project-sections">
-
-                <button
-                    type="button"
-                    className={`project-section-btn ${
-                        activeSection === "overview" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveSection("overview")}
-                >
-                    <FileText size={17} />
-                    Overview
-                </button>
-
-
-                <button
-                    type="button"
-                    className={`project-section-btn ${
-                        activeSection === "members" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveSection("members")}
-                >
-                    <Users size={17} />
-                    Team Members
-                </button>
-
-
-                <button
-                    type="button"
-                    className="project-section-btn"
-                    onClick={() =>
-                        navigate(`/projects/${id}/backlog`)
-                    }
-                >
-                    <ListTodo size={17} />
-                    Backlog
-                </button>
-
-
-                <button
-                    type="button"
-                    className="project-section-btn"
-                    onClick={() => navigate(`/projects/${id}/milestones`)}
-                >
-                    <Flag size={17} />
-                    Modules
-                </button>
-
-                <button
-                    type="button"
-                    className="project-section-btn"
-                    onClick={() => navigate(`/projects/${id}/sprints`)}
-                >
-                    <Layers size={17} />
-                    Sprints
-                </button>
-
-            </div>
-
-            {activeSection === "members" && (
-                <div className="project-section-content">
-
-                    <div className="team-members-header">
-                    
-                        <div className="section-title">
-                            <Users size={19} />
-                            <h2>Team Members</h2>
-                        </div>
+                    {/* BACK BUTTON */}
 
                         <button
                             type="button"
-                            className="add-member-button"
-                            onClick={() => {
-                                setSelectedUser("");
-                                setShowAddMember(true);
-                            }}
+                            className="back-project-btn"
+                            onClick={() => navigate("/projects")}
                         >
-                            +
-                            Add Member
+                            <ArrowLeft size={16} />
+                            Back to Project
                         </button>
-                    </div>
-
-                    {members.length === 0 ? (
                         
-                        <p className="empty-section-message">
-                            No team members assigned to this project.
-                        </p>
+                        {/* PROJECT HEADER */}
 
-                    ) : (
-                        <div className="project-members-list">
-                            {members.map((member) => {
-                                let memberUserId = null;
+                        <div className="project-details-header">
 
-                                // GET USER ID FROM MEMBER OBJECT
-                                if (
-                                    member.user && 
-                                    typeof member.user === "object"
-                                ) {
-                                    memberUserId = member.user.id;
-                                } else if (
-                                    member.user !== undefined &&
-                                    member.user !== null
-                                ) {
-                                    memberUserId = member.user;
-                                } else if (
-                                    member.user_id !== undefined
-                                ) {
-                                    memberUserId = member.user_id;
-                                }
+                            <div className="project-title-section">
 
-                                // FIND COMPLETE USER DETAILS
-                                const memberUser = users.find(
-                                    (item) => 
-                                        String(item.id) === String(memberUserId)
-                                );
-
-                                // Full name
-                                const fullName =
-                                    `${memberUser?.first_name || ""} ${
-                                        memberUser?.last_name || ""
-                                    }`.trim() ||
-                                    memberUser?.username ||
-                                    "Unknown User";
-
-                                // Designation
-                                const designation =
-                                    typeof memberUser?.designation === "object"
-                                        ? memberUser?.designation?.name
-                                        : memberUser?.designation;                               
-
-                                return (
-                                    <div
-                                        className="project-member-card"
-                                        key={member.id}
-                                    >
-                                        {/* AVATAR */}
-                                        <div className="member-avatar">
-                                            {(
-                                                memberUser?.first_name?.[0] ||
-                                                memberUser?.username?.[0] ||
-                                                "U"
-                                            ).toUpperCase()}
-                                        </div>
-
-                                        {/* MEMBER INFORMATION */}
-                                        <div className="member-info">
-                                            <strong>
-                                                {fullName}
-                                            </strong>
-
-                                            <span>
-                                                {designation || "Designation not available"}
-                                            </span>
-
-                                            <span>
-                                                {memberUser?.email || "Email not available"}
-                                            </span>
-                                        </div>
-
-                                        {/* MEMBER ROLE CHECKBOXES */}
-
-                                        <div className="member-role-checkboxes">
-
-                                            <label className="member-role-option">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={Boolean(member.is_team_leader)}
-                                                    onChange={(e) =>
-                                                        handleMemberRoleChange(
-                                                            member.id,
-                                                            "is_team_leader",
-                                                            e.target.checked
-                                                        )
-                                                    }
-                                                />
-                                                <span>Team Leader</span>
-                                            </label>
-
-                                            <label className="member-role-option">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={Boolean(member.is_project_manager)}
-                                                    onChange={(e) => 
-                                                        handleMemberRoleChange(
-                                                            member.id,
-                                                            "is_project_manager",
-                                                            e.target.checked
-                                                        )
-                                                    }
-                                                />
-                                                <span>Project Manager</span>
-                                            </label>
-
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* OVERVIEW SECTION PAGE  */}
-            {activeSection === "overview" && (
-                <div className="project-overview">
-
-                    <div className="overview-header">
-                        <div>
-                            <h2>Project Overview</h2>
-                            <p>
-                                Quick summary of this project's current progress.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="overview-stats">
-
-                        <div className="overview-stat-card">
-                            <span>Total Tasks</span>
-                            <strong>{totalTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>Completed</span>
-                            <strong>{completedTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>In Progress</span>
-                            <strong>{inProgressTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>Progress</span>
-                            <strong>{projectProgress}%</strong>
-                        </div>
-
-                    </div>
-
-
-                    <div className="overview-progress-card">
-
-                        <div className="overview-progress-header">
-                            <div>
-                                <h3>Project Progress</h3>
-                                <p>
-                                    {completedTasks} of {totalTasks} tasks completed
-                                </p>
-                            </div>
-
-                            <strong>{projectProgress}%</strong>
-                        </div>
-
-                        <div className="overview-progress-track">
-                            <div
-                                className="overview-progress-fill"
-                                style={{
-                                    width: `${projectProgress}%`,
-                                }}
-                            />
-                        </div>
-
-                    </div>
-
-                    {/* ALL PROJECTS SPRINTS */}
-                    <div className="overview-sprints-card">
-                        <div className="overview-card-header">
-                            <div>
-                                <h3>Project Sprints</h3>
-                                <p>{projectSprints.length} total sprints</p>
-                            </div>
-
-                            <button
-                                type="button"
-                                className="overview-view-button"
-                                onClick={() => navigate(`/projects/${id}/sprints`)}
-                            >
-                                Manage Sprints 
-                            </button>
-                        </div>
-
-                        {sprintLoading ? (
-                            <div className="overview-empty">Loading sprints...</div>
-                        ) : projectSprints.length === 0 ? (
-                            <div className="overview-empty">
-                                No sprints created for this project.
-                            </div>
-                        ) : (
-                            
-<div className="overview-sprints-list">
-    {projectSprints.map((sprint) => (
-        <div
-            className="overview-sprint-item clickable-sprint"
-            key={sprint.id}
-            role="button"
-            tabIndex={0}
-            onClick={() =>
-                navigate(`/projects/${id}/sprints/${sprint.id}`)
-            }
-            onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    navigate(`/projects/${id}/sprints/${sprint.id}`);
-                }
-            }}
-        >
-            <div className="overview-sprint-info">
-                <strong>{sprint.sprint_name}</strong>
-
-                <span>
-                    {sprint.start_date || "No start date"}
-                    {" - "}
-                    {sprint.end_date || "No end date"}
-                </span>
-
-                {sprint.goal && <span>{sprint.goal}</span>}
-            </div>
-
-            <span className="overview-sprint-status">
-                {sprint.status || "Upcoming"}
-            </span>
-        </div>
-    ))}
-</div>
-
-                        )}
-                    </div>
-
-                    <div className="overview-grid">
-                        {/* BACKLOG */}
-                        <div className="overview-card">
-
-                            <div className="overview-card-header">
-
+                                <div className="project-details-icon">
+                                    <FileText size={10} />
+                                </div>
                                 <div>
-                                    <h3>Backlog</h3>
-                                    <p>
-                                        {tasks.length} total tasks
-                                    </p>
+                                    <h1>
+                                            {project.project_name}                            
+                                    </h1>
+                                </div>
+                            </div>
+                            <span
+                                className={`project-detail-status ${
+                                    getProjectStatus() === "Upcoming"
+                                        ? "status-upcoming"
+                                        : getProjectStatus() === "Ongoing"
+                                        ? "status-ongoing"
+                                        : getProjectStatus() === "Completed"
+                                        ? "status-completed"
+                                        : ""
+                                }`}
+                            >
+                                {getProjectStatus()}
+                            </span>
+
+                        </div>
+                        
+                        {/* PROJECT SUMMARY CARDS */}
+
+                        <div className="project-summary-grid">
+
+                            <div className="project-summary-card">
+
+                                <div className="summary-icon manager-icon">
+                                    <User size={18} />
                                 </div>
 
-                                <ListTodo size={20} />
+                                <div>
+                                    <span>Project Manager</span>
+                                    <strong>
+                                        {projectManager?.username || "-"}
+                                    </strong>
+                                </div>
 
                             </div>
 
 
-                            <div className="overview-list">
+                            <div className="project-summary-card">
 
+                                <div className="summary-icon start-date-icon">
+                                    <CalendarDays size={18} />
+                                </div>
+
+                                <div>
+                                    <span>Start Date</span>
+                                    <strong>
+                                        {project.start_date || "-"}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+
+                            <div className="project-summary-card">
+
+                                <div className="summary-icon end-date-icon">
+                                    <CalendarDays size={18} />
+                                </div>
+
+                                <div>
+                                    <span>End Date</span>
+                                    <strong>
+                                        {project.end_date || "-"}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+
+                            <div className="project-summary-card">
+
+                                <div className="summary-icon status-icon">
+                                    <CircleCheck size={18} />
+                                </div>
+
+                                <div>
+                                    <span>Status</span>
+                                    <strong>
+                                        {getProjectStatus()}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* PROJECT INFORMATION */}
+
+                        <div className="project-information-card">
+
+                            <div className="project-information-grid">
                                 
-<div className="overview-list backlog-scroll-list">
-    {tasks.map((task) => (
-        <div
-            className="overview-list-item"
-            key={task.id}
-        >
-            <div>
-                <strong>
-                    {task.task_name || "-"}
-                </strong>
-
-                <span>
-                    {task.description || "No description"}
-                </span>
-            </div>
-
-            <span
-                className={`overview-priority ${
-                    task.priority
-                        ?.toLowerCase()
-                        .replace(/\s+/g, "-")
-                }`}
-            >
-                {task.priority || "-"}
-            </span>
-        </div>
-    ))}
-</div>
-
-                                {tasks.length === 0 && (
-                                    <div className="overview-empty">
-                                        No backlog items found.
+                                <div className="project-description">
+                                    
+                                    <div className="description-header">
+                                        <h3>Description</h3>
                                     </div>
-                                )}
 
-                            </div>
-
-
-                            <button
-                                type="button"
-                                className="overview-view-button"
-                                onClick={() =>
-                                    navigate(`/projects/${id}/backlog`)
-                                }
-                            >
-                                View Backlog →
-                            </button>
-
-                        </div>
-
-
-                        {/* MILESTONES */}
-
-                        <div className="overview-card">
-
-                            <div className="overview-card-header">
-
-                                <div>
-                                    <h3>Modules</h3>
-                                    <p>
-                                        Project modules
-                                    </p>
+                                    <p>{project.description || "No description available."}</p>
                                 </div>
 
-                                <Flag size={20} />
                             </div>
 
-                            <div className="overview-list overview-modules-lest">
-                                {modulesLoading ? (
-                                    <div className="overview-empty">
-                                        Loading modules...
+                        </div>
+                    </div>
+                )}
+                    
+                    {activeSection === "overview" && (
+                        <div className="overview-scroll-content">
+                        <div className="project-overview">
+
+                            <div className="overview-header">
+                                <div>
+                                    <h2>Project Overview</h2>
+                                    <p>
+                                        Quick summary of this project's current progress.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="overview-stats">
+
+                                <div className="overview-stat-card">
+                                    <span>Total Tasks</span>
+                                    <strong>{totalTasks}</strong>
+                                </div>
+
+                                <div className="overview-stat-card">
+                                    <span>Completed</span>
+                                    <strong>{completedTasks}</strong>
+                                </div>
+
+                                <div className="overview-stat-card">
+                                    <span>In Progress</span>
+                                    <strong>{inProgressTasks}</strong>
+                                </div>
+
+                                <div className="overview-stat-card">
+                                    <span>Progress</span>
+                                    <strong>{projectProgress}%</strong>
+                                </div>
+
+                            </div>
+
+
+                            <div className="overview-progress-card">
+
+                                <div className="overview-progress-header">
+                                    <div>
+                                        <h3>Project Progress</h3>
+                                        <p>
+                                            {completedTasks} of {totalTasks} tasks completed
+                                        </p>
                                     </div>
-                                ) : projectModules.length === 0 ? (
+
+                                    <strong>{projectProgress}%</strong>
+                                </div>
+
+                                <div className="overview-progress-track">
+                                    <div
+                                        className="overview-progress-fill"
+                                        style={{
+                                            width: `${projectProgress}%`,
+                                        }}
+                                    />
+                                </div>
+
+                            </div>
+
+                            {/* ALL PROJECTS SPRINTS */}
+                            <div className="overview-sprints-card">
+                                <div className="overview-card-header">
+                                    <div>
+                                        <h3>Project Sprints</h3>
+                                        <p>{projectSprints.length} total sprints</p>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        className="overview-view-button"
+                                        onClick={() => navigate(`/projects/${id}/sprints`)}
+                                    >
+                                        Manage Sprints 
+                                    </button>
+                                </div>
+
+                                {sprintLoading ? (
+                                    <div className="overview-empty">Loading sprints...</div>
+                                ) : projectSprints.length === 0 ? (
                                     <div className="overview-empty">
-                                        No modules created for this project.
+                                        No sprints created for this project.
                                     </div>
                                 ) : (
-                                    projectModules.map((module) => (
-                                        <div 
-                                            className="overview-module-item"
-                                            key={module.id}
-                                        >
-                                            {module.milestone_name || module.name || "Untitled Module"}                                       
-                                        </div>                                      
-                                    ))
-                                )}                               
+                                    
+                                <div className="overview-sprints-list">
+                                {projectSprints.map((sprint) => (
+                                    <div
+                                        className="overview-sprint-item clickable-sprint"
+                                        key={sprint.id}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() =>
+                                            navigate(`/projects/${id}/sprints/${sprint.id}`)
+                                        }
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" || e.key === " ") {
+                                                e.preventDefault();
+                                                navigate(`/projects/${id}/sprints/${sprint.id}`);
+                                            }
+                                        }}
+                                    >
+                                        <div className="overview-sprint-info">
+                                            <strong>{sprint.sprint_name}</strong>
+
+                                            <span>
+                                                {sprint.start_date || "No start date"}
+                                                {" - "}
+                                                {sprint.end_date || "No end date"}
+                                            </span>
+
+                                            {sprint.goal && <span>{sprint.goal}</span>}
+                                        </div>
+
+                                        <span className="overview-sprint-status">
+                                            {sprint.status || "Upcoming"}
+                                        </span>
+                                    </div>
+                                ))}
+                                </div>
+                            )}
+                            </div>
+
+                            <div className="overview-grid">
+                                {/* BACKLOG */}
+                                <div className="overview-card">
+
+                                    <div className="overview-card-header">
+
+                                        <div>
+                                            <h3>Backlog</h3>
+                                            <p>
+                                                {tasks.length} total tasks
+                                            </p>
+                                        </div>
+
+                                        <ListTodo size={20} />
+
+                                    </div>
+
+
+                                    <div className="overview-list">
+
+                                        
+                                    <div className="overview-list backlog-scroll-list">
+                                        {tasks.map((task) => (
+                                            <div
+                                                className="overview-list-item"
+                                                key={task.id}
+                                            >
+                                                <div>
+                                                    <strong>
+                                                        {task.task_name || "-"}
+                                                    </strong>
+
+                                                    <span>
+                                                        {task.description || "No description"}
+                                                    </span>
+                                                </div>
+
+                                                <span
+                                                    className={`overview-priority ${
+                                                        task.priority
+                                                            ?.toLowerCase()
+                                                            .replace(/\s+/g, "-")
+                                                    }`}
+                                                >
+                                                    {task.priority || "-"}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                        {tasks.length === 0 && (
+                                            <div className="overview-empty">
+                                                No backlog items found.
+                                            </div>
+                                        )}
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        className="overview-view-button"
+                                        onClick={() =>
+                                            navigate(`/projects/${id}/backlog`)
+                                        }
+                                    >
+                                        View Backlog →
+                                    </button>
+
+                                </div>
+
+
+                                {/* MILESTONES */}
+
+                                <div className="overview-card">
+
+                                    <div className="overview-card-header">
+
+                                        <div>
+                                            <h3>Modules</h3>
+                                            <p>
+                                                Project modules
+                                            </p>
+                                        </div>
+
+                                        <Flag size={20} />
+                                    </div>
+
+                                    <div className="overview-list overview-modules-lest">
+                                        {modulesLoading ? (
+                                            <div className="overview-empty">
+                                                Loading modules...
+                                            </div>
+                                        ) : projectModules.length === 0 ? (
+                                            <div className="overview-empty">
+                                                No modules created for this project.
+                                            </div>
+                                        ) : (
+                                            projectModules.map((module) => (
+                                                <div 
+                                                    className="overview-module-item"
+                                                    key={module.id}
+                                                >
+                                                    {module.milestone_name || module.name || "Untitled Module"}                                       
+                                                </div>                                      
+                                            ))
+                                        )}                               
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        className="overview-view-button"
+                                        onClick={() =>
+                                            navigate(`/projects/${id}/milestones`)
+                                        }
+                                    >
+                                        View Modules →
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        </div>
+                    )}
+
+                    {/* TEAM MEMBERS */}
+                    {activeSection === "members" && (
+                        <div className="members-scroll-content">
+                    <div className="project-section-content">
+
+                        <div className="team-members-header">
+                        
+                            <div className="section-title">
+                                <Users size={19} />
+                                <h2>Team Members</h2>
                             </div>
 
                             <button
                                 type="button"
-                                className="overview-view-button"
-                                onClick={() =>
-                                    navigate(`/projects/${id}/milestones`)
-                                }
+                                className="add-member-button"
+                                onClick={() => {
+                                    setSelectedUser("");
+                                    setShowAddMember(true);
+                                }}
                             >
-                                View Modules →
+                                +
+                                Add Member
                             </button>
-
                         </div>
+
+                        {members.length === 0 ? (
+                            
+                            <p className="empty-section-message">
+                                No team members assigned to this project.
+                            </p>
+
+                        ) : (
+                            <div className="project-members-list">
+                                {members.map((member) => {
+                                    let memberUserId = null;
+
+                                    // GET USER ID FROM MEMBER OBJECT
+                                    if (
+                                        member.user && 
+                                        typeof member.user === "object"
+                                    ) {
+                                        memberUserId = member.user.id;
+                                    } else if (
+                                        member.user !== undefined &&
+                                        member.user !== null
+                                    ) {
+                                        memberUserId = member.user;
+                                    } else if (
+                                        member.user_id !== undefined
+                                    ) {
+                                        memberUserId = member.user_id;
+                                    }
+
+                                    // FIND COMPLETE USER DETAILS
+                                    const memberUser = users.find(
+                                        (item) => 
+                                            String(item.id) === String(memberUserId)
+                                    );
+
+                                    // Full name
+                                    const fullName =
+                                        `${memberUser?.first_name || ""} ${
+                                            memberUser?.last_name || ""
+                                        }`.trim() ||
+                                        memberUser?.username ||
+                                        "Unknown User";
+
+                                    // Designation
+                                    const designation =
+                                        typeof memberUser?.designation === "object"
+                                            ? memberUser?.designation?.name
+                                            : memberUser?.designation;                               
+
+                                    return (
+                                        <div
+                                            className="project-member-card"
+                                            key={member.id}
+                                        >
+                                            {/* AVATAR */}
+                                            <div className="member-avatar">
+                                                {(
+                                                    memberUser?.first_name?.[0] ||
+                                                    memberUser?.username?.[0] ||
+                                                    "U"
+                                                ).toUpperCase()}
+                                            </div>
+
+                                            {/* MEMBER INFORMATION */}
+                                            <div className="member-info">
+                                                <strong>
+                                                    {fullName}
+                                                </strong>
+
+                                                <span>
+                                                    {designation || "Designation not available"}
+                                                </span>
+
+                                                <span>
+                                                    {memberUser?.email || "Email not available"}
+                                                </span>
+                                            </div>
+
+                                            {/* MEMBER ROLE CHECKBOXES */}
+
+                                            <div className="member-role-checkboxes">
+
+                                                <label className="member-role-option">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={Boolean(member.is_team_leader)}
+                                                        onChange={(e) =>
+                                                            handleMemberRoleChange(
+                                                                member.id,
+                                                                "is_team_leader",
+                                                                e.target.checked
+                                                            )
+                                                        }
+                                                    />
+                                                    <span>Team Leader</span>
+                                                </label>
+
+                                                <label className="member-role-option">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={Boolean(member.is_project_manager)}
+                                                        onChange={(e) => 
+                                                            handleMemberRoleChange(
+                                                                member.id,
+                                                                "is_project_manager",
+                                                                e.target.checked
+                                                            )
+                                                        }
+                                                    />
+                                                    <span>Project Manager</span>
+                                                </label>
+
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
+                    </div>
+                    )}
+                   
+                </main>
+            </div>
 
-                </div>
-            )}
-
+            {/* PROJECT WORKSPACE LAYOUT */}
             {showAddMember && (
                 <div className="member-modal-overlay">
                     <div className="member-modal">
@@ -993,8 +1002,8 @@ const handleMemberRoleChange = async (
                                         ? user.designation?.name ||
                                         user.designation?.designation_name
                                         : user.designation_name ||
-                                          user.designation ||
-                                          "No Designation";
+                                        user.designation ||
+                                        "No Designation";
 
                                 return (
                                     <option key={user.id} value={user.id}>

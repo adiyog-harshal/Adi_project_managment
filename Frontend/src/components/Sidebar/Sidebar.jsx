@@ -32,24 +32,20 @@ const Sidebar = () => {
         <aside className="sidebar">
             {/* LOGO */}
             <div className="sidebar-logo">
-
+                
                 <div className="logo-icon">
                     PMS
                 </div>
 
                 <span>
-                    Project Management
+                    Project Management System
                 </span>
 
             </div>
 
             {/* NAVIGATION */}
 
-            <nav className="sidebar-nav">
-
-                <p className="menu-title">
-                    MAIN MENU
-                </p>
+            <nav className="sidebar-nav">                
 
                 <NavLink
                     to="/"
@@ -105,7 +101,6 @@ const Sidebar = () => {
                                 masterOpen ? "master-arrow-open" : ""
                             }`}
                         />
-
                     </button>
 
                     {masterOpen && (

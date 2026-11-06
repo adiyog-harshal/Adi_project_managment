@@ -62,6 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
             "role_name",
             "is_active",
             "status",
+            "is_superuser",
         ]
         read_only_fields = [
             "id",
@@ -70,6 +71,7 @@ class UserSerializer(serializers.ModelSerializer):
             "designation_name",
             "role_id",
             "role_name",
+            "is_superuser",
         ]
 
     def get_designation_id(self, obj):
@@ -98,9 +100,18 @@ class UserSerializer(serializers.ModelSerializer):
         except UserProfile.DoesNotExist:
             return ""
 
+    def validate(self, attrs):
+        if self.instance and self.instance.is_superuser:
+            raise serializers.ValidationError(
+                "Superuser account cannot be edited."
+            )
+
+        return attrs
+
     def create(self, validated_data):
         name = validated_data.pop("name", "").strip()
         designation = validated_data.pop("designation", None)
+        role = validated_data.pop("role", None)
         password = validated_data.pop("password", None)
         status = validated_data.pop("status", "Active")
 
@@ -136,15 +147,31 @@ class UserSerializer(serializers.ModelSerializer):
 
         UserProfile.objects.update_or_create(
             user=user,
-            defaults={"designation": designation}
+            defaults={
+                "designation": designation,
+                "role": role,
+            }
         )
 
         return user
 
     def update(self, instance, validated_data):
+
+        # Never allow editing a superuser
+        if instance.is_superuser:
+            raise serializers.ValidationError(
+                "Superuser account is protected."
+            )
+        
         name = validated_data.pop("name", None)
+
         designation = validated_data.pop(
             "designation",
+            serializers.empty
+        )
+
+        role = validated_data.pop(
+            "role",
             serializers.empty
         )
         password = validated_data.pop("password", None)
@@ -166,10 +193,20 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        if designation is not serializers.empty:
-            UserProfile.objects.update_or_create(
-                user=instance,
-                defaults={"designation": designation}
+        if (
+            designation is not serializers.empty
+            or role is not serializers.empty
+        ):
+            profile, created = UserProfile.objects.get_or_create(
+                user=instance
             )
+
+            if designation is not serializers.empty:
+                profile.designation = designation
+
+            if role is not serializers.empty:
+                profile.role = role
+
+            profile.save()
 
         return instance
