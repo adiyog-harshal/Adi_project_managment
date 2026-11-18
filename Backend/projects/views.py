@@ -4,6 +4,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from history.services import log_activity
 
 from .models import (
     Project,
@@ -29,6 +30,15 @@ from projects.ProjectMember.serializers import ProjectMemberSerializer
 from django.shortcuts import render, get_object_or_404
 
 from django.db import models
+def get_project_values(project):
+    return {
+        "project_name": project.project_name,
+        "description": project.description,
+        "start_date": str(project.start_date) if project.start_date else None,
+        "end_date": str(project.end_date) if project.end_date else None,
+        "status": project.status,
+        "project_manager": project.project_manager_id,
+    }
 
 class ProjectListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
@@ -37,11 +47,11 @@ class ProjectListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
 
-        #Superusers can see all projects
+        # Superusers can see all projects
         if user.is_superuser:
             return Project.objects.all()
 
-        # Employess see projects they are member of.
+        # Employees see projects they are members of.
         # Project managers see projects they manage or are assigned to.
         return Project.objects.filter(
             models.Q(project_members__user=user) |
@@ -52,26 +62,92 @@ class ProjectListCreateView(generics.ListCreateAPIView):
             )
         ).distinct()
 
+    def perform_create(self, serializer):
+        project = serializer.save()
+
+        log_activity(
+            user=self.request.user,
+            module="Projects",
+            action="Created",
+            object_id=project.id,
+            object_name=project.project_name,
+            description=f"Project '{project.project_name}' was created.",
+            new_values=get_project_values(project),
+        )
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-       user = self.request.user
+        user = self.request.user
 
-       if user.is_superuser:
-           return Project.objects.all()
+        if user.is_superuser:
+            return Project.objects.all()
 
-       return Project.objects.filter(
-           models.Q(project_members__user=user) |
-           models.Q(project_manager=user),
-           models.Q(
+        return Project.objects.filter(
+            models.Q(project_members__user=user) |
+            models.Q(project_manager=user),
+            models.Q(
                 project_members__user=user,
                 project_members__is_project_manager=True
             )
-       ).distinct()
+        ).distinct()
 
+    def perform_update(self, serializer):
+        project = self.get_object()
+
+        old_values = get_project_values(project)
+
+        project = serializer.save()
+
+        new_values = get_project_values(project)
+
+        changed_fields = [
+            field
+            for field in old_values
+            if old_values[field] != new_values[field]
+        ]
+
+        if changed_fields:
+            changed_old_values = {
+                field: old_values[field]
+                for field in changed_fields
+            }
+
+            changed_new_values = {
+                field: new_values[field]
+                for field in changed_fields
+            }
+
+            log_activity(
+                user=self.request.user,
+                module="Projects",
+                action="Updated",
+                object_id=project.id,
+                object_name=project.project_name,
+                description=(
+                    f"Project '{project.project_name}' was updated. "
+                    f"Changed fields: {', '.join(changed_fields)}."
+                ),
+                old_values=changed_old_values,
+                new_values=changed_new_values,
+            )
+
+    def perform_destroy(self, instance):
+        old_values = get_project_values(instance)
+
+        log_activity(
+            user=self.request.user,
+            module="Projects",
+            action="Deleted",
+            object_id=instance.id,
+            object_name=instance.project_name,
+            description=f"Project '{instance.project_name}' was deleted.",
+            old_values=old_values,
+        )
+
+        instance.delete()
 
 class ProjectCommentListCreateView(generics.ListCreateAPIView):
 

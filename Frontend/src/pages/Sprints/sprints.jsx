@@ -1406,19 +1406,9 @@ return (
         ) : (
             <div className="sprint-cards">
                 {sprints
-                    .filter(sprint => {
-                    const status = sprint.status?.toLowerCase();
-
-                    const isActive =
-                        status === "in progress" || status === "active";
-
-                    const isClickedSprint =
-                        String(sprint.id) === String(sprintId);
-
-                    // Always show active sprints and only the
-                    // future sprint clicked from Project Overview.
-                    return isActive || isClickedSprint;
-                }).map(sprint => (
+                    .filter(sprint => sprint)
+                    .map(sprint => (
+                
                     <div
                         key={sprint.id}
                         className={`sprint-card ${

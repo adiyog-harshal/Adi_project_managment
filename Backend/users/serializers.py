@@ -98,9 +98,11 @@ class UserSerializer(serializers.ModelSerializer):
         except UserProfile.DoesNotExist:
             return ""
 
+  
     def create(self, validated_data):
         name = validated_data.pop("name", "").strip()
         designation = validated_data.pop("designation", None)
+        role = validated_data.pop("role", None)
         password = validated_data.pop("password", None)
         status = validated_data.pop("status", "Active")
 
@@ -136,17 +138,27 @@ class UserSerializer(serializers.ModelSerializer):
 
         UserProfile.objects.update_or_create(
             user=user,
-            defaults={"designation": designation}
+            defaults={
+                "designation": designation,
+                "role": role,
+            }
         )
 
         return user
 
     def update(self, instance, validated_data):
         name = validated_data.pop("name", None)
+
         designation = validated_data.pop(
             "designation",
             serializers.empty
         )
+
+        role = validated_data.pop(
+            "role",
+            serializers.empty
+        )
+
         password = validated_data.pop("password", None)
         status = validated_data.pop("status", None)
 
@@ -166,10 +178,20 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        if designation is not serializers.empty:
-            UserProfile.objects.update_or_create(
-                user=instance,
-                defaults={"designation": designation}
+        if (
+            designation is not serializers.empty
+            or role is not serializers.empty
+        ):
+            profile, created = UserProfile.objects.get_or_create(
+                user=instance
             )
+
+            if designation is not serializers.empty:
+                profile.designation = designation
+
+            if role is not serializers.empty:
+                profile.role = role
+
+            profile.save()
 
         return instance

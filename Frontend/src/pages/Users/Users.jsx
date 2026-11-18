@@ -274,12 +274,13 @@ function Users() {
 
 
             {/* Search */}
-            <PMSSearch
+            
+            <CommonSearch
                 value={search}
                 onChange={(e) => {
                     setSearch(e.target.value);
                 }}
-                placeholder='Search users'
+                placeholder="Search users"
             />
 
     <button

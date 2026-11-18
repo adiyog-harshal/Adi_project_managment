@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-    User,
-    Settings,
-    LogOut
-} from "lucide-react";
-
-import {
     BrowserRouter,
     useLocation,
     useNavigate
@@ -116,89 +110,39 @@ function RoutesLayout() {
         "/milestones": "Milestones",
         "/tasks": "Tasks",
         "/profile": "Profile",
-        "/settings": "Settings"
+        "/settings": "Settings",
+        "/history": "Activity History"
     };
 
     const pageTitle =
         pageTitles[location.pathname] || "Project Management";
 
-    const avatarText =
-        user?.first_name || user?.last_name
-            ? `${user.first_name?.charAt(0) || ""}${
-                user.last_name?.charAt(0) || ""
-              }`.toUpperCase()
-            : user?.username
-                ? user.username.substring(0, 2).toUpperCase()
-                : "U";
+    const avatarText = user?.username
+    ? user.username.charAt(0).toUpperCase()
+    : "U";
 
     return (
         <>
-            <Sidebar />
+            <Sidebar
+                user={user}
+                avatarText={avatarText}
+                showUserMenu={showUserMenu}
+                setShowUserMenu={setShowUserMenu}
+                handleLogout={handleLogout}
+                handleProfile={handleProfile}
+            />
 
             <main className="main-content">
-                <header className="top-header">
-                    <div className="top-header-left">
-                        <span className="top-header-page-title">
-                            {pageTitle}
-                        </span>
-                    </div>
+               
 
-                    <div className="top-header-right">
-                        <div className="user-menu">
-                            <button
-                                type="button"
-                                className="user-menu-button"
-                                aria-label="Open user menu"
-                                aria-expanded={showUserMenu}
-                                onClick={() =>
-                                    setShowUserMenu((current) => !current)
-                                }
-                            >
-                                <div className="user-avatar">
-                                    {avatarText}
-                                </div>
-                            </button>
-
-                            {showUserMenu && (
-                                <div className="user-dropdown">
-                                    <div className="dropdown-title">
-                                        My Account
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={handleProfile}
-                                    >
-                                        <User size={20} />
-                                        <span>Profile</span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setShowUserMenu(false);
-                                            navigate("/settings");
-                                        }}
-                                    >
-                                        <Settings size={20} />
-                                        <span>Settings</span>
-                                    </button>
-
-                                    <div className="dropdown-divider" />
-
-                                    <button
-                                        type="button"
-                                        className="logout-button"
-                                        onClick={handleLogout}
-                                    >
-                                        <LogOut size={20} />
-                                        <span>Logout</span>
-                                    </button>
-                                </div>
-                            )}
+                    <header className="top-header">
+                        <div className="top-header-left">
+                            <span className="top-header-page-title">
+                                {pageTitle}
+                            </span>
                         </div>
-                    </div>
-                </header>
+                    </header>
+                
 
                 <AppRoutes />
             </main>

@@ -14,6 +14,7 @@ import Sprints from "../pages/Sprints/sprints";
 import Profile from "../pages/Profile/Profile";
 import Settings from "../pages/Settings/Settings";
 import Clients from "../pages/clients/client";
+import History from "../pages/History/History";
 function AppRoutes() {
     return (
         <Routes>
@@ -194,7 +195,14 @@ function AppRoutes() {
                     </ProtectedRoute>
                 }
             />
-
+            <Route
+                path="/history"
+                element={
+                    <ProtectedRoute>
+                        <History />
+                    </ProtectedRoute>
+    }
+/>
 
             {/* UNKNOWN ROUTES */}
             <Route path="*" element={<Navigate to="/" replace />} />
