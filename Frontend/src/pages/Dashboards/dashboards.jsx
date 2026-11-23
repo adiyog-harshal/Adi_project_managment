@@ -637,10 +637,11 @@ const Dashboard = () => {
     console.log("=====================BEFORE DASHBOARD RETURN");
 
     return (
-
+       
         <div className="dashboard-page">
 
-            {/* =================================
+
+               {/* =================================
                 HEADER
             ================================= */}
 
@@ -651,9 +652,10 @@ const Dashboard = () => {
                     <h1>
                         <LayoutDashboard 
                             size={22}
-                            color="#D9A21B"
+                            color= "#D9A21B"
                         />
-                        Dashboard</h1>
+
+                            Dashboard</h1>
 
                     <p>
                         Monitor all of your projects and tasks here

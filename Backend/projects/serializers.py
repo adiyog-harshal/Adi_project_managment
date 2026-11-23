@@ -1,9 +1,15 @@
 from rest_framework import serializers
-from .models import Notification
-from .models import Project, ProjectComment, Notification
+from .models import Project, ProjectComment, Notification, Resource, Attachment
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+
+    # Keep the foreign-key ID writable while exposing a display value to the UI.
+    client_name = serializers.CharField(
+        source='client.client_name',
+        read_only=True,
+        default=None,
+    )
 
     class Meta:
         model = Project

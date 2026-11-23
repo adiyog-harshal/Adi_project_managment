@@ -12,7 +12,7 @@ import Designations from "../pages/Designations/designations";
 import Backlog from "../pages/Backlog/Backlog";
 import Sprints from "../pages/Sprints/sprints";
 import Clients from "../pages/clients/client";
-
+import Reports from "../pages/Reports/Report";
 function AppRoutes() {
     return (
         <Routes>
@@ -37,7 +37,7 @@ function AppRoutes() {
                     </ProtectedRoute>
                 }
             />
-
+        
             <Route
                 path="/projects"
                 element={
@@ -46,7 +46,14 @@ function AppRoutes() {
                     </ProtectedRoute>
                 }
             />
-
+             <Route 
+                  path="/reports"
+                  element={
+                    <ProtectedRoute>
+                             <Reports/>
+                    </ProtectedRoute>
+                  }
+                  />
             <Route
                 path="/projects/:id"
                 element={
@@ -102,6 +109,15 @@ function AppRoutes() {
             />
 
             <Route
+                path="/clients"
+                element={
+                    <ProtectedRoute>
+                        <Clients />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
                 path="/projects/:id/milestones"
                 element={
                     <ProtectedRoute>
@@ -121,6 +137,15 @@ function AppRoutes() {
 
             <Route
                 path="/projects/:id/sprints"
+                element={
+                    <ProtectedRoute>
+                        <Sprints />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/projects/:id/sprints/:sprintId"
                 element={
                     <ProtectedRoute>
                         <Sprints />
@@ -155,14 +180,6 @@ function AppRoutes() {
                 }
             />
 
-            <Route
-                path="/reports"
-                element={
-                    <ProtectedRoute>
-                        <h1>Reports</h1>
-                    </ProtectedRoute>
-                }
-            />
 
             <Route
                 path="/profile"

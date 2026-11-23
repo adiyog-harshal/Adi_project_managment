@@ -4,15 +4,15 @@ import { NavLink, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 
 import {
-    LayoutDashboard,
-    FolderKanban,
-    BriefcaseBusiness,
-    Users,
-    Settings,
-    ShieldCheck,
-    ChevronDown
+  LayoutDashboard,
+  FolderKanban,
+  Users,
+  FileBarChart,
+  ShieldCheck,
+  Settings,
+    ChevronDown,
+    Briefcase
 } from "lucide-react";
-
 const Sidebar = () => {
     const location = useLocation();
     const masterPaths = ["/roles", "/clients", "/designations"];
@@ -54,6 +54,16 @@ const Sidebar = () => {
                     <FolderKanban size={20} />
                     <span>Projects</span>
                 </NavLink>
+
+                <NavLink
+                to="/reports"
+            className={({ isActive }) =>
+         `sidebar-link ${isActive ? "active" : ""}`
+         }
+            >
+         <FileBarChart size={21} />
+          <span>Reports</span>
+             </NavLink>
 
                 <NavLink
                     to="/users"
@@ -119,7 +129,7 @@ const Sidebar = () => {
                                     }`
                                 }
                             >
-                                <BriefcaseBusiness size={18} />
+                                <Briefcase size={18} />
                                 <span>Designations</span>
                             </NavLink>
                         </div>

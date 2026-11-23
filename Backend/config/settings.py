@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'role',
     'sprints',
     'clients',
-    'sprints',
+    'reports',
+    
     
 ]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -100,11 +101,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'project_management_db',
         'USER': 'root',
-        'PASSWORD': 'root',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
+
+
 
 
 # Password validation

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-    ChevronDown,
     User,
     Settings,
     LogOut
@@ -11,7 +10,6 @@ import {
     useLocation,
     useNavigate
 } from "react-router-dom";
-
 import Sidebar from "./components/Sidebar/Sidebar";
 import AppRoutes from "./routes/AppRoutes";
 import api from "./services/api";
@@ -97,6 +95,7 @@ function RoutesLayout() {
         "/designations": "Designations",
         "/milestones": "Milestones",
         "/tasks": "Tasks",
+        "/report": "Reports",
         "/profile": "Profile",
         "/settings": "Settings"
     };
@@ -178,7 +177,6 @@ function RoutesLayout() {
                     </div>
                 </div>
 
-                {/* APPLICATION PAGES */}
                 <AppRoutes />
             </main>
         </>

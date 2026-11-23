@@ -1,0 +1,248 @@
+
+/* =====================================
+   PMS MAIN LAYOUT
+===================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+.pms-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f6f9;
+  overflow: hidden;
+}
+
+/* =====================================
+   SIDEBAR
+===================================== */
+
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  height: 100vh;
+  background: #101827;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 25px 18px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+
+/* Sidebar Logo */
+
+.sidebar-logo {
+  padding: 0 12px 35px;
+  border-bottom: 1px solid #344052;
+  margin-bottom: 30px;
+}
+
+.sidebar-logo h2 {
+  font-size: 22px;
+  margin: 0 0 5px;
+  color: #ffffff;
+}
+
+.sidebar-logo p {
+  font-size: 15px;
+  line-height: 1.7;
+  font-weight: 600;
+  color: #a5b4c8;
+  margin: 0;
+}
+
+/* =====================================
+   SIDEBAR MENU
+===================================== */
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-section-title {
+  color: #8291a8;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 50px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 16px;
+  margin: 2px 0;
+  border-radius: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sidebar-link svg {
+  min-width: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.sidebar-link:hover {
+  background: #19375d;
+  color: #ffffff;
+}
+
+.sidebar-link.active {
+  background: #1d416e;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* =====================================
+   MASTER MENU
+===================================== */
+
+.master-menu {
+  margin-top: 5px;
+}
+
+.master-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  color: #cbd5e1;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.master-toggle:hover {
+  background: #19375d;
+  color: #ffffff;
+}
+
+.master-toggle-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.master-toggle svg {
+  width: 21px;
+  height: 21px;
+}
+
+.master-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 10px 45px;
+  padding-left: 20px;
+  border-left: 1px solid #8291a8;
+}
+
+.master-submenu .sidebar-link {
+  color: #829bc1;
+  padding: 13px 10px;
+}
+
+.master-submenu .sidebar-link:hover,
+.master-submenu .sidebar-link.active {
+  color: #ffffff;
+  background: #19375d;
+}
+
+/* =====================================
+   REPORTS MENU
+===================================== */
+
+.sidebar-link[href="/reports"] {
+  color: #cbd5e1;
+}
+
+.sidebar-link[href="/reports"]:hover {
+  background: #19375d;
+  color: #ffffff;
+}
+
+.sidebar-link[href="/reports"].active {
+  background: #1d416e;
+  color: #ffffff;
+}
+
+/* =====================================
+   SETTINGS
+===================================== */
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+/* =====================================
+   MAIN CONTENT
+===================================== */
+
+.pms-main-content {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  background: #f5f6f9;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* =====================================
+   RESPONSIVE DESIGN
+===================================== */
+
+@media (max-width: 768px) {
+  .pms-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    max-height: 60vh;
+  }
+
+  .pms-main-content {
+    width: 100%;
+    min-height: 60vh;
+  }
+
+  .sidebar-logo {
+    padding-bottom: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 15px;
+  }
+
+  .sidebar-link {
+    padding: 13px;
+    font-size: 14px;
+  }
+
+  .pms-main-content {
+    padding: 0;
+  }
+}

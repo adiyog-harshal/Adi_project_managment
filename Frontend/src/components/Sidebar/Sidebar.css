@@ -43,7 +43,7 @@
 .sidebar-link {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 18px;
   width: 100%;
   height: 46px;
   box-sizing: border-box;
@@ -83,7 +83,7 @@
 .master-left {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 18px;
 }
 
 .master-button.active {

@@ -27,6 +27,13 @@ class Project(models.Model):
         blank=True,
         related_name='managed_projects'
     )
+    client = models.ForeignKey(
+        'clients.Client',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='projects'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

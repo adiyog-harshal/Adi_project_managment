@@ -1,6 +1,6 @@
 import Sidebar from './components/Sidebar';
 import TaskModule from './components/TaskModule';
-
+import Report from './src/pages/Report/Report';
 function App(){
   return (
     <div style={{display:'flex'}}>

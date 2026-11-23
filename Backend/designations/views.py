@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Designation
 from .serializers import DesignationSerializer
 
-# Create your views here.
+
 class DesignationListCreateView(
     generics.ListCreateAPIView
 ):
