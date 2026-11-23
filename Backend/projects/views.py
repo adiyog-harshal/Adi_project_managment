@@ -29,7 +29,11 @@ from projects.ProjectMember.serializers import ProjectMemberSerializer
 
 from django.shortcuts import render, get_object_or_404
 
+
 from django.db import models
+from django.db.models import Count, Q
+
+
 def get_project_values(project):
     return {
         "project_name": project.project_name,
@@ -40,6 +44,7 @@ def get_project_values(project):
         "project_manager": project.project_manager_id,
     }
 
+
 class ProjectListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
@@ -49,19 +54,23 @@ class ProjectListCreateView(generics.ListCreateAPIView):
 
         # Superusers can see all projects
         if user.is_superuser:
-            return Project.objects.all()
-
-        # Employees see projects they are members of.
-        # Project managers see projects they manage or are assigned to.
-        return Project.objects.filter(
-            models.Q(project_members__user=user) |
-            models.Q(project_manager=user),
-            models.Q(
-                project_members__user=user,
-                project_members__is_project_manager=True
+            queryset = Project.objects.all()
+        else:
+            queryset = Project.objects.filter(
+                models.Q(project_members__user=user) |
+                models.Q(project_manager=user)
+            ).distinct()
+        # Preserve testing branch task-count annotations
+        return queryset.annotate(
+            total_tasks=Count('tasks', distinct=True),
+            completed_tasks=Count(
+                'tasks',
+                filter=Q(tasks__status='Completed'),
+                distinct=True
             )
-        ).distinct()
+        )
 
+    # record project creation in Activity History
     def perform_create(self, serializer):
         project = serializer.save()
 
@@ -87,15 +96,25 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         return Project.objects.filter(
             models.Q(project_members__user=user) |
-            models.Q(project_manager=user),
-            models.Q(
-                project_members__user=user,
-                project_members__is_project_manager=True
-            )
+            models.Q(project_manager=user)
         ).distinct()
 
     def perform_update(self, serializer):
         project = self.get_object()
+        user = self.request.user
+
+        is_project_manager = (
+            project.project_manager_id == user.id
+            or project.project_members.filter(
+                user=user,
+                is_project_manager=True
+            ).exists()
+        )
+
+        if not (user.is_staff or is_project_manager):
+            raise PermissionDenied(
+                "Only Admins and Project Managers can edit projects."
+            )
 
         old_values = get_project_values(project)
 
@@ -110,18 +129,8 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         ]
 
         if changed_fields:
-            changed_old_values = {
-                field: old_values[field]
-                for field in changed_fields
-            }
-
-            changed_new_values = {
-                field: new_values[field]
-                for field in changed_fields
-            }
-
             log_activity(
-                user=self.request.user,
+                user=user,
                 module="Projects",
                 action="Updated",
                 object_id=project.id,
@@ -130,15 +139,37 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
                     f"Project '{project.project_name}' was updated. "
                     f"Changed fields: {', '.join(changed_fields)}."
                 ),
-                old_values=changed_old_values,
-                new_values=changed_new_values,
+                old_values={
+                    field: old_values[field]
+                    for field in changed_fields
+                },
+                new_values={
+                    field: new_values[field]
+                    for field in changed_fields
+                },
             )
 
+
     def perform_destroy(self, instance):
+        user = self.request.user
+
+        is_project_manager = (
+            instance.project_manager_id == user.id
+            or instance.project_members.filter(
+                user=user,
+                is_project_manager=True
+            ).exists()
+        )
+
+        if not (user.is_staff or is_project_manager):
+            raise PermissionDenied(
+                "Only Admins and Project Managers can delete projects."
+            )
+
         old_values = get_project_values(instance)
 
         log_activity(
-            user=self.request.user,
+            user=user,
             module="Projects",
             action="Deleted",
             object_id=instance.id,
@@ -148,7 +179,6 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         )
 
         instance.delete()
-
 class ProjectCommentListCreateView(generics.ListCreateAPIView):
 
     serializer_class = ProjectCommentSerializer
