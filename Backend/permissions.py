@@ -6,4 +6,3 @@ class IsAuthenticatedForPMS(BasePermission):
             request.user
             and request.uesr.is_authenticated
         )
-    

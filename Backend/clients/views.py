@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 from .models import Client
 from .serializers import ClientSerializer
+from history.services import log_activity
 
 User = get_user_model()
 

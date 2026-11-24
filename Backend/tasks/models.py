@@ -40,7 +40,7 @@ class Task(models.Model):
         blank=True,
         related_name='tasks'
     )
-    
+
     sprint = models.ForeignKey(
     'sprints.Sprint',
     on_delete=models.SET_NULL,
@@ -90,7 +90,7 @@ class Task(models.Model):
     priority = models.CharField(
         max_length=50,
         choices=PRIORITY_CHOICES,
-        
+
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -164,7 +164,7 @@ class TaskSprintHistory(models.Model):
 
     class Meta:
         ordering = ["-moved_at"]
-        
+
 
 class TimeLog(models.Model):
     task = models.ForeignKey(

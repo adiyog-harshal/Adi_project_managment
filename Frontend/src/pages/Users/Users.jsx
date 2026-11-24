@@ -96,7 +96,7 @@ function Users() {
         setShowForm(false);
         setEditingUser(null);
     };
-   
+    
 const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -111,6 +111,7 @@ const handleSubmit = async (e) => {
         designation: formData.designation,
         status: formData.status,
     };
+
 
     try {
         if (editingUser) {
@@ -321,7 +322,7 @@ const handleResetPassword = async (user) => {
         <div className="users-page">
 
             {/* Header */}
-           
+
 <div className="common-page-toolbar">
 
     <div className="common-page-title">
@@ -330,14 +331,19 @@ const handleResetPassword = async (user) => {
             <h1>User Management</h1>
             <p>Manage users, roles, and designations.</p>
         </div>
-        
+
     </div>
 
-    <CommonSearch
-        search={search}
-        setSearch={setSearch}
-        placeholder="Search users..."
-    />
+
+            {/* Search */}
+
+            <CommonSearch
+                value={search}
+                onChange={(e) => {
+                    setSearch(e.target.value);
+                }}
+                placeholder="Search users"
+            />
 
     <button
         type="button"
@@ -349,7 +355,6 @@ const handleResetPassword = async (user) => {
     </button>
 
 </div>
-            
             {/* Users Table */}
             <div className="users-card">
                 <table className="users-table">
@@ -614,7 +619,7 @@ const handleResetPassword = async (user) => {
                                     Cancel
                                 </button>
 
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={isSaving}
                                 >
@@ -627,7 +632,7 @@ const handleResetPassword = async (user) => {
                     </div>
                 </div>
             )}
-            {/* Employee Login Credentials Modal */}
+            
             {/* Employee Login Credentials Modal */}
             {credentials && (
                 <div className="credentials-overlay">
@@ -730,4 +735,5 @@ const handleResetPassword = async (user) => {
         </div>
     );
 }
+
 export default Users;

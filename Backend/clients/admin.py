@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from .models import Client
 
@@ -17,6 +16,7 @@ class ClientAdmin(admin.ModelAdmin):
     search_fields = (
         "client_name",
         "project_name",
+        "email",
         "phone_number",
         "address",
     )

@@ -27,17 +27,21 @@ const Projects = () => {
     const [notifications, setNotifications] = useState([]);
     const [showNotifications, setShowNotifications] = useState(false);
 
+    const unreadCount = notifications.filter(
+        (notification) => !notification.is_read
+    ).length;
+
     const [search, setSearch] = useState("");
     const [openAction, setOpenAction] = useState(null);
 
     const navigate = useNavigate();
-    
+
     const [editingProject, setEditingProject] = useState(null);
 
     const [clients, setClients] = useState([]);
 
     const [currentPage, setCurrentPage] = useState(1);
-    
+
     const projectsPerPage = 5;
 
     const totalProjectCount = projects.length;
@@ -222,7 +226,7 @@ useEffect(() => {
     const fetchProjects = async () => {
         try {
             const response = await api.get("projects/");
-            
+
             setProjects([...response.data].reverse());
         } catch (error) {
             console.error("Error fetching projects:", error);
@@ -246,8 +250,15 @@ useEffect(() => {
         try {
             const response = await api.get("projects/notifications/");
             const data = response.data;
+            const notificationList = Array.isArray(data)
+                ? data
+                : data.results || [];
+
             setNotifications(
-                Array.isArray(data) ? data : data.results || []
+                [...notificationList].sort(
+                    (a, b) =>
+                        new Date(b.created_at) - new Date(a.created_at)
+                )
             );
         } catch (error) {
             console.error("Error fetching notifications:", error);
@@ -267,10 +278,11 @@ useEffect(() => {
     const markAsRead = async (notificationId) => {
         try {
             await api.put(
-                `projects/notifications/${notificationId}/read`
+                `projects/notifications/${notificationId}/read`,
+                { is_read: true }
             );
 
-            setNotifications((prev) => 
+            setNotifications((prev) =>
                 prev.map((notification) =>
                     notification.id === notificationId
                         ? { ...notification, is_read: true }
@@ -278,7 +290,10 @@ useEffect(() => {
                 )
             );
         } catch (error) {
-            console.error("Error marking notification as read:", error);
+            console.error(
+                "Error marking notification as read:", 
+                error.response?.data || error
+            );
         }
     };
 
@@ -394,6 +409,8 @@ useEffect(() => {
         }
     };
    
+
+
     return (
 
         <div className={`projects-page ${showForm ? "form-open" : "" }`}>
@@ -428,30 +445,33 @@ useEffect(() => {
                         + Add Project
                     </button>
                 </div>
-                
+
 
                 <div className="project-header-actions">
 
                     <div className="notification-wrapper">
-                        <button 
-                            className="header-icon-btn" 
+                        <button
+                            className="header-icon-btn"
                             title="Notifications"
                             onClick={() => setShowNotifications(!showNotifications)}
                         >
                             <Bell size={19} />
 
-                            {notifications.some(
-                                (notification) => !notification.is_read
-                            ) && (
-                                <span className="notification-dot"></span>
+                            {unreadCount > 0 && (
+                                <span className="notification-badge">
+                                    {unreadCount > 99 ? "99+" : unreadCount}
+                                </span>                               
                             )}
                         </button>
 
                         {showNotifications && (
                             <div className="notification-dropdown">
-                                
+
                                 <div className="notification-header">
-                                    <span>Notifications</span>
+                                    <h3>Notifications</h3>
+                                    <span className="notification-unread-count">
+                                        {unreadCount} unread
+                                    </span>
                                 </div>
 
                                 {notifications.length === 0 ? (
@@ -465,7 +485,7 @@ useEffect(() => {
                                             className={`notification-item ${
                                                 !notification.is_read ? "unread" : ""
                                             }`}
-                                            onClick={() => 
+                                            onClick={() =>
                                                 !notification.is_read &&
                                                 markAsRead(notification.id)
                                             }
@@ -566,16 +586,15 @@ useEffect(() => {
 
                         <div className="project-form-top">
 
-                            
 
                             <div className="project-form-header">    
                                 <h2>{editingProject ? "Edit Project" : "Add New Project"}</h2>
 
                                 <p>Enter the project details below</p>
-                            
+
 
                             </div>
-                                
+
                                 <button
                                     type="button"
                                     className="project-close-btn"
@@ -583,12 +602,12 @@ useEffect(() => {
                                         setShowForm(false);
                                         setFormError("");
                                     }}
-                                    
+
                                 >
                                     x
                                 </button>
                         </div>
-                            
+
 
                             {formError && (
                                 <div className="project-form-error">
@@ -610,23 +629,24 @@ useEffect(() => {
         />
     </div>
 
-    {/* PROJECT MANAGER */}
-    <div className="form-group project-manager-field">
-        <label>Project Manager</label>
-        <select
-            name="project_manager"
-            value={projectForm.project_manager}
-            onChange={handleChange}
-        >
-            <option value="">Select Project Manager</option>
 
-            {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                    {user.username}
-                </option>
-            ))}
-        </select>
-    </div>
+                                <div className="form-group full-width">
+                                    <label>Project Manager</label>
+
+                                    <select
+                                        name="project_manager"
+                                        value={projectForm.project_manager}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Project Manager</option>
+
+                                        {users.map((user) => (
+                                            <option key={user.id} value={user.id}>
+                                                {user.username}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
 
     {/* PROJECT TYPE */}
     <div className="form-group project-type-field">
@@ -741,6 +761,8 @@ useEffect(() => {
 
                             </div>
 
+
+
                     </div>
                 </div>
 
@@ -826,17 +848,17 @@ useEffect(() => {
                     </div>
 
                     {/* STATUS */}
-                
+
 
                     {/* ACTION */}
-                    <div 
+                    <div
                         className="action-menu"
                     >                        
-                        <button 
+                        <button
                             type="button"
                             className="action-button"
                             onClick={() => {
-                                
+
 
                                 setOpenAction(
                                     openAction === project.id ? null : project.id
@@ -847,16 +869,16 @@ useEffect(() => {
                         </button>
 
                         {openAction === project.id && (
-                            <div 
+                            <div
                                 className="action-dropdown"
-                                
+
                             >
                                 <button
                                     type="button"
                                     onClick={() => {
                                         setOpenAction(null);
                                         handleEditProject(project);
-                                    }}                                
+                                    }}
                                 >
                                     Edit
                                 </button>
@@ -869,7 +891,7 @@ useEffect(() => {
 
                                     }}
                                 >
-                                    
+
                                     Delete
                                 </button>
                             </div>
@@ -886,6 +908,10 @@ useEffect(() => {
 
                 </div> {/* Close projects-table */}
  
+
+
+
+
                 {/* PAGINATION - OUTSIDE TABLE */}
                 <div className="project-pagination">
                     <span className="project-pagination-info">

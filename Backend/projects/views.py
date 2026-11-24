@@ -4,6 +4,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from history.services import log_activity
 
 from .models import (
     Project,
@@ -27,6 +28,7 @@ from projects.ProjectMember.models import ProjectMember
 from projects.ProjectMember.serializers import ProjectMemberSerializer
 
 from django.shortcuts import render, get_object_or_404
+
 
 from django.db import models
 from django.db.models import Count, Q
@@ -64,11 +66,13 @@ class ProjectListCreateView(generics.ListCreateAPIView):
 
         # Employee and project Mangaers
         else:
+            # Members and project managers can see their projects.
             queryset = Project.objects.filter(
-                models.Q(project_members__user=user) |
-                models.Q(project_manager=user)
+                Q(project_members__user=user) |
+                Q(project_manager=user)
             ).distinct()
-            
+
+        # Preserve task-count annotations.
         return queryset.annotate(
             total_tasks=Count('tasks', distinct=True),
             completed_tasks=Count(
@@ -127,6 +131,35 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance.delete()
 
 
+    def perform_destroy(self, instance):
+        user = self.request.user
+
+        is_project_manager = (
+            instance.project_manager_id == user.id
+            or instance.project_members.filter(
+                user=user,
+                is_project_manager=True
+            ).exists()
+        )
+
+        if not (user.is_staff or is_project_manager):
+            raise PermissionDenied(
+                "Only Admins and Project Managers can delete projects."
+            )
+
+        old_values = get_project_values(instance)
+
+        log_activity(
+            user=user,
+            module="Projects",
+            action="Deleted",
+            object_id=instance.id,
+            object_name=instance.project_name,
+            description=f"Project '{instance.project_name}' was deleted.",
+            old_values=old_values,
+        )
+
+        instance.delete()
 class ProjectCommentListCreateView(generics.ListCreateAPIView):
 
     serializer_class = ProjectCommentSerializer
@@ -192,11 +225,16 @@ class NotificationListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-
-        return Notification.objects.filter(
+        queryset = Notification.objects.filter(
             recipient=self.request.user
         ).order_by("-created_at")
 
+        unread = self.request.query_params.get("unread")
+
+        if unread == "true":
+            queryset = queryset.filter(is_read=False)
+
+        return queryset
 
 class NotificationReadView(generics.UpdateAPIView):
 
@@ -210,13 +248,7 @@ class NotificationReadView(generics.UpdateAPIView):
         )
 
     def perform_update(self, serializer):
-
-        notification = serializer.save(
-            is_read=True
-        )
-
-        mark_notification_as_read(notification)
-
+        serializer.save(is_read=True)
 
 class ResourceListCreateView(generics.ListCreateAPIView):
 

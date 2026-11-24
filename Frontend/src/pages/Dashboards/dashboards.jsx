@@ -41,6 +41,11 @@ const Dashboard = () => {
     const [filterStatus, setFilterStatus] = useState("all");
     const [sortBy, setSortBy] = useState("none");
 
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [notificationLoading, setNotificationLoading] = useState(false);
+
     const [showFilterMenu, setShowFilterMenu] = useState(false)
     const [showSortMenu, setShowSortMenu] = useState(false);
 
@@ -64,6 +69,7 @@ const Dashboard = () => {
     useEffect(() => {
         fetchProjects();
         fetchUsers();
+        fetchNotifications();
     }, []);
 
     useEffect(() => {
@@ -110,7 +116,7 @@ const Dashboard = () => {
                     let taskProjectId = null;
 
                     if (projectValue && typeof projectValue === "object") {
-                        taskProjectId = 
+                        taskProjectId =
                             projectValue.id ??
                             projectValue.project_id;
                     } else {
@@ -145,8 +151,8 @@ const Dashboard = () => {
                 console.log("===========================");
 
                 // Handle normal array OR DRF pagination
-            
-            } catch (error) {               
+
+            } catch (error) {
                 console.error(
                     "FAILED TO FETCH TASKS:",
                     error.response?.data || error
@@ -227,6 +233,66 @@ const Dashboard = () => {
             console.error(
                 "Failed to fetch users:",
                 error
+            );
+        }
+    };
+
+    const fetchNotifications = async () => {
+        try {
+            setNotificationLoading(true);
+
+            const response = await api.get("notifications/");
+
+            const data= Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+            
+            setNotifications(data);
+
+            setUnreadCount(
+                data.filter(notification => !notification.is_read).length
+            );
+        } catch (error) {
+            console.error(
+                "Failed to fetch notifications:",
+                error.response?.data || error
+            );
+        } finally {
+            setNotificationLoading(false);
+        }
+    };
+
+    const toggleNotifications = () => {
+        const nextState = !showNotifications;
+        setShowNotifications(nextState);
+
+        if (nextState) {
+            fetchNotifications();
+        }
+    };
+
+    const handleNotificationClick = async (notification) => {
+        if (notification.is_read) return;
+
+        try {
+            await api.patch(
+                `notifications/${notification.id}/read/`,
+                {is_read: true}
+            );
+
+            setNotifications(previous =>
+                previous.map(item => 
+                    item.id === notification.id
+                        ? { ...item, is_read: true }
+                        : item
+                )
+            );
+
+            setUnreadCount(previous => Math.max(0, previous - 1));
+        } catch (error) {
+            console.error(
+                "Failed to mark notifications as read:",
+                error.response?.data || error
             );
         }
     };
@@ -461,7 +527,7 @@ console.log("PROJECT PROGRESS:", {
 
         if (sortBy === "start_date") {
 
-            return new Date(a.start_date || 0) - 
+            return new Date(a.start_date || 0) -
                 new Date(b.start_date || 0);
         }
 
@@ -540,7 +606,7 @@ console.log("PROJECT PROGRESS:", {
         });
     };
 
-    const completedProjectsData = 
+    const completedProjectsData =
         getCompletedProjectsCumulative(projects);
 
     /* =========================
@@ -611,7 +677,7 @@ console.log("PROJECT PROGRESS:", {
         headers,
         ...rows
     ]
-        .map((row) => 
+        .map((row) =>
             row
                 .map((value) =>
                     `"${String(value).replace(/"/g, '""')}"`
@@ -619,7 +685,7 @@ console.log("PROJECT PROGRESS:", {
                 .join(",")
         )
         .join("/n");
-    
+
     const blob = new Blob(
         [csvContent],
         {
@@ -654,7 +720,7 @@ console.log("PROJECT PROGRESS:", {
                 HEADER
             ================================= */}
 
-            
+
 <div className="dashboard-header">
     <div className="dashboard-header-right">
         <div className="dashboard-search">
@@ -668,13 +734,83 @@ console.log("PROJECT PROGRESS:", {
             />
         </div>
 
-        <button
-            type="button"
-            className="dashboard-notification"
-            title="Notification"
-        >
-            <Bell size={19} />
-        </button>
+        <div className="dashboard-notification-wrapper">
+            <button
+                type="button"
+                className="dashboard-notification"
+                title="Notifications"
+                onClick={toggleNotifications}
+            >
+                <Bell size={19} />
+
+                {unreadCount > 0 && (
+                    <span className="notification-badge">
+                        {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
+                )}
+            </button>
+
+            {showNotifications && (
+                <div className="notification-dropdown">
+                    <div className="notification-dropdown-header">
+                        <h3>Notifications</h3>
+                        <span>{unreadCount} unread</span>
+                    </div>
+
+                    <div className="notification-list">
+
+                        {notificationLoading ? (
+                            <p className="notification-empty">
+                                Loading notifications...
+                            </p>
+                        ) : notifications.length > 0 ? (
+
+                            notifications.map(notification => (
+                                <div
+                                    key={notification.id}
+                                    className={`notification-item ${
+                                        !notification.is_read ? "unread" : ""
+                                    }`}
+                                    onClick={() => 
+                                        handleNotificationClick(notification)
+                                    }
+                                >
+                                    <div className="notification-message">
+                                        <p>{notification.message}</p>
+
+                                        <small>
+                                            {new Date(
+                                                notification.created_at
+                                            ).toLocaleString("en-IN")}
+                                        </small>
+                                    </div>
+
+                                    {notification.is_read && (
+                                        <span className="notification-unread-dot" />
+                                    )}
+                                </div>
+                            ))
+
+                        ) : (
+                            <p className="notification-empty">
+                                No Notifications availabe.
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="notification-dropdown-footer">
+                        <button
+                            type="button"
+                            onClick={fetchNotifications}
+                        >
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+
+        
     </div>
 </div>
 
@@ -829,7 +965,7 @@ console.log("PROJECT PROGRESS:", {
 
                                 <button className="card-more">
                                     <MoreHorizontal size={17} />
-                                </button>                                                   
+                                </button>
                             </div>
 
                             <h2>{onTimeProjectCount}</h2>
@@ -1064,12 +1200,12 @@ console.log("PROJECT PROGRESS:", {
                             </div>
 
                         </div>
-                        
+
                         <div className="project-progress-content">
 
                             <div
                                 className="progress-circle"
-                                
+
                         style={{
                             background: "conic-gradient(#16a34a 0% 33%, #3b82f6 33% 66%, #f59e0b 66% 100%)"
                         }}
@@ -1104,7 +1240,7 @@ console.log("PROJECT PROGRESS:", {
                         </div>
 
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
     );

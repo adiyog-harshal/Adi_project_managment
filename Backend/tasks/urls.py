@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (
-    TaskListCreateView, 
+    TaskListCreateView,
     TaskDetailView,
     TaskCommentListCreateView,
     TaskCommentDetailView,
@@ -70,7 +70,7 @@ urlpatterns = [
         TimeLogListCreateView.as_view(),
         name="time-log-list-create",
     ),
-    
+
     path(
         "time-summary/",
         TimeSummaryView.as_view(),

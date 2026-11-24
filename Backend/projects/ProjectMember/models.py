@@ -21,13 +21,13 @@ class ProjectMember(models.Model):
 
     joined_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta: 
+    class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["user", "project"],
                 name="unique_user_per_project"
             )
         ]
-        
+
     def __str__(self):
         return f"{self.project} - {self.user.username}"

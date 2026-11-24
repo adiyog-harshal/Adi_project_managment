@@ -7,12 +7,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     initial = True
-
     dependencies = [
         ('milestones', '0002_milestone_start_date'),
         ('projects', '0006_notification_resource'),
     ]
-
     operations = [
         migrations.CreateModel(
             name='Sprint',
