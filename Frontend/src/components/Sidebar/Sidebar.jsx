@@ -1,42 +1,78 @@
 
-import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 import {
-  LayoutDashboard,
-  FolderKanban,
-  Users,
-  FileBarChart,
-  ShieldCheck,
-  Settings,
-    ChevronDown,
-    Briefcase
+    LayoutDashboard,
+    FolderKanban,
+    BriefcaseBusiness,
+    Users,
+    Settings,
+    ShieldCheck,
+    ChevronRight,
+    ClipboardList,
+    LogOut,
+    User,
+    Handshake,
+    History as HistoryIcon,
 } from "lucide-react";
-const Sidebar = () => {
+
+    const Sidebar = ({
+    user,
+    avatarText,
+    showUserMenu,
+    setShowUserMenu,
+    handleLogout,
+    handleProfile
+}) => {
+    const [masterOpen, setMasterOpen] = useState(false);
+
     const location = useLocation();
-    const masterPaths = ["/roles", "/clients", "/designations"];
-    const masterActive = masterPaths.includes(location.pathname);
-    const [masterState, setMasterState] = useState({
-        pathname: location.pathname,
-        open: masterActive,
-    });
-    const masterOpen = masterState.pathname === location.pathname
-        ? masterState.open
-        : masterActive;
+    const navigate = useNavigate();
+    const profileRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                profileRef.current &&
+                !profileRef.current.contains(event.target)
+            ) {
+                setShowUserMenu(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [setShowUserMenu]);
+
+    const displayName = user?.username || "My Account";
+    const masterActive =
+        location.pathname === "/roles" ||
+        location.pathname === "/designations" ||
+        location.pathname === "/clients";
 
     return (
         <aside className="sidebar">
+            {/* LOGO */}
             <div className="sidebar-logo">
-                <div className="">PMS  <span> <h3>Project Management System</h3></span></div>
-                
+                            {/* LOGO */}
+            <div className="sidebar-logo">
+                <div className="logo-icon">PMS</div>
+                <span>Project Management System</span>
+            </div>
             </div>
 
+
+            {/* NAVIGATION */}
+
+            {/* NAVIGATION */}
             <nav className="sidebar-nav">
-                <p className="menu-title">MAIN MENU</p>
                 <NavLink
                     to="/"
-                    end
                     className={({ isActive }) =>
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
@@ -65,15 +101,26 @@ const Sidebar = () => {
           <span>Reports</span>
              </NavLink>
 
+
                 <NavLink
-                    to="/users"
+                    to="/milestones"
                     className={({ isActive }) =>
                         `sidebar-link ${isActive ? "active" : ""}`
                     }
                 >
-                    <Users size={20} />
-                    <span>Users</span>
+                    <ClipboardList size={20} />
+                    <span>Milestones</span>
                 </NavLink>
+                <NavLink
+                    to="/history"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <HistoryIcon size={20} />
+                    <span>History</span>
+                </NavLink>
+
 
                 <div className="master-menu">
                     <button
@@ -112,17 +159,6 @@ const Sidebar = () => {
                             </NavLink>
 
                             <NavLink
-                                to="/clients"
-                                className={({ isActive }) =>
-                                    `master-submenu-link ${isActive ? "active" : ""
-                                    }`
-                                }
-                            >
-                                <Users size={18} />
-                                <span>Clients</span>
-                            </NavLink>
-
-                            <NavLink
                                 to="/designations"
                                 className={({ isActive }) =>
                                     `master-submenu-link ${isActive ? "active" : ""
@@ -132,10 +168,22 @@ const Sidebar = () => {
                                 <Briefcase size={18} />
                                 <span>Designations</span>
                             </NavLink>
+
+                            <NavLink
+                                to="/clients"
+                                className={({ isActive }) =>
+                                    `master-submenu-link ${
+                                        isActive ? "active" : ""
+                                    }`
+                                }
+                            >
+                                <Handshake size={18} />
+                                <span>Clients</span>
+                            </NavLink>
+
                         </div>
                     )}
                 </div>
-
                 <NavLink
                     to="/settings"
                     className={({ isActive }) =>
@@ -145,8 +193,66 @@ const Sidebar = () => {
                     <Settings size={20} />
                     <span>Settings</span>
                 </NavLink>
-            </nav>
-        </aside>
+                      </nav>
+
+                    {/* BOTTOM USER PROFILE */}
+                    <div className="sidebar-profile-section" ref={profileRef}>
+
+                        {showUserMenu && (
+                            <div className="sidebar-profile-dropdown">
+
+                                <div className="sidebar-dropdown-title">
+                                    My Account
+                                </div>
+
+                                <button type="button" onClick={handleProfile}>
+                                    <User size={18} />
+                                    <span>Profile</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowUserMenu(false);
+                                        navigate("/settings");
+                                    }}
+                                >
+                                    <Settings size={18} />
+                                    <span>Settings</span>
+                                </button>
+
+                                <div className="sidebar-dropdown-divider" />
+
+                                <button
+                                    type="button"
+                                    className="sidebar-logout-button"
+                                    onClick={handleLogout}
+                                >
+                                    <LogOut size={18} />
+                                    <span>Logout</span>
+                                </button>
+
+                            </div>
+                        )}
+
+                        <button
+                            type="button"
+                            className="sidebar-profile-button"
+                            onClick={() => setShowUserMenu(current => !current)}
+                            aria-expanded={showUserMenu}
+                        >
+                            <div className="sidebar-profile-avatar">
+                                {avatarText || "U"}
+                            </div>
+
+                            <span className="sidebar-profile-name">
+                                {displayName}
+                            </span>
+                        </button>
+
+                    </div>
+
+                    </aside>
     );
 };
 

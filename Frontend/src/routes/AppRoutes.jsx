@@ -11,8 +11,10 @@ import Milestones from "../pages/Milestones/Milestones";
 import Designations from "../pages/Designations/designations";
 import Backlog from "../pages/Backlog/Backlog";
 import Sprints from "../pages/Sprints/sprints";
+import Profile from "../pages/Profile/Profile";
+import Settings from "../pages/Settings/Settings";
 import Clients from "../pages/clients/client";
-import Reports from "../pages/Reports/Report";
+import History from "../pages/History/History";
 function AppRoutes() {
     return (
         <Routes>
@@ -181,23 +183,34 @@ function AppRoutes() {
             />
 
 
+
             <Route
                 path="/profile"
                 element={
-                    <ProtectedRoute>
-                        <h1>Profile</h1>
-                    </ProtectedRoute>
-                }
-            />
+                <ProtectedRoute>
+                    <Profile />
+                </ProtectedRoute>
+             }
+                />
+
+
 
             <Route
                 path="/settings"
                 element={
                     <ProtectedRoute>
-                        <h1>Settings</h1>
+                        <Settings />
                     </ProtectedRoute>
                 }
             />
+            <Route
+                path="/history"
+                element={
+                    <ProtectedRoute>
+                        <History />
+                    </ProtectedRoute>
+    }
+/>
 
             {/* UNKNOWN ROUTES */}
             <Route path="*" element={<Navigate to="/" replace />} />

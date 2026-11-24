@@ -5,7 +5,7 @@ import {
     Search,
     FolderKanban,
     Bell,
-    FolderOpen,
+    PauseCircle,
     PlayCircle,
     Clock3,
     CheckCircle2,
@@ -14,8 +14,7 @@ import {
 import { Link, useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import "./projects.css";
-
-
+import CommonSearch from "../../components/Common/Common.jsx";
 const Projects = () => {
 
     const [showForm, setShowForm] = useState(false);
@@ -39,7 +38,7 @@ const Projects = () => {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
+}
     const upcomingProjects = projects.filter((project) => {
 
         if (!project.start_date) return false;
@@ -178,9 +177,15 @@ const Projects = () => {
     };
 
     const filteredProjects = projects.filter((project) =>
-        project.project_name
-            ?.toLowerCase()
-            .includes(search.toLowerCase())
+        [
+            project.project_name,
+            project.status,
+            project.description,
+        ].some((value) =>
+            String(value || "")
+                .toLowerCase()
+                .includes(search.trim().toLowerCase())
+        )
     );
 
     const fetchProjects = async () => {
@@ -271,6 +276,49 @@ const Projects = () => {
     const currentProjects =
         filteredProjects.slice(startIndex, endIndex);
 
+
+    const onHoldProjects = projects.filter(
+        (project) => project.status === "On Hold"
+    ).length;
+
+    // EDIT PROJECT
+    const handleEditProject = (project) => {
+
+        setProjectForm({
+            project_name: project.project_name || "",
+            start_date: project.start_date || "",
+            end_date: project.end_date || "",
+            project_manager: project.project_manager || "",
+            description: project.description || ""
+        });
+
+        setEditingProject(project);
+        setShowForm(true);
+    };
+
+    // DELETE PROJECT
+    const handleDeleteProject = async (id) => {
+
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this project?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            await api.delete(`projects/${id}/`);
+
+            await fetchProjects();
+
+        } catch (error) {
+
+            console.error("Delete project error:", error);
+
+            alert("Failed to delete project.");
+
     const calculateProgress = (project) => {
         if (!project.start_date || !project.end_date) {
             return 0;
@@ -307,6 +355,7 @@ const Projects = () => {
 
         return Math.min(Math.max(progress, 0), 100);
     };
+   
 
 
     return (
@@ -317,19 +366,33 @@ const Projects = () => {
 
             <div className="projects-header">
 
-                <div className="project-title">
-
-                    <h1>
+                <div className="projects-top-header">
+                    <div className="page-title-wrapper">
                         <FolderKanban
-                            size={22}
-                            color="#D9A21B"
+                            size={27}
+                            className="page-title-icon"
                         />
-                        Project Management
-                    </h1>
+                        <h1>Project Management </h1>
+                        {/* <p>Manage and track all your projects.</p> */}
+                    </div>
 
-                    <p>Manage and track your projects</p>
+                    <div className="projects-header-search">
+                        <CommonSearch
+                            search={search}
+                            setSearch={setSearch}
+                            placeholder="Search projects..."
+                        />
+                    </div>
 
+                    <button
+                        type="button"
+                        className="add-project-btn"
+                        onClick={() => setShowForm(true)}
+                    >
+                        + Add Project
+                    </button>
                 </div>
+
 
                 <div className="project-header-actions">
 
@@ -363,8 +426,9 @@ const Projects = () => {
                                     notifications.map((notification) => (
                                         <div
                                             key={notification.id}
-                                            className={`notification-item ${!notification.is_read ? "unread" : ""
-                                                }`}
+                                            className={`notification-item ${
+                                                !notification.is_read ? "unread" : ""
+                                            }`}
                                             onClick={() =>
                                                 !notification.is_read &&
                                                 markAsRead(notification.id)
@@ -390,25 +454,7 @@ const Projects = () => {
                                 )}
                             </div>
                         )}
-
                     </div>
-
-
-
-
-                    <button
-                        className="add-project-btn"
-                        onClick={() => {
-                            setShowForm(true);
-                            setFormError("");
-                        }}
-                    >
-                        <Plus size={18} />
-                        <span>
-                            Add Project
-                        </span>
-                    </button>
-
                 </div>
 
             </div>
@@ -435,7 +481,7 @@ const Projects = () => {
                     </div>
 
                     <div className="summary-content">
-                        <span>Upcoming Projects</span>
+                        <span>Planning </span>
                         <strong>{upcomingProjects}</strong>
                     </div>
                 </div>
@@ -449,6 +495,17 @@ const Projects = () => {
                     <div className="summary-content">
                         <span>Ongoing Projects</span>
                         <strong>{ongoingProjects}</strong>
+                    </div>
+                </div>
+
+                {/* ON HOLD */}
+                <div className="summary-card">
+                    <div className="summary=icon on-hold-icon">
+                        <PauseCircle size={22} />
+                    </div>
+                    <div className="summary-content">
+                        <span>On Hold</span>
+                        <strong>{onHoldProjects}</strong>
                     </div>
                 </div>
 
@@ -483,25 +540,46 @@ const Projects = () => {
 
                             </div>
 
-                            <button
-                                type="button"
-                                className="project-close-btn"
-                                onClick={() => {
-                                    setShowForm(false);
-                                    setFormError("");
-                                }}
+                                <button
+                                    type="button"
+                                    className="project-close-btn"
+                                    onClick={() => {
+                                        setShowForm(false);
+                                        setFormError("");
+                                    }}
 
-                            >
-                                x
-                            </button>
+                                >
+                                    x
+                                </button>
                         </div>
 
 
-                        {formError && (
-                            <div className="project-form-error">
-                                {formError}
-                            </div>
-                        )}
+                            {formError && (
+                                <div className="project-form-error">
+                                    {formError}
+                                </div>
+                            )}
+
+                            <div className="project-form-grid">
+
+                                {/* Project Name */}
+
+
+                                <div className="form-group full-width">
+                                    <label>Project Name</label>
+
+                                    <input
+                                        type="text"
+                                        name="project_name"
+                                        value={projectForm.project_name}
+                                        onChange={handleChange}
+                                        placeholder="Enter project name"
+                                    />
+                                </div>
+
+
+                                {/* project manager dropdown */}
+
 
                         <div className="project-form-grid">
 
@@ -544,63 +622,50 @@ const Projects = () => {
                                 </select>
                             </div>
 
-                            
-                              {/* Start Date */}
-                            <div className="form-group">
-                                <label>Start Date</label>
-
-                                <input
-                                    type="date"
-                                    name="start_date"
-                                    value={projectForm.start_date}
-                                    onChange={handleChange}
-                                    min="2000-01-01"
-
-                                />
-                            </div>
 
 
-                            {/* End Date */}
-                            <div className="form-group">
-                                <label>End Date</label>
 
-                                <input
-                                    type="date"
-                                    name="end_date"
-                                    value={projectForm.end_date}
-                                    onChange={handleChange}
-                                    min="2000-01-01"
 
-                                />
-                            </div>
-                             <div className="form-group full-width client-field">
-                                <label>Client</label>
+                                {/* Start Date */}
+                                <div className="form-group">
+                                    <label>Start Date</label>
 
-                                <select
-                                    name="client"
-                                    value={projectForm.client}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Client (optional)</option>
+                                    <input
+                                        type="date"
+                                        name="start_date"
+                                        value={projectForm.start_date}
+                                        onChange={handleChange}
+                                        min="2000-01-01"
 
-                                    {clients.map((client) => (
-                                        <option key={client.id} value={client.id}>
-                                            {client.client_name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                                 
-                            <div className="form-group full-width">
-                                <label>Description</label> 
-                                
+                                    />
+                                </div>
 
-                                <textarea
-                                    name="description"
-                                    value={projectForm.description}
-                                    onChange={handleChange}
-                                    placeholder="Enter project description"
-                                />
+
+                                {/* End Date */}
+                                <div className="form-group">
+                                    <label>End Date</label>
+
+                                    <input
+                                        type="date"
+                                        name="end_date"
+                                        value={projectForm.end_date}
+                                        onChange={handleChange}
+                                        min="2000-01-01"
+
+                                    />
+                                </div>
+
+                                <div className="form-group full-width">
+                                    <label>Description</label>
+
+                                    <textarea
+                                        name="description"
+                                        value={projectForm.description}
+                                        onChange={handleChange}
+                                        placeholder="Enter project description"
+                                    />
+
+                                </div>
 
                             </div>
 
@@ -639,25 +704,6 @@ const Projects = () => {
 
             {/* SEARCH */}
 
-            <div className="projects-toolbar">
-
-                <div className="search-box">
-
-                    <Search size={18} />
-
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                            setCurrentPage(1);
-                        }}
-                        placeholder="Search projects...."
-                    />
-
-                </div>
-            </div>
-
             {/* PROJECT TABLE */}
             <div className="projects-card">
 
@@ -679,18 +725,106 @@ const Projects = () => {
 
                     </div>
 
-                    {/* table rows */}
                     {/* TABLE ROWS */}
                     {currentProjects.length > 0 ? (
                         currentProjects.map((project) => (
                             <div className="table-row" key={project.id}>
 
-                                {/* PROJECT */}
-                                <div className="project-name">
-                                    <div className="project-icon">
-                                        <FolderKanban size={18} />
-                                    </div>
-                                    
+                    {/* PROJECT */}
+                    <div className="project-name">
+                        <div className="project-icon">
+                            <FolderKanban size={18} />
+                        </div>
+
+                        <div>
+                            <Link
+                                to={`/projects/${project.id}`}
+                                className="project-name-link"
+                            >
+                                {project.project_name}
+                            </Link>
+                        </div>
+                    </div>
+
+
+                    {/* START DATE */}
+                    <span>
+                        {project.start_date || "-"}
+                    </span>
+                    <span>{project.end_date || "_"}</span>
+
+                    {/* PROGRESS */}
+                    <div className="project-progress">
+
+                         <div className="progress-bar">
+                            <div
+                                className={`progress-fill ${
+                                    (project.progress|| 0) < 50
+                                        ? "progress-orange"
+                                        : "progress-green"
+                                }`}
+                                style={{
+                                    width: `${project.progress || 0}%`
+                                }}
+                            />
+                        </div>
+
+                        <span className="progress-percentage">
+                            {project.progress || 0}%
+                        </span>
+
+                    </div>
+
+                    {/* STATUS */}
+
+
+                    {/* ACTION */}
+                    <div
+                        className="action-menu"
+                    >                        
+                        <button
+                            type="button"
+                            className="action-button"
+                            onClick={() => {
+
+
+                                setOpenAction(
+                                    openAction === project.id ? null : project.id
+                                );
+                            }}
+                        >
+                            <MoreVertical size={18} />
+                        </button>
+
+                        {openAction === project.id && (
+                            <div
+                                className="action-dropdown"
+
+                            >
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setOpenAction(null);
+                                        handleEditProject(project);
+                                    }}
+                                >
+                                    Edit
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setOpenAction(null);
+                                        handleDeleteProject(project.id);
+
+                                    }}
+                                >
+
+                                    Delete
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
                                     <div>
                                         <Link
@@ -742,6 +876,7 @@ const Projects = () => {
                     )}
 
                 </div> {/* Close projects-table */}
+ 
 
 
 
@@ -749,10 +884,12 @@ const Projects = () => {
                 {/* PAGINATION - OUTSIDE TABLE */}
                 <div className="project-pagination">
                     <span className="project-pagination-info">
-                        Showing 1 to 1 of 1 projects
+                        Showing {totalProjects === 0 ? 0 : startIndex + 1} to{" "}
+                        {Math.min(endIndex, totalProjects)} of {totalProjects} projects
                     </span>
 
                     <div className="project-pagination-buttons">
+
                         <button
                             type="button"
                             className="project-page-btn"
@@ -762,17 +899,23 @@ const Projects = () => {
                             Previous
                         </button>
 
-                        <button
-                            type="button"
-                            className="project-page-number active"
-                        >
-                            1
-                        </button>
+                        {Array.from({ length: totalPages }, (_, index) => (
+                            <button
+                                key={index + 1}
+                                type="button"
+                                className={`project-page-number ${
+                                    currentPage === index +1 ? "active" : ""
+                                }`}
+                                onClick={() => setCurrentPage(index + 1)}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
 
                         <button
                             type="button"
                             className="project-page-btn"
-                            disabled={currentPage === totalPages}
+                            disabled={currentPage >= totalPages}
                             onClick={() => setCurrentPage(currentPage + 1)}
                         >
                             Next
@@ -780,9 +923,7 @@ const Projects = () => {
                     </div>
                 </div>
             </div>
-        </div>
-
+        </div>      
     );
 };
-
 export default Projects;

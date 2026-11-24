@@ -4,17 +4,20 @@ from .models import Project, ProjectComment, Notification, Resource, Attachment
 
 class ProjectSerializer(serializers.ModelSerializer):
 
-    # Keep the foreign-key ID writable while exposing a display value to the UI.
-    client_name = serializers.CharField(
-        source='client.client_name',
-        read_only=True,
-        default=None,
-    )
+    progress = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields = '__all__'
 
+    def get_progress(self, obj):
+        total_tasks = getattr(obj, 'total_tasks', 0)
+        completed_tasks = getattr(obj, 'completed_tasks', 0)
+
+        if total_tasks == 0:
+            return 0
+
+        return round((completed_tasks / total_tasks) * 100)
 
 class NotificationSerializer(serializers.ModelSerializer):
 

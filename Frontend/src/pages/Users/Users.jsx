@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import './Users.css';
-import {
-    PMSPageHeader,
-    PMSSearch,
-    PMSActionButton,
-} from "../../components/Common/Common";
 
 import api from "../../services/api";
+import CommonSearch from "../../components/Common/Common.jsx";
+
+import {
+    Plus,
+    ShieldCheck,
+    Users as UsersIcon,
+    UserIcon,
+    LockKeyhole,
+} from "lucide-react";
 
 function Users() {
+    console.count("Users component rendered")
     const [users, setUsers] = useState([]);
     const [designations, setDesignations] = useState([]);
     const [roles, setRoles] = useState([]);
@@ -16,8 +21,12 @@ function Users() {
     const [search, setSearch] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+
     const [openMenu, setOpenMenu] = useState(null);
     const [errors, setErrors] = useState({});
+=======
+    const [isSaving, setIsSaving] = useState(false);
+>>>>>>> fd53781dc6aa12d92a6a6980c44eeb1d9151b169
 
     const [formData, setFormData] = useState({
         name: '',
@@ -28,7 +37,7 @@ function Users() {
     });
 
     const filteredUsers = users.filter((user) =>
-        `${user.name} ${user.email} ${user.role} ${user.designation} ${user.status}`
+        `${user.name} ${user.email} ${user.role_name} ${user.designation} ${user.status}`
             .toLowerCase()
             .includes(search.toLowerCase())
     );
@@ -115,11 +124,11 @@ function Users() {
         setEditingUser(user);
 
         setFormData({
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            designation: user.designation,
-            status: user.status,
+            name: user.name === "N/A" ? "" : user.name,
+            email: user.email || "",
+            role: String(user.role_id ?? ""),
+            designation: String(user.designationId || ""),
+            status: user.status || "Active",
         });
 
         setErrors({});
@@ -131,10 +140,12 @@ function Users() {
         setEditingUser(null);
         setErrors({});
     };
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (isSaving) return;
+
+        setIsSaving(true);
 
         const payload = {
             name: formData.name.trim(),
@@ -143,6 +154,10 @@ function Users() {
             designation: formData.designation,
             status: formData.status,
         };
+
+        console.log("User update payload:", payload);
+        console.log("Available designations:", designations);
+        console.log("Available roles:", roles);
 
         try {
             if (editingUser) {
@@ -159,23 +174,26 @@ function Users() {
                     ? "User updated successfully."
                     : "User created successfully."
             );
-
         } catch (error) {
             console.error(
                 "Failed to save user:",
-                error.response?.data || error
+                error.response?.status,
+                error.response?.data || error.message
             );
 
+            const errorData = error.response?.data;
+
             alert(
-                JSON.stringify(
-                    error.response?.data || "Failed to save user."
-                )
+                errorData
+                    ? JSON.stringify(errorData, null, 2)
+                    : "Failed to save user. Please try again."
             );
+        } finally {
+            setIsSaving(false);
         }
     };
 
-    const handleDelete = async (id) => {
-        const confirmed = window.confirm(
+    const handleDelete = async (id) => {const confirmed = window.confirm(
             "Are you sure you want to delete this user?"
         );
 
@@ -196,13 +214,15 @@ function Users() {
             alert("Failed to delete user.");
         }
     };
-
     useEffect(() => {
+        console.log("Testing Users page");
+
         fetchDesignations();
         fetchRoles();
         fetchUsers();
     }, []);
 
+    // FETCH DESIGNATION
     const fetchDesignations = async () => {
         try {
             const response = await api.get("designations/");
@@ -211,41 +231,63 @@ function Users() {
                 ? response.data
                 : response.data.results || [];
 
-            setDesignations(data);
+            console.log("Designation records:", data);
 
+            setDesignations(
+                data.map((item) => ({
+                    id: item.id,
+                    name:
+                        item.designation_name ||
+                        item.name ||
+                        item.title ||
+                        "",
+                    is_active: item.is_active,
+                }))
+            );
         } catch (error) {
             console.error(
                 "Failed to fetch designations:",
-                error.response?.data || error
+                error.response?.status,
+                error.response?.data || error.message
             );
         }
     };
 
     const fetchRoles = async () => {
+    try {
+        const response = await api.get("roles/");
+
+        const data = Array.isArray(response.data)
+            ? response.data
+            : response.data.results || [];
+
+        setRoles(
+            data.map((role) => ({
+                id: role.id,
+                name: role.role_name,
+                is_active: role.is_active,
+            }))
+        );
+    } catch (error) {
+        console.error(
+            "Failed to fetch roles:",
+            error.response?.data || error
+        );
+    }
+};
+        const fetchUsers = async () => {
         try {
-            const response = await api.get("roles/");
+            // Check whether the JWT access token exists
+            const token = localStorage.getItem("access_token");
 
-            const data = Array.isArray(response.data)
-                ? response.data
-                : response.data.results || [];
+            if (!token) {
+                console.error(
+                    "Access token missing. Please log in again."
+                );
+                return;
+            }
 
-            setRoles(
-                data.map((role) => ({
-                    id: role.id,
-                    name: role.role_name,
-                    is_active: role.role_name,
-                    status: role.is_active ? "Active" : "Inactive",
-                })));
-        } catch (error) {
-            console.error(
-                "Failed to fetch roles:",
-                error.response?.data || error
-            );
-        }
-    };
-
-    const fetchUsers = async () => {
-        try {
+            // Request users through your configured Axios instance
             const response = await api.get("users/");
 
             const data = Array.isArray(response.data)
@@ -257,56 +299,72 @@ function Users() {
             setUsers(
                 data.map((user) => ({
                     id: user.id,
-                    name:
-                        `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-                        user.username ||
-                        "N/A",
-                    email: user.email || "N/A",
-                    role: user.role_name || user.role || "Not Assigned",
-                    designation: user.designation_name || "Not Assigned",
-                    status: user.is_active === false ? "Inactive" : "Active",
-                }))
+
+                name:
+                    `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+                    user.username?.replace(/_/g, " ") ||
+                    "N/A",
+
+                email: user.email || "",
+
+                role_id: user.role_id ?? "",
+                role_name: user.role_name || "",
+
+                designationId: user.designation_id ?? "",
+                designation: user.designation_name || "Not Assigned",
+
+                is_superuser: user.is_superuser,
+                status: user.is_active === false ? "Inactive" : "Active",
+            }))
             );
         } catch (error) {
             console.error(
+                "Users API error:",
                 error.response?.status,
                 error.response?.data || error.message
             );
         }
     };
-
-
-
-
     return (
         <div className="users-page">
 
             {/* Header */}
-            <div className="users-header">
-                <div>
-                    <h1>Users</h1>
-                    <p>
-                        Manage users and their access to the system.
-                    </p>
-                </div>
 
-                <button
-                    type="button"
-                    className="add-user-btn"
-                    onClick={openAddForm}
-                >
-                    + Add User
-                </button>
-            </div>
+<div className="common-page-toolbar">
+
+    <div className="common-page-title">
+        <UsersIcon size={22} color="#D9A21B" />
+        <div className="common-page-title-text">
+            <h1>User Management</h1>
+            <p>Manage users, roles, and designations.</p>
+        </div>
+
+    </div>
+
 
             {/* Search */}
-            <PMSSearch
+
+            <CommonSearch
                 value={search}
                 onChange={(e) => {
                     setSearch(e.target.value);
                 }}
-                placeholder='Search users'
+                placeholder="Search users"
             />
+
+    <button
+        type="button"
+        className="add-user-btn"
+        onClick={openAddForm}
+    >
+        <Plus size={17} />
+        Add User
+    </button>
+
+</div>
+
+
+
 
             {/* Users Table */}
             <div className="users-card">
@@ -326,9 +384,31 @@ function Users() {
                         {filteredUsers.length > 0 ? (
                             filteredUsers.map((user, index) => (
                                 <tr key={user.id}>
-                                    <td>{user.name || "N/A"}</td>
+                                    <td>
+                                        <div className='user-name'>
+                                            <div className='user-icon'>
+                                                {user.is_superuser ? (
+                                                    <ShieldCheck size={18} color="#D9A21B" />
+                                                ) : (
+                                                    <UserIcon size={18} />
+                                                )}
+                                            </div>
+
+                                            <span>{user.name || "N/A"}</span>
+
+                                            {user.is_superuser && (
+                                                <span className='admin-badge'>ADMIN</span>
+                                            )}
+                                        </div>
+                                    </td>
                                     <td>{user.email || "N/A"}</td>
-                                    <td>{user.role || "Not Assigned"}</td>
+                                    <td>
+                                        {user.role_name ||
+                                            roles.find(
+                                                (role) => String(role.id) === String(user.role_id)
+                                            )?.name ||
+                                            "Not Assigned"}
+                                    </td>
                                     <td>{user.designation || "Not Assigned"}</td>
 
                                     <td>
@@ -343,51 +423,34 @@ function Users() {
 
                                     <td>
                                         <div className="user-actions">
-
-                                            <button
-                                                type="button"
-                                                className="user-menu-btn"
-                                                onClick={() =>
-                                                    setOpenMenu(
-                                                        openMenu === user.id
-                                                            ? null
-                                                            : user.id
-                                                    )
-                                                }
-                                                aria-label="User actions"
-                                            >
-                                                ⋮
-                                            </button>
-
-                                            {openMenu === user.id && (
-                                                <div
-                                                    className={`user-action-menu ${index === filteredUsers.length - 1
-                                                            ? 'user-action-menu-up'
-                                                            : ''
-                                                        }`}
-                                                >
-                                                    <button
+                                            {user.is_superuser ? (
+                                                <span className='protected-user'>
+                                                    <LockKeyhole size={14} />
+                                                    Protected
+                                                </span>
+                                            ) : (
+                                                <>
+                                                   <button
                                                         type="button"
-                                                        onClick={() => {
-                                                            setOpenMenu(null);
-                                                            openEditForm(user);
-                                                        }}
+                                                        className="user-edit-btn"
+                                                        onClick={() =>
+                                                            openEditForm(user)
+                                                        }
                                                     >
                                                         Edit
                                                     </button>
 
                                                     <button
                                                         type="button"
-                                                        onClick={() => {
-                                                            setOpenMenu(null);
-                                                            handleDelete(user.id);
-                                                        }}
+                                                        className="user-delete-btn"
+                                                        onClick={() =>
+                                                            handleDelete(user.id)
+                                                        }
                                                     >
                                                         Delete
                                                     </button>
-                                                </div>
+                                                </>
                                             )}
-
                                         </div>
                                     </td>
                                 </tr>
@@ -409,9 +472,7 @@ function Users() {
             {/* Add / Edit User Modal */}
             {showForm && (
                 <div className="user-form-overlay">
-
                     <div className="user-form">
-
                         {/* Close Button */}
                         <button
                             type="button"
@@ -419,7 +480,7 @@ function Users() {
                             onClick={closeForm}
                             aria-label="Close"
                         >
-                            ×
+                            X
                         </button>
 
                         {/* Form Title */}
@@ -433,9 +494,10 @@ function Users() {
 
                             {/* Name */}
                             <div>
-                                <label>Name:</label>
+                                <label htmlFor="user-name">Name:</label>
 
                                 <input
+                                    id="user-name"
                                     type="text"
                                     name="name"
                                     value={formData.name}
@@ -496,12 +558,7 @@ function Users() {
                                     {roles
                                         .filter((role) => role.is_active)
                                         .map((role) => (
-                                            <option
-                                                key={role.id}
-                                                value={role.id}
-                                            >
-                                                {role.name}
-                                            </option>
+                                            <option value={role.id} >{role.name}</option>
                                         ))}
                                 </select>
 
@@ -514,9 +571,10 @@ function Users() {
 
                             {/* Designation */}
                             <div>
-                                <label>Designation:</label>
+                                <label htmlFor="user-designation">Designation:</label>
 
                                 <select
+                                    id="user-designation"
                                     name="designation"
                                     value={formData.designation}
                                     onChange={handleChange}
@@ -526,19 +584,12 @@ function Users() {
                                             : ''
                                     }
                                 >
-                                    <option value="">
-                                        Select Designation
-                                    </option>
+                                    <option value="">Select Designation</option>
 
                                     {designations
-                                        .filter((designation) => designation.status)
+                                        .filter((designation) => designation.is_active !== false)
                                         .map((designation) => (
-                                            <option
-                                                key={designation.id}
-                                                value={designation.id}
-                                            >
-                                                {designation.name}
-                                            </option>
+                                            <option value={designation.id}>{designation.name}</option>
                                         ))}
                                 </select>
 
@@ -559,7 +610,9 @@ function Users() {
                                     className={errors.status ? 'input-error' : ''}
                                 >
                                     <option value="">Select Status</option>
+
                                     <option value="Active">Active</option>
+
                                     <option value="Inactive">Inactive</option>
                                 </select>
 
@@ -575,18 +628,20 @@ function Users() {
                                 <button
                                     type="button"
                                     onClick={closeForm}
+                                    disabled={isSaving}
                                 >
                                     Cancel
                                 </button>
 
-                                <button type="submit">
-                                    {editingUser
-                                        ? 'Update User'
-                                        : 'Create User'}
+                                <button
+                                    type="submit"
+                                    disabled={isSaving}
+                                >
+                                    {isSaving
+                                        ? (editingUser ? "Updating..." : "Saving...")
+                                        : (editingUser ? "Update User" : "Create User")}
                                 </button>
-
                             </div>
-
                         </form>
                     </div>
                 </div>

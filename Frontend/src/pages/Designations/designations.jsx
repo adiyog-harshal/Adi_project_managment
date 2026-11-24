@@ -13,10 +13,6 @@ import {
 import api from "../../services/api";
 
 import "./designations.css";
-import {
-    PMSPageHeader,
-    PMSActionButton,
-} from "../../components/Common/Common";
 
 const Designations = () => {
 
@@ -292,18 +288,6 @@ const Designations = () => {
 
             </div>
 
-            <div className="designations-toolbar">
-                <label className="designation-search" htmlFor="designation-search-input">
-                    <Search size={18} aria-hidden="true" />
-                    <input
-                        id="designation-search-input"
-                        type="search"
-                        placeholder="Search designations"
-                        value={searchTerm}
-                        onChange={(event) => setSearchTerm(event.target.value)}
-                    />
-                </label>
-            </div>
 
             {showForm && (
 

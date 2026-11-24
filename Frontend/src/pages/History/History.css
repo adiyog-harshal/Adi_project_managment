@@ -1,0 +1,267 @@
+
+/* ================================
+   HISTORY PAGE
+================================ */
+
+.history-page {
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+/* ================================
+   PAGE HEADER
+================================ */
+
+.history-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+/* Icon and title in one horizontal row */
+.history-heading-row,
+.history-title {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px;
+    width: 100%;
+}
+
+.history-heading-row svg,
+.history-title svg {
+    display: block;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    color: #6c5ce7;
+}
+
+.history-heading-row h2,
+.history-title h2 {
+    display: block;
+    margin: 0 !important;
+    padding: 0;
+    color: #2d3436;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.history-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ================================
+   FILTERS
+================================ */
+
+.history-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.history-filters input,
+.history-filters select {
+    min-height: 40px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    background: #fff;
+    color: #333;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.history-filters input:focus,
+.history-filters select:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+}
+
+/* ================================
+   TABLE
+================================ */
+
+.history-table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+.history-table th,
+.history-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.history-table th {
+    background: #f8f7fc;
+    color: #555;
+    font-weight: 600;
+}
+
+.history-table td {
+    color: #444;
+}
+
+.history-table tbody tr:hover {
+    background: #faf9ff;
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ================================
+   ACTION BADGE
+================================ */
+
+.history-action {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #eeeaff;
+    color: #6c5ce7;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ================================
+   DETAILS BUTTON
+================================ */
+
+.history-details {
+    border: none;
+    background: transparent;
+    color: #6c5ce7;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.history-details:hover {
+    color: #5142c5;
+    text-decoration: underline;
+}
+
+/* ================================
+   EXPANDED DETAILS
+================================ */
+
+.history-expanded {
+    padding: 16px;
+    background: #faf9ff;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #444;
+    font-size: 13px;
+}
+
+/* ================================
+   PAGINATION
+================================ */
+
+.history-pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.history-pagination button,
+.history-refresh {
+    padding: 9px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #6c5ce7;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.history-pagination button:hover,
+.history-refresh:hover {
+    background: #5948d6;
+}
+
+.history-pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ================================
+   LOADING / EMPTY / ERROR
+================================ */
+
+.history-loading,
+.history-empty,
+.history-error {
+    padding: 30px;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+
+.history-error {
+    color: #d63031;
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+================================ */
+
+@media (max-width: 768px) {
+    .history-page {
+        padding: 14px;
+    }
+
+    .history-header {
+        align-items: flex-start;
+    }
+
+    .history-heading-row h2,
+    .history-title h2 {
+        font-size: 20px;
+    }
+
+    .history-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .history-filters input,
+    .history-filters select {
+        width: 100%;
+    }
+
+    .history-pagination {
+        justify-content: center;
+    }
+}

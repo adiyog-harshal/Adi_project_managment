@@ -13,9 +13,7 @@ import {
 } from "lucide-react";
 
 import api from "../../services/api";
-
-import "./ProjectDetails.css";
-
+import "./projectdetails.css";
 
 const ProjectDetails = () => {
 
@@ -28,15 +26,22 @@ const ProjectDetails = () => {
 
     const [members, setMembers] = useState([]);
     const [tasks, setTasks] = useState([]);
-    const [activeSection, setActiveSection] = useState("");
+    const [activeSection, setActiveSection] = useState("details");
     const [selectedUser, setSelectedUser] = useState("");
     const [showAddMember, setShowAddMember] = useState(false);
+
+    const [projectSprints, setProjectSprints] = useState([]);
+    const [sprintLoading, setSprintLoading] = useState(true);
+
+    const [projectModules, setProjectModules] = useState([]);
+    const [modulesLoading, setModulesLoading] = useState(true);
 
 
     useEffect(() => {
         fetchProject();
+        fetchProjectSprints();
+        fetchProjectModules();
     }, [id]);
-
 
     const fetchProject = async () => {
 
@@ -95,6 +100,67 @@ const ProjectDetails = () => {
         }
     };
 
+    // FETCH SPRINTS FOR THIS PROJECT
+    const fetchProjectSprints = async () => {
+        setSprintLoading(true);
+
+        try{
+            const response = await api.get("sprints/");
+
+            const data = Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+
+            // keep sprints belonging to this project
+            const projectData = data.filter((sprint) => {
+                const sprintProjectId = 
+                    typeof sprint.project === "object"
+                        ? sprint.project?.id
+                        : sprint.project;
+                return String(sprintProjectId) === String(id);
+            });
+
+            setProjectSprints(projectData);
+        } catch (error) {
+            console.error("Failed to fetch project sprints:", 
+                error.response?.data || error.message);
+            setProjectSprints([]);
+        } finally {
+            setSprintLoading(false);
+        }
+    };
+
+    const fetchProjectModules = async () => {
+        try {
+            setModulesLoading(true);
+
+            const response = await api.get("milestones/");
+
+            const data = Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+
+            const filteredModules = data
+                .filter((module) =>
+                    String(
+                        typeof module.project === "object"
+                            ? module.project?.id
+                            : module.project
+                    ) === String(id)
+                )
+                .reverse();
+            setProjectModules(filteredModules);
+        } catch (error) {
+            console.error(
+                "Error fetching project modules:",
+                error.response?.data || error
+            );
+            setProjectModules([]);
+        } finally {
+            setModulesLoading(false);
+        }
+    };
+
     const handleAddMember = async () => {
         if (!selectedUser) {
             alert("Please select a user.");
@@ -142,7 +208,7 @@ const ProjectDetails = () => {
     const projectManager = users.find(
         (user) => user.id === project?.project_manager
     );
-
+    
 
 
     if (loading) {
@@ -160,15 +226,7 @@ const ProjectDetails = () => {
 
         return (
             <div className="project-details-page">
-
-                <button
-                    className="back-project-btn"
-                    onClick={() => navigate("/projects")}
-                >
-                    <ArrowLeft size={16} />
-                    Back to Projects
-                </button>
-
+                
                 <div className="project-not-found">
                     Project not found.
                 </div>
@@ -192,7 +250,7 @@ const ProjectDetails = () => {
         endDate.setHours(0, 0, 0, 0);
 
         if (startDate > today) {
-            return "Upcoming";
+            return "Not Started";
         }
 
         if (startDate <= today && endDate >= today) {
@@ -225,28 +283,158 @@ const ProjectDetails = () => {
             ? Math.round((completedTasks / totalTasks) * 100)
             : 0;
 
+   
+const handleMemberRoleChange = async (
+    memberId,
+    roleField,
+    checked
+) => {
+    const previousMembers = members;
+
+    setMembers((currentMembers) =>
+        currentMembers.map((member) => {
+            if (String(member.id) === String(memberId)) {
+                return { ...member, [roleField]: checked };
+            }
+            //  if assigning a role, uncheck it for other members.
+            if (checked) {
+                return { ...member, [roleField]: false};
+            }  
+
+            return member;
+        })
+    );
+
+    try {
+        const response = await api.patch(
+            `projects/${id}/members/roles/${memberId}/`,
+            {
+                [roleField]: checked,
+            }
+        );
+
+        // Sync the updated member with the backend response.
+        if (response.data && typeof response.data === "object") {
+            setMembers((currentMembers) =>
+                currentMembers.map((member) =>
+                    String(member.id) === String(memberId)
+                        ? { ...member, ...response.data }
+                        : member
+                )
+            );
+        }
+    } catch (error) {
+        console.error(
+            "Failed to update member role:",
+            error.response?.status,
+            error.response?.data || error.message
+        );
+
+        setMembers(previousMembers);
+
+        alert(
+            JSON.stringify(
+                error.response?.data ||
+                error.message ||
+                "Failed to update member role."
+            )
+        );
+    }
+};
 
     return (
-
         <div className="project-details-page">
 
-            {/* BACK BUTTON */}
+            <div className="project-workspace">
+                {/* LEFT SIDEBAR */}
 
-            <button
-                type="button"
-                className="back-project-btn"
-                onClick={() => navigate("/projects")}
-            >
-                <ArrowLeft size={16} />
-                Back to Projects
-            </button>
+                <aside className="project-workspace-sidebar">
+                    <div className="workspace-sidebar-heading">
+                        PROJECT MENU
+                    </div>
 
+                    <div className="section-title">
+                        <FileText size={19} />
+                        <h2>Project Details</h2>
 
-            {/* PROJECT HEADER */}
+                    </div>
 
-            <div className="project-details-header">
+                    <button
+                        type="button"
+                        className={`project-section-btn ${
+                            activeSection === "overview" ? "active" : ""
+                        }`}
+                        onClick={() => setActiveSection("overview")}
+                    >
+                        <FileText size={17} />
+                        Overview
+                    </button>
 
-                <div className="project-title-section">
+                    <button
+                        type="button"
+                        className={`project-section-btn ${
+                            activeSection === "members" ? "active" : ""
+                        }`}
+                        onClick={() => setActiveSection("members")}
+                    >
+                        <Users size={17} />
+                        Team Members
+                    </button>
+            
+                    <button
+                        type="button"
+                        className="project-section-btn"
+                        onClick={() =>
+                            navigate(`/projects/${id}/backlog`)
+                        }
+                    >
+                        <ListTodo size={17} />
+                        Backlog
+                    </button>
+
+                    <button
+                        type="button"
+                        className="project-section-btn"
+                        onClick={() => navigate(`/projects/${id}/milestones`)}
+                    >
+                        <Flag size={17} />
+                        Modules
+                    </button>
+
+                    <button
+                        type="button"
+                        className="project-section-btn"
+                        onClick={() => navigate(`/projects/${id}/sprints`)}
+                    >
+                        <Layers size={17} />
+                        Sprints
+                    </button>
+
+                </aside>
+
+                {/* RIGHT SIDE CONTENT */}
+                <main className="project-workspace-content">
+                {/* OVERVIEW SECTION PAGE  */}
+
+                {activeSection === "details" && (
+                    <div className="project-details-content">
+
+                    {/* BACK BUTTON */}
+
+                        <button
+                            type="button"
+                            className="back-project-btn"
+                            onClick={() => navigate("/projects")}
+                        >
+                            <ArrowLeft size={16} />
+                            Back to Project
+                        </button>
+                        
+                        {/* PROJECT HEADER */}
+
+                        <div className="project-details-header">
+
+                            <div className="project-title-section">
 
                     <div className="project-details-icon">
                         <FileText size={10} />
@@ -255,8 +443,8 @@ const ProjectDetails = () => {
                     <div>
 
                         <h1>
-                            {project.project_name}
-
+                                {project.project_name}
+                            
                         </h1>
 
                     </div>
@@ -265,114 +453,107 @@ const ProjectDetails = () => {
 
 
                 <span
-                    className={`project-detail-status ${getProjectStatus() === "Upcoming"
-                        ? "status-upcoming"
-                        : getProjectStatus() === "Ongoing"
+                    className={`project-detail-status ${
+                        getProjectStatus() === "Upcoming"
+                            ? "status-upcoming"
+                            : getProjectStatus() === "Ongoing"
                             ? "status-ongoing"
                             : getProjectStatus() === "Completed"
-                                ? "status-completed"
-                                : ""
-                        }`}
+                            ? "status-completed"
+                            : ""
+                    }`}
                 >
                     {getProjectStatus()}
                 </span>
 
-            </div>
+                        </div>
+                        
+                        {/* PROJECT SUMMARY CARDS */}
+
+                        <div className="project-summary-grid">
+
+                            <div className="project-summary-card">
+
+                                <div className="summary-icon manager-icon">
+                                    <User size={18} />
+                                </div>
+
+                                <div>
+                                    <span>Project Manager</span>
+                                    <strong>
+                                        {projectManager?.username || "-"}
+                                    </strong>
+                                </div>
+
+                            </div>
 
 
-            {/* PROJECT SUMMARY CARDS */}
+                            <div className="project-summary-card">
 
-            <div className="project-summary-grid">
+                                <div className="summary-icon start-date-icon">
+                                    <CalendarDays size={18} />
+                                </div>
 
-                <div className="project-summary-card">
+                                <div>
+                                    <span>Start Date</span>
+                                    <strong>
+                                        {project.start_date || "-"}
+                                    </strong>
+                                </div>
 
-                    <div className="summary-icon manager-icon">
-                        <User size={18} />
-                    </div>
-
-                    <div>
-                        <span>Project Manager</span>
-                        <strong>
-                            {projectManager?.username || "-"}
-                        </strong>
-                    </div>
-
-                </div>
+                            </div>
 
 
-                <div className="project-summary-card">
+                            <div className="project-summary-card">
 
-                    <div className="summary-icon start-date-icon">
-                        <CalendarDays size={18} />
-                    </div>
+                                <div className="summary-icon end-date-icon">
+                                    <CalendarDays size={18} />
+                                </div>
 
-                    <div>
-                        <span>Start Date</span>
-                        <strong>
-                            {project.start_date || "-"}
-                        </strong>
-                    </div>
+                                <div>
+                                    <span>End Date</span>
+                                    <strong>
+                                        {project.end_date || "-"}
+                                    </strong>
+                                </div>
 
-                </div>
-
-
-                <div className="project-summary-card">
-
-                    <div className="summary-icon end-date-icon">
-                        <CalendarDays size={18} />
-                    </div>
-
-                    <div>
-                        <span>End Date</span>
-                        <strong>
-                            {project.end_date || "-"}
-                        </strong>
-                    </div>
-
-                </div>
+                            </div>
 
 
-                <div className="project-summary-card">
+                            <div className="project-summary-card">
 
-                    <div className="summary-icon status-icon">
-                        <CircleCheck size={18} />
-                    </div>
+                                <div className="summary-icon status-icon">
+                                    <CircleCheck size={18} />
+                                </div>
 
-                    <div>
-                        <span>Status</span>
-                        <strong>
-                            {getProjectStatus()}
-                        </strong>
-                    </div>
+                                <div>
+                                    <span>Status</span>
+                                    <strong>
+                                        {getProjectStatus()}
+                                    </strong>
+                                </div>
 
-                </div>
+                            </div>
 
-            </div>
+                        </div>
 
 
-            {/* PROJECT INFORMATION */}
+                        {/* PROJECT INFORMATION */}
 
-            <div className="project-information-card">
-
-                <div className="section-title">
-                    <FileText size={19} />
-                    <h2>Project Details</h2>
-
-                </div>
-
+                        <div className="project-information-card">
 
                 <div className="project-information-grid">
-
+                    
                     <div className="project-description">
-
+                        
                         <div className="description-header">
                             <h3>Description</h3>
                         </div>
 
-                        <p>{project.description || "No description available."}</p>
-                    </div>
+                                    <p>{project.description || "No description available."}</p>
+                                </div>
 
-                </div>
+                            </div>
 
             </div>
 
@@ -383,8 +564,9 @@ const ProjectDetails = () => {
 
                 <button
                     type="button"
-                    className={`project-section-btn ${activeSection === "overview" ? "active" : ""
-                        }`}
+                    className={`project-section-btn ${
+                        activeSection === "overview" ? "active" : ""
+                    }`}
                     onClick={() => setActiveSection("overview")}
                 >
                     <FileText size={17} />
@@ -394,8 +576,9 @@ const ProjectDetails = () => {
 
                 <button
                     type="button"
-                    className={`project-section-btn ${activeSection === "members" ? "active" : ""
-                        }`}
+                    className={`project-section-btn ${
+                        activeSection === "members" ? "active" : ""
+                    }`}
                     onClick={() => setActiveSection("members")}
                 >
                     <Users size={17} />
@@ -435,12 +618,13 @@ const ProjectDetails = () => {
 
             </div>
 
+                
 
             {activeSection === "members" && (
                 <div className="project-section-content">
 
                     <div className="team-members-header">
-
+                    
                         <div className="section-title">
                             <Users size={19} />
                             <h2>Team Members</h2>
@@ -460,7 +644,7 @@ const ProjectDetails = () => {
                     </div>
 
                     {members.length === 0 ? (
-
+                        
                         <p className="empty-section-message">
                             No team members assigned to this project.
                         </p>
@@ -472,7 +656,7 @@ const ProjectDetails = () => {
 
                                 // GET USER ID FROM MEMBER OBJECT
                                 if (
-                                    member.user &&
+                                    member.user && 
                                     typeof member.user === "object"
                                 ) {
                                     memberUserId = member.user.id;
@@ -489,14 +673,15 @@ const ProjectDetails = () => {
 
                                 // FIND COMPLETE USER DETAILS
                                 const memberUser = users.find(
-                                    (item) =>
+                                    (item) => 
                                         String(item.id) === String(memberUserId)
                                 );
 
                                 // Full name
                                 const fullName =
-                                    `${memberUser?.first_name || ""} ${memberUser?.last_name || ""
-                                        }`.trim() ||
+                                    `${memberUser?.first_name || ""} ${
+                                        memberUser?.last_name || ""
+                                    }`.trim() ||
                                     memberUser?.username ||
                                     "Unknown User";
 
@@ -504,7 +689,7 @@ const ProjectDetails = () => {
                                 const designation =
                                     typeof memberUser?.designation === "object"
                                         ? memberUser?.designation?.name
-                                        : memberUser?.designation;
+                                        : memberUser?.designation;                               
 
                                 return (
                                     <div
@@ -546,179 +731,403 @@ const ProjectDetails = () => {
             {activeSection === "overview" && (
                 <div className="project-overview">
 
-                    <div className="overview-header">
-                        <div>
-                            <h2>Project Overview</h2>
-                            <p>
-                                Quick summary of this project's current progress.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="overview-stats">
-
-                        <div className="overview-stat-card">
-                            <span>Total Tasks</span>
-                            <strong>{totalTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>Completed</span>
-                            <strong>{completedTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>In Progress</span>
-                            <strong>{inProgressTasks}</strong>
-                        </div>
-
-                        <div className="overview-stat-card">
-                            <span>Progress</span>
-                            <strong>{projectProgress}%</strong>
-                        </div>
-
-                    </div>
-
-
-                    <div className="overview-progress-card">
-
-                        <div className="overview-progress-header">
-                            <div>
-                                <h3>Project Progress</h3>
-                                <p>
-                                    {completedTasks} of {totalTasks} tasks completed
-                                </p>
-                            </div>
-
-                            <strong>{projectProgress}%</strong>
-                        </div>
-
-                        <div className="overview-progress-track">
-                            <div
-                                className="overview-progress-fill"
-                                style={{
-                                    width: `${projectProgress}%`,
-                                }}
-                            />
-                        </div>
-
-                    </div>
-
-
-                    <div className="overview-grid">
-
-                        {/* BACKLOG */}
-
-                        <div className="overview-card">
-
-                            <div className="overview-card-header">
-
+                            <div className="overview-header">
                                 <div>
-                                    <h3>Backlog</h3>
+                                    <h2>Project Overview</h2>
                                     <p>
-                                        {tasks.length} total tasks
+                                        Quick summary of this project's current progress.
                                     </p>
                                 </div>
+                            </div>
 
-                                <ListTodo size={20} />
+                            <div className="overview-stats">
+
+                                <div className="overview-stat-card">
+                                    <span>Total Tasks</span>
+                                    <strong>{totalTasks}</strong>
+                                </div>
+
+                                <div className="overview-stat-card">
+                                    <span>Completed</span>
+                                    <strong>{completedTasks}</strong>
+                                </div>
+
+                                <div className="overview-stat-card">
+                                    <span>In Progress</span>
+                                    <strong>{inProgressTasks}</strong>
+                                </div>
+
+                                <div className="overview-stat-card">
+                                    <span>Progress</span>
+                                    <strong>{projectProgress}%</strong>
+                                </div>
 
                             </div>
 
 
-                            <div className="overview-list">
+                            <div className="overview-progress-card">
+
+                                <div className="overview-progress-header">
+                                    <div>
+                                        <h3>Project Progress</h3>
+                                        <p>
+                                            {completedTasks} of {totalTasks} tasks completed
+                                        </p>
+                                    </div>
+
+                                    <strong>{projectProgress}%</strong>
+                                </div>
+
+                                <div className="overview-progress-track">
+                                    <div
+                                        className="overview-progress-fill"
+                                        style={{
+                                            width: `${projectProgress}%`,
+                                        }}
+                                    />
+                                </div>
+
+                            </div>
+
+                            {/* ALL PROJECTS SPRINTS */}
+                            <div className="overview-sprints-card">
+                                <div className="overview-card-header">
+                                    <div>
+                                        <h3>Project Sprints</h3>
+                                        <p>{projectSprints.length} total sprints</p>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        className="overview-view-button"
+                                        onClick={() => navigate(`/projects/${id}/sprints`)}
+                                    >
+                                        Manage Sprints 
+                                    </button>
+                                </div>
+
+                                {sprintLoading ? (
+                                    <div className="overview-empty">Loading sprints...</div>
+                                ) : projectSprints.length === 0 ? (
+                                    <div className="overview-empty">
+                                        No sprints created for this project.
+                                    </div>
+                                ) : (
+                                    
+                                <div className="overview-sprints-list">
+                                {projectSprints.map((sprint) => (
+                                    <div
+                                        className="overview-sprint-item clickable-sprint"
+                                        key={sprint.id}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() =>
+                                            navigate(`/projects/${id}/sprints/${sprint.id}`)
+                                        }
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" || e.key === " ") {
+                                                e.preventDefault();
+                                                navigate(`/projects/${id}/sprints/${sprint.id}`);
+                                            }
+                                        }}
+                                    >
+                                        <div className="overview-sprint-info">
+                                            <strong>{sprint.sprint_name}</strong>
+
+                                            <span>
+                                                {sprint.start_date || "No start date"}
+                                                {" - "}
+                                                {sprint.end_date || "No end date"}
+                                            </span>
+
+                                            {sprint.goal && <span>{sprint.goal}</span>}
+                                        </div>
+
+                                        <span className="overview-sprint-status">
+                                            {sprint.status || "Upcoming"}
+                                        </span>
+                                    </div>
+                                ))}
+                                </div>
+                            )}
+                            </div>
+
+                            <div className="overview-grid">
+                                {/* BACKLOG */}
+                                <div className="overview-card">
+
+                                    <div className="overview-card-header">
+
+                                        <div>
+                                            <h3>Backlog</h3>
+                                            <p>
+                                                {tasks.length} total tasks
+                                            </p>
+                                        </div>
+
+                                        <ListTodo size={20} />
+
+                                    </div>
 
 
-                                <div className="overview-list backlog-scroll-list">
-                                    {tasks.map((task) => (
+                                    <div className="overview-list">
+
+                                
+<div className="overview-list backlog-scroll-list">
+    {tasks.map((task) => (
+        <div
+            className="overview-list-item"
+            key={task.id}
+        >
+            <div>
+                <strong>
+                    {task.task_name || "-"}
+                </strong>
+
+                <span>
+                    {task.description || "No description"}
+                </span>
+            </div>
+
+            <span
+                className={`overview-priority ${
+                    task.priority
+                        ?.toLowerCase()
+                        .replace(/\s+/g, "-")
+                }`}
+            >
+                {task.priority || "-"}
+            </span>
+        </div>
+    ))}
+</div>
+
+                                        {tasks.length === 0 && (
+                                            <div className="overview-empty">
+                                                No backlog items found.
+                                            </div>
+                                        )}
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        className="overview-view-button"
+                                        onClick={() =>
+                                            navigate(`/projects/${id}/backlog`)
+                                        }
+                                    >
+                                        View Backlog →
+                                    </button>
+
+                                </div>
+
+
+                                {/* MILESTONES */}
+
+                                <div className="overview-card">
+
+                                    <div className="overview-card-header">
+
+                                        <div>
+                                            <h3>Modules</h3>
+                                            <p>
+                                                Project modules
+                                            </p>
+                                        </div>
+
+                                        <Flag size={20} />
+                                    </div>
+
+                                    <div className="overview-list overview-modules-lest">
+                                        {modulesLoading ? (
+                                            <div className="overview-empty">
+                                                Loading modules...
+                                            </div>
+                                        ) : projectModules.length === 0 ? (
+                                            <div className="overview-empty">
+                                                No modules created for this project.
+                                            </div>
+                                        ) : (
+                                            projectModules.map((module) => (
+                                                <div 
+                                                    className="overview-module-item"
+                                                    key={module.id}
+                                                >
+                                                    {module.milestone_name || module.name || "Untitled Module"}                                       
+                                                </div>                                      
+                                            ))
+                                        )}                               
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        className="overview-view-button"
+                                        onClick={() =>
+                                            navigate(`/projects/${id}/milestones`)
+                                        }
+                                    >
+                                        View Modules →
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        </div>
+                    )}
+
+                    {/* TEAM MEMBERS */}
+                    {activeSection === "members" && (
+                        <div className="members-scroll-content">
+                    <div className="project-section-content">
+
+                        <div className="team-members-header">
+                        
+                            <div className="section-title">
+                                <Users size={19} />
+                                <h2>Team Members</h2>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="add-member-button"
+                                onClick={() => {
+                                    setSelectedUser("");
+                                    setShowAddMember(true);
+                                }}
+                            >
+                                +
+                                Add Member
+                            </button>
+                        </div>
+
+                        {members.length === 0 ? (
+                            
+                            <p className="empty-section-message">
+                                No team members assigned to this project.
+                            </p>
+
+                        ) : (
+                            <div className="project-members-list">
+                                {members.map((member) => {
+                                    let memberUserId = null;
+
+                                    // GET USER ID FROM MEMBER OBJECT
+                                    if (
+                                        member.user && 
+                                        typeof member.user === "object"
+                                    ) {
+                                        memberUserId = member.user.id;
+                                    } else if (
+                                        member.user !== undefined &&
+                                        member.user !== null
+                                    ) {
+                                        memberUserId = member.user;
+                                    } else if (
+                                        member.user_id !== undefined
+                                    ) {
+                                        memberUserId = member.user_id;
+                                    }
+
+                                    // FIND COMPLETE USER DETAILS
+                                    const memberUser = users.find(
+                                        (item) => 
+                                            String(item.id) === String(memberUserId)
+                                    );
+
+                                    // Full name
+                                    const fullName =
+                                        `${memberUser?.first_name || ""} ${
+                                            memberUser?.last_name || ""
+                                        }`.trim() ||
+                                        memberUser?.username ||
+                                        "Unknown User";
+
+                                    // Designation
+                                    const designation =
+                                        typeof memberUser?.designation === "object"
+                                            ? memberUser?.designation?.name
+                                            : memberUser?.designation;                               
+
+                                    return (
                                         <div
-                                            className="overview-list-item"
-                                            key={task.id}
+                                            className="project-member-card"
+                                            key={member.id}
                                         >
-                                            <div>
+                                            {/* AVATAR */}
+                                            <div className="member-avatar">
+                                                {(
+                                                    memberUser?.first_name?.[0] ||
+                                                    memberUser?.username?.[0] ||
+                                                    "U"
+                                                ).toUpperCase()}
+                                            </div>
+
+                                            {/* MEMBER INFORMATION */}
+                                            <div className="member-info">
                                                 <strong>
-                                                    {task.task_name || "-"}
+                                                    {fullName}
                                                 </strong>
 
                                                 <span>
-                                                    {task.description || "No description"}
+                                                    {designation || "Designation not available"}
+                                                </span>
+
+                                                <span>
+                                                    {memberUser?.email || "Email not available"}
                                                 </span>
                                             </div>
 
-                                            <span
-                                                className={`overview-priority ${task.priority
-                                                        ?.toLowerCase()
-                                                        .replace(/\s+/g, "-")
-                                                    }`}
-                                            >
-                                                {task.priority || "-"}
-                                            </span>
+                                            {/* MEMBER ROLE CHECKBOXES */}
+
+                                            <div className="member-role-checkboxes">
+
+                                                <label className="member-role-option">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={Boolean(member.is_team_leader)}
+                                                        onChange={(e) =>
+                                                            handleMemberRoleChange(
+                                                                member.id,
+                                                                "is_team_leader",
+                                                                e.target.checked
+                                                            )
+                                                        }
+                                                    />
+                                                    <span>Team Leader</span>
+                                                </label>
+
+                                                <label className="member-role-option">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={Boolean(member.is_project_manager)}
+                                                        onChange={(e) => 
+                                                            handleMemberRoleChange(
+                                                                member.id,
+                                                                "is_project_manager",
+                                                                e.target.checked
+                                                            )
+                                                        }
+                                                    />
+                                                    <span>Project Manager</span>
+                                                </label>
+
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
-
-                                {tasks.length === 0 && (
-                                    <div className="overview-empty">
-                                        No backlog items found.
-                                    </div>
-                                )}
-
+                                    );
+                                })}
                             </div>
-
-
-                            <button
-                                type="button"
-                                className="overview-view-button"
-                                onClick={() =>
-                                    navigate(`/projects/${id}/backlog`)
-                                }
-                            >
-                                View Backlog →
-                            </button>
-
-                        </div>
-
-
-                        {/* MILESTONES */}
-
-                        <div className="overview-card">
-
-                            <div className="overview-card-header">
-
-                                <div>
-                                    <h3>Milestones</h3>
-                                    <p>
-                                        Project milestones
-                                    </p>
-                                </div>
-
-                                <Flag size={20} />
-
-                            </div>
-
-
-                            <div className="overview-list">
-                                <div className="overview-empty">
-                                    View project milestones and manage them from the Milestones page.
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                className="overview-view-button"
-                                onClick={() =>
-                                    navigate(`/projects/${id}/milestones`)
-                                }
-                            >
-                                View Milestones →
-                            </button>
-
-                        </div>
-
+                        )}
                     </div>
+                    </div>
+                    )}
+                   
+                </main>
+            </div>
 
-                </div>
-            )}
-
+            {/* PROJECT WORKSPACE LAYOUT */}
             {showAddMember && (
                 <div className="member-modal-overlay">
                     <div className="member-modal">
@@ -756,7 +1165,7 @@ const ProjectDetails = () => {
 
                                 {users.map((user) => {
 
-                                    const fullname =
+                                    const fullname = 
                                         `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
                                         user.username ||
                                         "Unknown User";
@@ -764,18 +1173,17 @@ const ProjectDetails = () => {
                                     const designation =
                                         typeof user.designation === "object"
                                             ? user.designation?.name
-                                            : user.designation;
+                                            : user.designation;      
+                                        
 
-
-                                    return (
-                                        <option
-                                            key={user.id} value={user.id}>
-                                            {user.username || fullname}
-                                            {"-"}
-                                            {designation || "No Designation"}
-                                        </option>
-                                    );
-                                })}
+                                return (
+                                    <option key={user.id} value={user.id}>
+                                        {user.username || fullname}
+                                        {" - "}
+                                        {designation}
+                                    </option>
+                                );
+                            })}
 
                             </select>
                         </div>
@@ -844,6 +1252,4 @@ const ProjectDetails = () => {
     );
 
 };
-
-
 export default ProjectDetails;

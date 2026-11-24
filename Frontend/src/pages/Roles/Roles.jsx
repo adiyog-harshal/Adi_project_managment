@@ -10,12 +10,6 @@ import {
     MoreVertical,
 } from "lucide-react";
 
-import {
-    PMSPageHeader,
-    PMSSearch,
-    PMSActionButton,
-} from "../../components/Common/Common";
-
 import RoleModal from "./RoleModal";
 import "./Roles.css";
 import api from "../../services/api";
@@ -38,6 +32,8 @@ function Roles() {
     const [statusFilter, setStatusFilter] = useState("All statuses");
 
 
+    const [openActionId, setOpenActionId] = useState(null);
+
     const fetchRoles = async () => {
         try {
             const response = await api.get("roles/");
@@ -57,26 +53,32 @@ function Roles() {
         fetchRoles();
     }, []);
 
-    const handleSelectStatus = async (role, isActive) => {
-        try {
+
+    const handleToggleRoleStatus = async (role, newStatus) => {
+         try {
             await api.patch(`roles/${role.id}/`, {
-                is_active: isActive
+                is_active: newStatus,
             });
 
-            await fetchRoles();
             setOpenStatusId(null);
-
+            await fetchRoles();
         } catch (error) {
             console.error(
                 "Failed to update role status:",
                 error.response?.data || error
             );
-
             alert("Failed to update role status.");
         }
     };
 
+    const handleSelectStatus = async (role, isActive) => {
+        if (role.is_active === isActive){
+            setOpenStatusId(null);
+            return;
+        }
 
+        await handleToggleRoleStatus(role, isActive);
+    };
     // Open Add Role modal
     const handleAddRole = () => {
         setOpenActionRoleId(null);
@@ -89,7 +91,6 @@ function Roles() {
         setSelectedRole(role);
         setIsModalOpen(true);
     };
-
 
     const handleDeleteRole = async (id) => {
 
@@ -148,6 +149,8 @@ function Roles() {
         }
     };
     // Search
+
+
     const filteredRoles = roles.filter((role) => {
 
         const searchText = search.toLowerCase();
@@ -163,14 +166,23 @@ function Roles() {
         return matchesSearch && matchesStatus;
     });
 
-
     return (
         <div className="roles-page">
-            <div className="roles-page-header">
+
+            {/* Header */}
+            <div className="page-header">
+
                 <div>
-                    <div className="roles-title-row">
-                        <ShieldCheck size={28} className="roles-title-icon" />
-                        <h1>Roles</h1>
+
+                    <div className="page-title-wrapper">
+
+                        <ShieldCheck
+                            size={27}
+                            className="page-title-icon"
+                        />
+                        <h1>
+                            Role Management
+                        </h1>
                     </div>
                     <p className="roles-subtitle">Manage roles and permissions</p>
                 </div>
@@ -184,39 +196,18 @@ function Roles() {
                 </button>
             </div>
 
-            <div className="roles-toolbar">
-                <label className="roles-search">
-                    <Search size={18} aria-hidden="true" />
-                    <span className="visually-hidden">Search roles</span>
-                    <input
-                        type="search"
-                        placeholder="Search roles..."
-                        value={search}
-                        onChange={(event) => setSearch(event.target.value)}
-                    />
-                </label>
-            </div>
+            <div className="roles-card">
 
-            <section className="roles-table-card" aria-labelledby="roles-table-title">
-                <div className="roles-card-header">
+                <div className="card-header">
+
                     <div>
-                        <h2 id="roles-table-title">All roles</h2>
-                        <p>{filteredRoles.length} of {roles.length} roles shown</p>
-                    </div>
+                        <h2>
+                            Roles
+                        </h2>
 
-                    <div className="search-box">
-
-                        <Search size={18} />
-
-                        <PMSSearch
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                            placeholder="Search roles..."
-
-                        />
+                        <p>
+                            {roles.length} roles configured
+                        </p>
 
                     </div>
 
@@ -226,15 +217,18 @@ function Roles() {
                     <table className="roles-table">
                         <thead>
                             <tr>
-                                <th scope="col">Role</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Actions</th>
+                                <th>Role Name</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredRoles.length === 0 ? (
-                                <tr>
-                                    <td colSpan="4" className="roles-empty-state">
+                               <tr>
+                                    <td
+                                        colSpan="5"
+                                        className="empty-state"
+                                    >
                                         No roles found
                                     </td>
                                 </tr>
@@ -250,81 +244,65 @@ function Roles() {
                                             </div>
 
                                         </td>
+                                    <td>
+                                        <div className="status-dropdown-wrapper">
+                                            <button
+                                                type="button"
+                                                className={`status ${
+                                                    role.is_active ? "active-status" : "inactive-status"
+                                                }`}
+                                                onClick={() =>
+                                                    setOpenStatusId(
+                                                        openStatusId === role.id ? null : role.id
+                                                    )
+                                                }
+                                            >
+                                                {role.is_active ? "Active" : "Inactive"}
+                                            </button>
 
 
+                                        </div>
+                                    </td>
                                         <td>
-                                            <div className="status-dropdown-wrapper">
+                                            <div className="role-actions-menu">
                                                 <button
                                                     type="button"
-                                                    className={`status ${role.is_active ? "active-status" : "inactive-status"
-                                                        }`}
+                                                    className="role-actions-trigger"
+                                                    title="Actions"
+                                                    aria-label={`Actions for ${role.name}`}
                                                     onClick={() =>
-                                                        setOpenStatusId(
-                                                            openStatusId === role.id ? null : role.id
+                                                        setOpenActionId(
+                                                            openActionId === role.id ? null : role.id
                                                         )
                                                     }
                                                 >
-                                                    {role.is_active ? "Active" : "Inactive"}
-                                                    <span className="status-arrow">▼</span>
+                                                    <MoreVertical size={20} />
                                                 </button>
 
-                                                {openStatusId === role.id && (
-                                                    <div className="status-dropdown-menu">
+                                                 {openActionId === role.id && (
+                                                    <div className="role-actions-dropdown">
                                                         <button
                                                             type="button"
-                                                            className={role.is_active ? "selected-status" : ""}
-                                                            onClick={() => handleSelectStatus(role, true)}
+                                                            onClick={() => {
+                                                                setOpenActionId(null);
+                                                                handleEditRole(role);
+                                                            }}
                                                         >
-                                                            Active {role.is_active ? "✓" : ""}
+                                                            Edit
                                                         </button>
 
                                                         <button
                                                             type="button"
-                                                            className={!role.is_active ? "selected-status" : ""}
-                                                            onClick={() => handleSelectStatus(role, false)}
+                                                            className="role-delete-action"
+                                                            onClick={() => {
+                                                                setOpenActionId(null);
+                                                                handleDeleteRole(role.id);
+                                                            }}
                                                         >
-                                                            Inactive {!role.is_active ? "✓" : ""}
+                                                            Delete
                                                         </button>
                                                     </div>
-                                                )}
-                                            </div>
-                                        </td>
-
-
-
-                                        <td>
-                                            <div className="roles-actions">
-                                                <button
-                                                    className="roles-action-button"
-                                                    type="button"
-                                                    aria-label={`Actions for ${role.name}`}
-                                                    aria-haspopup="menu"
-                                                    aria-expanded={openActionRoleId === role.id}
-                                                    title="Role actions"
-                                                    onClick={(event) => toggleActionMenu(role.id, event)}
-                                                >
-                                                    <MoreVertical size={18} />
-                                                </button>
-                                                {openActionRoleId === role.id && createPortal(
-                                                    <div
-                                                        ref={actionMenuRef}
-                                                        className="roles-action-menu-list"
-                                                        role="menu"
-                                                        aria-label={`Actions for ${role.name}`}
-                                                        style={{ top: actionMenuPosition.top, right: actionMenuPosition.right }}
-                                                    >
-                                                        <button type="button" role="menuitem" onClick={handleAddRole}>
-                                                            <Plus size={16} /> Add role
-                                                        </button>
-                                                        <button type="button" role="menuitem" onClick={() => handleEditRole(role)}>
-                                                            <Pencil size={16} /> Edit role
-                                                        </button>
-                                                        <button type="button" role="menuitem" className="delete-action" onClick={() => handleDeleteRole(role.id)}>
-                                                            <Trash2 size={16} /> Delete role
-                                                        </button>
-                                                    </div>,
-                                                    document.body
-                                                )}
+                                                 )}
                                             </div>
                                         </td>
                                     </tr>
@@ -348,5 +326,4 @@ function Roles() {
         </div>
     );
 }
-
 export default Roles;

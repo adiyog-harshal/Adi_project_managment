@@ -15,55 +15,52 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        if (!username.trim() || !password.trim()) {
-            setError("Username and password are required.");
-            return;
-        }
+        setError("");
+        setLoading(true);
 
         try {
-            setLoading(true);
-            setError("");
-
-            // Django JWT Login API
-            const response = await api.post("token/", {
-                username: username.trim(),
+            const response = await api.post("login/", {
+                username: username,
                 password: password,
             });
 
-            console.log("LOGIN RESPONSE:", response.data);
+            const accessToken = response.data.access;
+            const refreshToken = response.data.refresh;
+
+            if (!accessToken) {
+                throw new Error(
+                    "Access token was not returned by the server."
+                );
+            }
 
             // Save JWT tokens
-            if (response.data.access) {
-                localStorage.setItem("token", response.data.access);
+            localStorage.setItem("access_token", accessToken);
+
+            if (refreshToken) {
+                localStorage.setItem("refresh_token", refreshToken);
             }
 
-            if (response.data.refresh) {
-                localStorage.setItem(
-                    "refresh_token",
-                    response.data.refresh
-                );
-            }
+            console.log("Login successful");
+            console.log(
+                "Token saved:",
+                Boolean(localStorage.getItem("access_token"))
+            );
 
-            console.log("TOKEN SAVED");
-
-            // Navigate after successful login
-            navigate("/");
+            // Change "/dashboard" if your app uses a different route.
+            navigate("/dashboard");
 
         } catch (err) {
-            console.error("LOGIN ERROR:", err.response?.data || err);
+            console.error(
+                "Login failed:",
+                err.response?.data || err.message
+            );
 
-            if (err.response?.status === 401) {
-                setError("Invalid username or password.");
-            } else if (err.response?.status === 400) {
-                setError("Please check your username and password.");
-            } else if (err.response) {
-                setError(
-                    err.response.data?.detail ||
-                    "Login failed. Please try again."
-                );
-            } else {
-                setError("Unable to connect to the server.");
-            }
+            setError(
+                err.response?.data?.detail ||
+                err.response?.data?.non_field_errors?.[0] ||
+                err.message ||
+                "Login failed. Please try again."
+            );
         } finally {
             setLoading(false);
         }
@@ -72,7 +69,6 @@ const Login = () => {
     return (
         <div className="login-page">
             <div className="login-card">
-
                 <div className="login-header">
                     <h1>PMS</h1>
                     <h2>Login</h2>
@@ -80,29 +76,24 @@ const Login = () => {
                 </div>
 
                 <form onSubmit={handleLogin}>
-
                     <div className="login-field">
                         <label>Username</label>
-
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="Enter username"
-                            autoComplete="username"
                             required
                         />
                     </div>
 
                     <div className="login-field">
                         <label>Password</label>
-
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Enter password"
-                            autoComplete="current-password"
                             required
                         />
                     </div>
@@ -120,7 +111,6 @@ const Login = () => {
                     >
                         {loading ? "Logging in..." : "Login"}
                     </button>
-
                 </form>
             </div>
         </div>

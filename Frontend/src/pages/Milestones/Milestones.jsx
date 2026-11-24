@@ -1,18 +1,12 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 
 import './Milestones.css';
 import { ArrowLeft, Flag } from "lucide-react";
-import {
-    PMSPageHeader,
-    PMSSearch,
-    PMSActionButton,
-} from "../../components/Common/Common";
 import api from "../../services/api";
 
 const initialFormData = {
     name: '',
-    project: '',
     description: '',
     startDate: '',
     endDate: '',
@@ -87,8 +81,8 @@ function Milestones() {
 
             const formattedMilestones = projectMilestones.map((milestone) => ({
                 id: milestone.id,
-                name: milestone.milestone_name,
                 project: milestone.project,
+                name: milestone.milestone_name || milestone.name || "",
                 description: milestone.description || '',
                 startDate: milestone.start_date || "",
                 endDate: milestone.due_date || '',
@@ -97,7 +91,7 @@ function Milestones() {
                     milestone.status,
             }));
 
-            setMilestones(formattedMilestones);
+            setMilestones(formattedMilestones.reverse());
         } catch (err) {
             console.error('Error loading milestones:', err);
             setError('Unable to load milestones.');
@@ -114,16 +108,16 @@ function Milestones() {
     const [formData, setFormData] = useState({
         ...initialFormData,
     });
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const filteredMilestones = milestones.filter((milestone) => {
         const project = projects.find(
             (item) => Number(item.id) === Number(milestone.project)
         );
 
-        const projectName = project?.project_name || '';
+    
 
-        return `${milestone.name}
-        ${projectName}
+    return `${milestone.name}
         ${milestone.description}
         ${milestone.startDate}
         ${milestone.endDate}
@@ -133,14 +127,32 @@ function Milestones() {
     });
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+    const { name, value } = e.target;
 
-        setFormData((previousData) => ({
-            ...previousData,
-            [name]: value,
-        }));
+    setFormData((previousData) => ({
+        ...previousData,
+        [name]: value,
+    }));
+
+    const errorFieldMap = {
+        name: 'milestone_name',
+        startDate: 'start_date',
+        endDate: 'due_date',
     };
 
+    setFieldErrors((previousErrors) => {
+        const updatedErrors = { ...previousErrors };
+        delete updatedErrors[name];
+
+        if (errorFieldMap[name]) {
+            delete updatedErrors[errorFieldMap[name]];
+        }
+
+        return updatedErrors;
+    });
+
+    setError('');
+};
     const openAddForm = () => {
         setEditingMilestone(null);
         setOpenMenu(null);
@@ -178,67 +190,130 @@ function Milestones() {
         });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        if (
-            formData.startDate &&
-            formData.endDate &&
-            formData.endDate < formData.startDate
-        ) {
-            alert('End date cannot be before start date.');
+    setError('');
+    setFieldErrors({});
+
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+        newErrors.milestone_name = ['Milestone name is required.'];
+    } else if (formData.name.trim().length < 2) {
+        newErrors.milestone_name = [
+            'Milestone name must contain at least 2 characters.',
+        ];
+    }
+
+    if (!formData.startDate) {
+        newErrors.start_date = ['Start date is required.'];
+    }
+
+    if (!formData.endDate) {
+        newErrors.due_date = ['End date is required.'];
+    }
+
+    if (
+        formData.startDate &&
+        formData.endDate &&
+        formData.endDate < formData.startDate
+    ) {
+        newErrors.due_date = [
+            'Due date cannot be before the start date.',
+        ];
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+        setFieldErrors(newErrors);
+        return;
+    }
+
+    const payload = {
+        project: Number(id),
+        milestone_name: formData.name.trim(),
+        description: formData.description,
+        start_date: formData.startDate,
+        due_date: formData.endDate,
+        status: statusToBackend[formData.status],
+    };
+
+    try {
+        const url = editingMilestone
+            ? `${API_BASE_URL}/milestones/${editingMilestone.id}/update/`
+            : `${API_BASE_URL}/milestones/create/`;
+
+        const response = await fetch(url, {
+            method: editingMilestone ? 'PUT' : 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const responseText = await response.text();
+
+        let responseData = {};
+
+        try {
+            responseData = responseText
+                ? JSON.parse(responseText)
+                : {};
+        } catch {
+            console.error(
+                'Milestone API returned a non-JSON response:',
+                response.status,
+                responseText
+            );
+        }
+
+        if (!response.ok) {
+            if (
+                responseData &&
+                typeof responseData === 'object' &&
+                !Array.isArray(responseData)
+            ) {
+                const backendErrors = {};
+
+                Object.entries(responseData).forEach(([key, value]) => {
+                    backendErrors[key] = Array.isArray(value)
+                        ? value.map(String)
+                        : [String(value)];
+                });
+
+                setFieldErrors(backendErrors);
+
+                const messages = Object.entries(backendErrors)
+                    .flatMap(([key, values]) =>
+                        values.map((message) => `${key}: ${message}`)
+                    );
+
+                setError(
+                    messages.length
+                        ? messages.join(' ')
+                        : `Unable to save milestone (HTTP ${response.status}).`
+                );
+            } else {
+                setError(
+                    `Unable to save milestone (HTTP ${response.status}). Check the API URL and server logs.`
+                );
+            }
+
             return;
         }
 
-        const payload = {
-            project: Number(id),
-            milestone_name: formData.name,
-            description: formData.description,
-            start_date: formData.startDate,
-            due_date: formData.endDate,
-            status: statusToBackend[formData.status],
-        };
+        setFieldErrors({});
+        setError('');
+        await fetchMilestones();
+        closeForm();
+    } catch (err) {
+        console.error('Error saving milestone:', err);
+        setError(
+            err.message || 'Unable to save milestone. Check your connection.'
+        );
+    }
+};
 
-        try {
-            let response;
-
-            if (editingMilestone) {
-                response = await fetch(
-                    `${API_BASE_URL}/milestones/${editingMilestone.id}/update/`,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(payload),
-                    }
-                );
-            } else {
-                response = await fetch(
-                    `${API_BASE_URL}/milestones/create/`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(payload),
-                    }
-                );
-            }
-
-            if (!response.ok) {
-                const responseData = await response.json();
-                console.error(responseData);
-                throw new Error('Unable to save milestone.');
-            }
-
-            await fetchMilestones();
-            closeForm();
-        } catch (err) {
-            console.error(err);
-            setError(err.message);
-        }
-    };
 
     const handleDelete = async (id) => {
         const confirmed = window.confirm(
@@ -284,11 +359,13 @@ function Milestones() {
             {/* Header */}
             <button
                 type="button"
-                className="back-to-projects-btn"
+                className="backlog-back-button"
                 onClick={() =>
-                    navigate(-1)}
+                    navigate(`/projects/${id}`)
+                }
             >
                 <ArrowLeft size={16} />
+
                 Back to Project
             </button>
 
@@ -297,10 +374,10 @@ function Milestones() {
                 <div>
                     <h1 className='milestones-title'>
                         <Flag size={16} />
-                        Milestones</h1>
+                        Modules</h1>
 
                     <p>
-                        Manage project milestones and track their progress.
+                        Manage project modules and track their progress.
                     </p>
                 </div>
 
@@ -309,22 +386,11 @@ function Milestones() {
                     className="add-milestone-btn"
                     onClick={openAddForm}
                 >
-                    + Add Milestone
+                    + Add Module
                 </button>
             </div>
 
-            {/* Search */}
-            <div className="milestones-toolbar">
-                <div className="milestones-search-box">
-                    <PMSSearch
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                        }}
-                        placeholder="Search milestones..."
-                    />
-                </div>
-            </div>
+        
 
             {/* Milestones Table */}
             <div className="milestones-card">
@@ -334,7 +400,6 @@ function Milestones() {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Description</th>
                             <th>Start Date</th>
                             <th>End Date</th>
                             <th>Status</th>
@@ -343,37 +408,33 @@ function Milestones() {
                     </thead>
 
                     <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan="7" className="empty-milestones">
-                                    Loading milestones...
-                                </td>
-                            </tr>
-                        ) : filteredMilestones.length > 0 ? (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="5" className="empty-milestones">
+                                        Loading milestones...
+                                    </td>
+                                </tr>
+                            ) : filteredMilestones.length > 0 ? (
 
                             filteredMilestones.map((milestone) => (
 
                                 <tr key={milestone.id}>
-
+                                    {/* NAME */}
                                     <td className="milestone-name">
                                         {milestone.name || "-"}
                                     </td>
-                                    <td>
-                                        {getProjectName(milestone.project)}
-                                    </td>
 
-                                    <td>
-                                        {milestone.description || "-"}
-                                    </td>
-
+                                    {/* START DATE */}
                                     <td>
                                         {milestone.startDate || "-"}
                                     </td>
 
+                                    {/* END DATE */}
                                     <td>
                                         {milestone.endDate || "-"}
                                     </td>
 
+                                    {/* STATUS */}
                                     <td>
                                         <span className="milestone-status">
                                             {milestone.status || "-"}
@@ -382,23 +443,20 @@ function Milestones() {
 
                                     {/* 3 DOT ACTION MENU */}
                                     <td>
-
-                                        <div className="milestone-actions">
-
+                                       <div className="milestone-actions">
                                             <button
                                                 type="button"
                                                 className="milestone-menu-btn"
                                                 onClick={() =>
                                                     setOpenMenu(
-                                                        openMenu ===
-                                                            milestone.id
+                                                        openMenu === milestone.id
                                                             ? null
                                                             : milestone.id
                                                     )
                                                 }
                                                 aria-label="More actions"
                                             >
-                                                ⋮
+                                                â‹®
                                             </button>
 
                                             {openMenu === milestone.id && (
@@ -408,14 +466,9 @@ function Milestones() {
                                                         : ""
                                                         }`}
                                                 >
-
                                                     <button
                                                         type="button"
-                                                        onClick={() =>
-                                                            openEditForm(
-                                                                milestone
-                                                            )
-                                                        }
+                                                        onClick={() => openEditForm( milestone)}
                                                     >
                                                         Edit
                                                     </button>
@@ -423,26 +476,17 @@ function Milestones() {
                                                     <button
                                                         type="button"
                                                         className="delete-action"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                milestone.id
-                                                            )
-                                                        }
+                                                        onClick={() => handleDelete( milestone.id)}
                                                     >
                                                         Delete
                                                     </button>
 
                                                 </div>
                                             )}
-
                                         </div>
-
                                     </td>
-
                                 </tr>
-
                             ))
-
                         ) : (
 
                             <tr>
@@ -471,8 +515,8 @@ function Milestones() {
                         <div className="milestone-form-header">
                             <h2>
                                 {editingMilestone
-                                    ? "Edit Milestone"
-                                    : "Add Milestone"}
+                                    ? "Edit Module"
+                                    : "Update Module"}
                             </h2>
 
                             <button
@@ -481,11 +525,16 @@ function Milestones() {
                                 onClick={closeForm}
                                 aria-label="Close"
                             >
-                                ×
+                                Ã—
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} noValidate>
+                            {error && (
+                            <div className="milestone-error-message" role="alert">
+                                {error}
+                            </div>
+                        )}
 
                             {/* Name */}
                             <div className="milestone-form-group">
@@ -495,13 +544,21 @@ function Milestones() {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    placeholder="Enter milestone name"
+                                    placeholder="Enter module name"
                                     required
                                 />
+                                {(fieldErrors.milestone_name || fieldErrors.name) && (
+                                <p className="milestone-field-error" role="alert">
+                                    {(
+                                        fieldErrors.milestone_name ||
+                                        fieldErrors.name
+                                    ).join(' ')}
+                                </p>
+                            )}
                             </div>
 
                             {/* Description */}
-                            <div className="milestone-form-group">
+                            {/* <div className="milestone-form-group">
                                 <label>Description</label>
                                 <textarea
                                     name="description"
@@ -510,7 +567,7 @@ function Milestones() {
                                     placeholder="Enter milestone description"
                                     rows={3}
                                 />
-                            </div>
+                            </div> */}
 
                             {/* Dates */}
                             <div className="milestone-form-date-row">
@@ -525,6 +582,8 @@ function Milestones() {
                                     />
                                 </div>
 
+
+
                                 <div className="milestone-form-group">
                                     <label>End Date</label>
                                     <input
@@ -535,7 +594,54 @@ function Milestones() {
                                         min={formData.startDate || undefined}
                                         required
                                     />
+                                    {(fieldErrors.due_date || fieldErrors.endDate) && (
+                                        <p className="milestone-field-error" role="alert">
+                                            {(
+                                                fieldErrors.due_date ||
+                                                fieldErrors.endDate
+                                            ).join(" ")}
+                                        </p>
+                                    )}
                                 </div>
+
+
+                                <input
+                                    type="date"
+                                    name="startDate"
+                                    value={formData.startDate || ""}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                {(fieldErrors.start_date || fieldErrors.startDate) && (
+                                <p className="milestone-field-error" role="alert">
+                                    {(
+                                        fieldErrors.start_date ||
+                                        fieldErrors.startDate
+                                    ).join(' ')}
+                                </p>
+                            )}
+                            </div>
+
+                            {/* End Date */}
+                            <div>
+                                <label>End Date:</label>
+
+                                <input
+                                    type="date"
+                                    name="endDate"
+                                    value={formData.endDate}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                {(fieldErrors.due_date || fieldErrors.endDate) && (
+                                <p className="milestone-field-error" role="alert">
+                                    {(
+                                        fieldErrors.due_date ||
+                                        fieldErrors.endDate
+                                    ).join(' ')}
+                                </p>
+                            )}
+
                             </div>
 
                             {/* Status */}
@@ -569,8 +675,8 @@ function Milestones() {
                                     className="milestone-save-button"
                                 >
                                     {editingMilestone
-                                        ? "Update Milestone"
-                                        : "Create Milestone"}
+                                        ? "Update Module"
+                                        : "Create Module"}
                                 </button>
                             </div>
 
