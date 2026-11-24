@@ -15,6 +15,7 @@ import Profile from "../pages/Profile/Profile";
 import Settings from "../pages/Settings/Settings";
 import Clients from "../pages/clients/client";
 import History from "../pages/History/History";
+import Report from "../pages/Report/Report";
 function AppRoutes() {
     return (
         <Routes>
@@ -170,7 +171,7 @@ function AppRoutes() {
                 path="/reports"
                 element={
                     <ProtectedRoute>
-                        <h1>Reports</h1>
+                        <Report />
                     </ProtectedRoute>
                 }
             />
@@ -211,4 +212,3 @@ function AppRoutes() {
 }
 
 export default AppRoutes;
-
