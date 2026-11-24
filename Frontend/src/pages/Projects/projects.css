@@ -2813,3 +2813,125 @@
     background: #fff3cd;
     color: #b7791f;
 }
+
+
+
+/* MAIN GRID */
+.project-form-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-areas:
+        "name name"
+        "type manager"
+        "start end"
+        "description description";
+    gap: 26px;
+    width: 100%;
+    align-items: start;
+}
+
+/* EACH FIELD */
+.project-form-grid > .form-group {
+    position: static !important;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* FIELD POSITIONS */
+.project-name-field {
+    grid-area: name;
+}
+
+.project-type-field {
+    grid-area: type;
+}
+
+.project-manager-field {
+    grid-area: manager;
+}
+
+.start-date-field {
+    grid-area: start;
+}
+
+.end-date-field {
+    grid-area: end;
+}
+
+.description-field {
+    grid-area: description;
+}
+
+/* INPUT WIDTH */
+.project-form-grid input,
+.project-form-grid select,
+.project-form-grid textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* PROJECT TYPE BOX */
+.project-type-client-box {
+    position: static !important;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    border: 1px solid #dcdfe5;
+    border-radius: 10px;
+    background: #fff;
+}
+
+/* DESCRIPTION */
+.project-form-grid textarea {
+    min-height: 90px;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+    .project-form-grid {
+        grid-template-columns: 1fr !important;
+        grid-template-areas:
+            "name"
+            "type"
+            "manager"
+            "start"
+            "end"
+            "description";
+    }
+}
+
+
+/* SMALL RADIO BUTTONS */
+.project-radio input[type="radio"] {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px;
+    min-height: 14px;
+    margin: 0;
+    padding: 0;
+    accent-color: #2563eb;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.project-radio {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Space between circle and text */
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.project-name-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.project-client-name {
+    font-size: 12px;
+    color: #64748b;
+}

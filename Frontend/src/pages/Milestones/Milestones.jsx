@@ -7,9 +7,6 @@ import api from "../../services/api";
 
 const initialFormData = {
     name: '',
-    description: '',
-    startDate: '',
-    endDate: '',
     status: 'Not Started',
 };
 const API_BASE_URL = 'http://127.0.0.1:8000/api';
@@ -38,6 +35,7 @@ function Milestones() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [formError, setFormError] = useState("");
     useEffect(() => {
         fetchProjects();
         fetchMilestones();
@@ -137,6 +135,7 @@ function Milestones() {
     const openAddForm = () => {
         setEditingMilestone(null);
         setOpenMenu(null);
+        setFormError("");
 
         setFormData({
             ...initialFormData,
@@ -154,12 +153,13 @@ function Milestones() {
             name: milestone.name || "",
             project: id,
             description: milestone.description || "",
-            startDate: milestone.startDate || "",
-            endDate: milestone.endDate || "",
             status: milestone.status || "Not Started",
         });
 
+        setFormError("");
+
         setShowForm(true);
+
     };
 
     const closeForm = () => {
@@ -169,10 +169,14 @@ function Milestones() {
         setFormData({
             ...initialFormData,
         });
+
+        setFormError("");
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setFormError("");
 
         if (
             formData.startDate &&
@@ -221,15 +225,22 @@ function Milestones() {
 
             if (!response.ok) {
                 const responseData = await response.json();
-                console.error(responseData);
-                throw new Error('Unable to save milestone.');
+
+                const errorMessage = 
+                    responseData.milestone_name?.[0] ||
+                    responseData.detail ||
+                    'Unable to save module.';
+
+                throw new Error(errorMessage);
             }
 
             await fetchMilestones();
             closeForm();
         } catch (err) {
-            console.error(err);
-            setError(err.message);
+            console.error("Module save error:", err);
+            setFormError(
+                err.message || "Unable to save Module. Please try again."
+            );
         }
     };
 
@@ -318,8 +329,6 @@ function Milestones() {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -328,7 +337,7 @@ function Milestones() {
                     <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="5" className="empty-milestones">
+                                    <td colSpan="3" className="empty-milestones">
                                         Loading milestones...
                                     </td>
                                 </tr>
@@ -340,16 +349,6 @@ function Milestones() {
                                     {/* NAME */}
                                     <td className="milestone-name">
                                         {milestone.name || "-"}
-                                    </td>
-
-                                    {/* START DATE */}
-                                    <td>
-                                        {milestone.startDate || "-"}
-                                    </td>
-
-                                    {/* END DATE */}
-                                    <td>
-                                        {milestone.endDate || "-"}
                                     </td>
 
                                     {/* STATUS */}
@@ -410,7 +409,7 @@ function Milestones() {
 
                             <tr>
                                 <td
-                                    colSpan="7"
+                                    colSpan="3"
                                     className="empty-milestones"
                                 >
                                     No milestones found.
@@ -436,7 +435,7 @@ function Milestones() {
                             <h2>
                                 {editingMilestone
                                     ? "Edit Module"
-                                    : "Update Module"}
+                                    : "Add New Module"}
                             </h2>
 
                             <button
@@ -448,6 +447,12 @@ function Milestones() {
                                 ×
                             </button>
                         </div>
+
+                        {formError && (
+                            <div className="milestone-form-error" role="alert">
+                                {formError}
+                            </div>
+                        )}
 
                         <form onSubmit={handleSubmit}>
 
@@ -477,31 +482,7 @@ function Milestones() {
                             </div> */}
 
                             {/* Dates */}
-                            <div className="milestone-form-date-row">
-                                <div className="milestone-form-group">
-                                    <label>Start Date</label>
-                                    <input
-                                        type="date"
-                                        name="startDate"
-                                        value={formData.startDate || ""}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="milestone-form-group">
-                                    <label>End Date</label>
-                                    <input
-                                        type="date"
-                                        name="endDate"
-                                        value={formData.endDate || ""}
-                                        onChange={handleChange}
-                                        min={formData.startDate || undefined}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
+                            
                             {/* Status */}
                             <div className="milestone-form-group">
                                 <label>Status</label>
@@ -542,8 +523,6 @@ function Milestones() {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 }

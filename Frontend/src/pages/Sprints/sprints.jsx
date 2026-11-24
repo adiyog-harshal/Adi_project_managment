@@ -9,6 +9,21 @@ const { id, sprintId } = useParams();
 const navigate = useNavigate();
 
 const [sprints, setSprints] = useState([]);
+
+const totalSprints = sprints.length;
+
+const activeSprint = sprints.find(
+    (sprint) => sprint.status === "In Progress"
+);
+
+const completedSprints = sprints.filter(
+    (sprint) => sprint.status === "Completed"
+).length;
+
+const plannedSprints = sprints.filter(
+    (sprint) => sprint.status === "Planned"
+).length;
+
 const [tasks, setTasks] = useState([]);
 const [selectedSprint, setSelectedSprint] = useState(null);
 const [loading, setLoading] = useState(true);
@@ -113,6 +128,7 @@ const [scheduleForm, setScheduleForm] = useState({
 
 const [savingSchedule, setSavingSchedule] = useState(false);
 const [scheduleMessage, setScheduleMessage] = useState("");
+const [showScheduleForm, setShowScheduleForm] = useState(true);
 
 const [taskScheduleForm, setTaskScheduleForm] = useState({
     start_date: "",
@@ -217,24 +233,25 @@ const formatMinutes = (value) => {
     return `${minutes}m`;
 };
 
-const handleSaveSchedule = async () => {
+
+const handleSaveSchedule = async (type) => {
     if (!selectedTask) return;
 
-    const estimatedTime = parseTimeToMinutes(
-        scheduleForm.estimated_time
-    );
-    const actualTime = parseTimeToMinutes(
-        scheduleForm.actual_time
-    );
+    const isEstimated = type === "estimated";
 
-    if (estimatedTime === null || actualTime === null) {
-        setScheduleMessage(
-            "Enter time like 2h 30m, 2h, or 30m."
-        );
+    const timeValue = isEstimated
+        ? scheduleForm.estimated_time
+        : scheduleForm.actual_time;
+
+    const totalMinutes = parseTimeToMinutes(timeValue);
+
+    if (totalMinutes === null) {
+        setScheduleMessage("Enter time like 2h 30m, 2h, or 30m.");
         return;
     }
 
     if (
+        isEstimated &&
         scheduleForm.start_date &&
         scheduleForm.due_date &&
         scheduleForm.due_date < scheduleForm.start_date
@@ -246,6 +263,7 @@ const handleSaveSchedule = async () => {
     }
 
     if (
+        !isEstimated &&
         scheduleForm.actual_start_date &&
         scheduleForm.actual_end_date &&
         scheduleForm.actual_end_date < scheduleForm.actual_start_date
@@ -256,14 +274,17 @@ const handleSaveSchedule = async () => {
         return;
     }
 
-    const payload = {
-        start_date: scheduleForm.start_date || null,
-        due_date: scheduleForm.due_date || null,
-        actual_start_date: scheduleForm.actual_start_date || null,
-        actual_end_date: scheduleForm.actual_end_date || null,
-        estimated_time_minutes: estimatedTime,
-        actual_time_minutes: actualTime,
-    };
+    const payload = isEstimated
+        ? {
+            start_date: scheduleForm.start_date || null,
+            due_date: scheduleForm.due_date || null,
+            estimated_time_minutes: totalMinutes,
+        }
+        : {
+            actual_start_date: scheduleForm.actual_start_date || null,
+            actual_end_date: scheduleForm.actual_end_date || null,
+            actual_time_minutes: totalMinutes,
+        };
 
     try {
         setSavingSchedule(true);
@@ -278,47 +299,56 @@ const handleSaveSchedule = async () => {
             ...selectedTask,
             ...response.data,
         };
-        // updated the selected task details 
+
         setSelectedTask(updatedTask);
 
-        setSprintTasks((previous) => 
-            previous.map((task) => 
+        setTasks((previous) =>
+            previous.map((task) =>
                 String(task.id) === String(updatedTask.id)
-                    ? {...task, ...response.data }
-                    : task   
-        ));
+                    ? { ...task, ...response.data }
+                    : task
+            )
+        );
 
         setScheduleForm((previous) => ({
             ...previous,
-            start_date: response.data.start_date || "",
-            due_date: response.data.due_date || "",
-            actual_start_date: response.data.actual_start_date || "",
-            actual_end_date: response.data.actual_end_date || "",
+            start_date: updatedTask.start_date || "",
+            due_date: updatedTask.due_date || "",
+            actual_start_date: updatedTask.actual_start_date || "",
+            actual_end_date: updatedTask.actual_end_date || "",
             estimated_time: formatMinutes(
-                response.data.estimated_time_minutes
+                updatedTask.estimated_time_minutes
             ),
             actual_time: formatMinutes(
-                response.data.actual_time_minutes
+                updatedTask.actual_time_minutes
             ),
         }));
 
-        setScheduleMessage("Task schedule saved successfully.");
+        setShowScheduleForm(false);
+
+        setToast({
+            message: isEstimated
+                ? "Estimated schedule saved successfully!"
+                : "Actual time saved successfully!",
+            type: "success",
+        });
+
     } catch (error) {
         console.error(
-            "Failed to save task schedule:",
+            "Failed to save schedule:",
             error.response?.data || error
         );
 
         setScheduleMessage(
             Object.values(error.response?.data || {})
                 .flat()
-                .join(" ") ||
-            "Failed to save. Please check the backend API and try again."
+                .join(" ") || "Failed to save schedule."
         );
     } finally {
         setSavingSchedule(false);
     }
 };
+
 
 const calculateEndDate = (start, days) => {
     if (!start || !days) return "";
@@ -562,7 +592,9 @@ const handleCreateSprint = async (e) => {
                 : null,
             start_date: sprintForm.start_date,
             end_date: sprintForm.end_date,
-            status: sprintForm.status,
+            status: editingSprintId !== null
+                ? sprintForm.status
+                : "Planned",
         };
 
         if (editingSprintId !== null) {
@@ -674,25 +706,52 @@ const handleAssignTasks = async () => {
     }
 };
 
-
-
-
 const handleStartSprint = async (sprintId, startChoice) => {
-    if (getSprintTaskCount(sprintId) === 0) {
+
+    // Step 1: Check whether sprint has tasks
+    const sprintTaskList = getSprintTasks(sprintId);
+
+    if (sprintTaskList.length === 0) {
         setShowStartSprintModal(false);
+
         setToast({
-            message: "Please assign at least one task before starting the sprint.",
+            message: "Please add at least one task before starting the sprint.",
             type: "error",
         });
+
         return;
     }
 
+
+    // Step 2: Check whether every task has an employee
+    const unassignedTasks = getUnassignedSprintTasks(sprintId);
+
+    if (unassignedTasks.length > 0) {
+
+        const taskNames = unassignedTasks
+            .map(task => task.task_name || task.title || `Task ${task.id}`)
+            .join(", ");
+
+        setShowStartSprintModal(false);
+
+        setToast({
+            message: `Assign employees to these tasks before starting: ${taskNames}`,
+            type: "error",
+        });
+
+        return;
+    }
+
+
+    // Step 3: Start sprint if all checks pass
     try {
         setStartingSprint(true);
 
         const response = await api.post(
             `sprints/${sprintId}/start/`,
-            { start_choice: startChoice }
+            {
+                start_choice: startChoice
+            }
         );
 
         const updatedSprint = response.data.sprint;
@@ -715,6 +774,7 @@ const handleStartSprint = async (sprintId, startChoice) => {
             message: response.data.message || "Sprint started successfully!",
             type: "success",
         });
+
     } catch (error) {
         console.error(
             "Sprint start error:",
@@ -727,6 +787,7 @@ const handleStartSprint = async (sprintId, startChoice) => {
                 "Unable to start sprint.",
             type: "error",
         });
+
     } finally {
         setStartingSprint(false);
     }
@@ -899,6 +960,14 @@ const handleMoveToBacklog = async (task) => {
 
 const handleCompleteSprint = async () => {
     if (!selectedSprint) return;
+
+    if (selectedSprint.status !== "In Progress") {
+        setToast({
+            message: "You can end a sprint only after starting it.",
+            type: "error",
+        });
+        return;
+    }
 
     const unfinishedTasks = sprintTasks.filter(
         (task) => getTaskStatus(task) !== "Completed"
@@ -1103,15 +1172,35 @@ const handleTaskAssigneeChange = async (task, userId) => {
     }
 };
 
-const getSprintTaskCount = (sprintId) => {
+// Get all tasks belonging to a particular sprint
+const getSprintTasks = (sprintId) => {
     return tasks.filter((task) => {
-        const taskSprintId = 
+        const taskSprintId =
             typeof task.sprint === "object"
                 ? task.sprint?.id
                 : task.sprint;
 
         return String(taskSprintId) === String(sprintId);
-    }).length;
+    });
+};
+
+
+// Count tasks belonging to a sprint
+const getSprintTaskCount = (sprintId) => {
+    return getSprintTasks(sprintId).length;
+};
+
+
+// Find tasks that do not have an assigned employee
+const getUnassignedSprintTasks = (sprintId) => {
+    return getSprintTasks(sprintId).filter((task) => {
+        const assignedUserId =
+            typeof task.assigned_to === "object"
+                ? task.assigned_to?.id
+                : task.assigned_to;
+
+        return !assignedUserId;
+    });
 };
 
 return (
@@ -1134,6 +1223,8 @@ return (
                 <h1>Sprint Management</h1>
                 <p>Plan your sprints and track task progress.</p>
             </div>
+
+           
 
             <button
                 type="button"
@@ -1171,6 +1262,34 @@ return (
                 <Plus size={18} />
                 Create Sprint
             </button>     
+        </div>
+
+        <div className="sprint-summary-cards">
+
+            <div className="sprint-summary-card">
+                <h4>Total Sprints</h4>
+                <h2>{totalSprints}</h2>
+                <span>All created sprints</span>
+            </div>
+
+            <div className="sprint-summary-card">
+                <h4>Active Sprint</h4>
+                <h2>{activeSprint ? activeSprint.sprint_name : "No Sprint Active"}</h2>
+                <span>{activeSprint ? "Currently running" : ""}</span>
+            </div>
+
+            <div className="sprint-summary-card">
+                <h4>Completed Sprints</h4>
+                <h2>{completedSprints}</h2>
+                <span>Successfully completed</span>
+            </div>
+
+            <div className="sprint-summary-card">
+                <h4>Planned Sprints</h4>
+                <h2>{plannedSprints}</h2>
+                <span>Waiting to start</span>
+            </div>
+
         </div>
         {toast.message && (
     <div
@@ -1212,7 +1331,7 @@ return (
                             : "Create New Sprint"}
                     </h2>
                     <p>
-                        Configure your sprint duration, dates, status, and goal.
+                        Configure your sprint duration, dates, and goal.
                     </p>
 
                     {editingSprintId === null && (
@@ -1286,24 +1405,6 @@ return (
                             })
                         }
                     />
-                </label>
-
-                <label>
-                    Status
-                    <select
-                        value={sprintForm.status}
-                        onChange={(e) =>
-                            setSprintForm({
-                                ...sprintForm,
-                                status: e.target.value,
-                            })
-                        }
-                    >
-                        <option value="Planned">Planned</option>
-                        <option value="Active">Active</option>
-                        <option value="Completed">Completed</option>
-                        <option value="On Hold">On Hold</option>
-                    </select>
                 </label>
 
                 <label>
@@ -1535,7 +1636,8 @@ return (
                             Add Tasks
                         </button>
 
-                        {selectedSprint && (
+                        {selectedSprint && 
+                            (selectedSprint.status || "").toLowerCase() === "planned" && (
                             <button
                                 type="button"
                                 className="start-sprint-button"
@@ -1558,9 +1660,8 @@ return (
                         )}
 
                         {selectedSprint &&
-                            !["completed", "cancelled"].includes(
-                                (selectedSprint.status || "").toLowerCase()
-                            ) && (
+                            (selectedSprint.status || "").toLowerCase() === "in progress" && (
+                            
                                 <button
                                     type="button"
                                     className="complete-sprint-button"
@@ -1766,6 +1867,8 @@ return (
                                                 className={isSelected ? "selected" : ""}
                                                 onClick={() => {
                                                     setSelectedTask(task);
+                                                    setShowScheduleForm(true);
+                                                    setScheduleMessage("");
                                                 }}
                                             >
                                                 <td>
@@ -1990,141 +2093,186 @@ return (
                                                                                 : "Unassigned")}
                                                                 </p>
                                                             </section>
-                                                        </div>
+                                                        </div>                                                                                                                           
+                                                                                                       
+                                                        {/* TASK SCHEDULE AND MANUAL TIME */}
+                                                        <section className="task-info-section task-schedule-section">
 
-                                                        {/* TIME SUMMARY */}
-                                                                                                
-                                                    
-                                                    {/* TASK SCHEDULE AND MANUAL TIME */}
-            <section className="task-info-section task-schedule-section">
-                <h4>Task Schedule</h4>
+                                                            <h4>Task Schedule</h4>
 
-                <div className="schedule-date-grid">
-                    <div className="schedule-field">
-                        <label htmlFor="estimated-start-date">
-                            Estimated Start Date
-                        </label>
+                                                            {!showScheduleForm ? (
+                                                                <button
+                                                                    type="button"
+                                                                    className="save-schedule-button"
+                                                                    onClick={() => {
+                                                                        // Load previously saved values
+                                                                        setScheduleForm({
+                                                                            start_date: selectedTask.start_date || "",
+                                                                            due_date: selectedTask.due_date || "",
+                                                                            estimated_time: formatMinutes(
+                                                                                selectedTask.estimated_time_minutes
+                                                                            ),
+                                                                            actual_start_date: selectedTask.actual_start_date || "",
+                                                                            actual_end_date: selectedTask.actual_end_date || "",
+                                                                            actual_time: formatMinutes(
+                                                                                selectedTask.actual_time_minutes
+                                                                            ),
+                                                                        });
 
-                        <input
-                            id="estimated-start-date"
-                            type="date"
-                            name="start_date"
-                            value={scheduleForm.start_date}
-                            onChange={handleScheduleChange}
-                        />
-                    </div>
+                                                                        setScheduleMessage("");
+                                                                        setShowScheduleForm(true);
+                                                                    }}
+                                                                >
+                                                                    Edit Schedule
+                                                                </button>
+                                                            ) : (
+                                                                <>
+                                                                    {/* ESTIMATED SCHEDULE */}
+                                                                    <h5>Estimated Schedule</h5>
 
-                    <div className="schedule-field">
-                        <label htmlFor="estimated-end-date">
-                            Estimated End Date
-                        </label>
+                                                                    <div className="schedule-date-grid">
 
-                        <input
-                            id="estimated-end-date"
-                            type="date"
-                            name="due_date"
-                            min={scheduleForm.start_date || undefined}
-                            value={scheduleForm.due_date}
-                            onChange={handleScheduleChange}
-                        />
-                    </div>
+                                                                        <div className="schedule-field">
+                                                                            <label>Estimated Start Date</label>
+                                                                            <input
+                                                                                type="date"
+                                                                                value={scheduleForm.start_date}
+                                                                                onChange={(e) =>
+                                                                                    setScheduleForm({
+                                                                                        ...scheduleForm,
+                                                                                        start_date: e.target.value
+                                                                                    })
+                                                                                }
+                                                                            />
+                                                                        </div>
 
-                    <div className="schedule-field">
-                        <label htmlFor="actual-start-date">
-                            Actual Start Date
-                        </label>
+                                                                        <div className="schedule-field">
+                                                                            <label>Estimated End Date</label>
+                                                                            <input
+                                                                                type="date"
+                                                                                min={scheduleForm.start_date || undefined}
+                                                                                value={scheduleForm.due_date}
+                                                                                onChange={(e) =>
+                                                                                    setScheduleForm({
+                                                                                        ...scheduleForm,
+                                                                                        due_date: e.target.value
+                                                                                    })
+                                                                                }
+                                                                            />
+                                                                        </div>
 
-                        <input
-                            id="actual-start-date"
-                            type="date"
-                            name="actual_start_date"
-                            value={scheduleForm.actual_start_date}
-                            onChange={handleScheduleChange}
-                        />
-                    </div>
+                                                                    </div>
 
-                    <div className="schedule-field">
-                        <label htmlFor="actual-end-date">
-                            Actual End Date
-                        </label>
+                                                                    <div className="schedule-time-group estimated-time-group">
+                                                                        <label>Estimated Time</label>
 
-                        <input
-                            id="actual-end-date"
-                            type="date"
-                            name="actual_end_date"
-                            min={scheduleForm.actual_start_date || undefined}
-                            value={scheduleForm.actual_end_date}
-                            onChange={handleScheduleChange}
-                        />
-                    </div>
-                </div>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={scheduleForm.estimated_time}
+                                                                            onChange={(e) =>
+                                                                                setScheduleForm({
+                                                                                    ...scheduleForm,
+                                                                                    estimated_time: e.target.value
+                                                                                })
+                                                                            }
+                                                                            placeholder="e.g. 2h 30m"
+                                                                        />
 
-                {/* ESTIMATED TIME */}
-            <div className="schedule-time-group estimated-time-group">
-                <label htmlFor="estimated-time">
-                    Estimated Time
-                </label>
+                                                                        <small>Planned effort</small>
+                                                                    </div>
 
-                <input
-                    id="estimated-time"
-                    type="text"
-                    value={scheduleForm.estimated_time}
-                    onChange={(e) =>
-                        setScheduleForm({
-                            ...scheduleForm,
-                            estimated_time: e.target.value
-                        }) 
-                    }
-                    placeholder="e.g. 2h 30m"
-                />
+                                                                    <button
+                                                                        type="button"
+                                                                        className="save-schedule-button"
+                                                                        onClick={() => handleSaveSchedule("estimated")}
+                                                                        disabled={savingSchedule}
+                                                                    >
+                                                                        {savingSchedule ? "Saving..." : "Save Estimated Time"}
+                                                                    </button>
 
-                <small>Planned effort</small>
-            </div>
+                                                                    {/* ACTUAL SCHEDULE */}
+                                                                    {selectedTask.status === "Completed" && (
+                                                                        <>
+                                                                            <hr />
 
-            {/* ACTUAL TIME */}
-            <div className="schedule-time-group actual-time-group">
-                <label htmlFor="actual-time">
-                    Actual Time Taken
-                </label>
+                                                                            <h5>Actual Schedule</h5>
 
-                <input
-                    id="actual-time"
-                    type="text"
-                    
-                    value={scheduleForm.actual_time}
-                    onChange={(e) =>
-                        setScheduleForm({
-                            ...scheduleForm,
-                            actual_time: e.target.value
-                        }) 
-                    }
-                    placeholder="e.g. 1h 45m"
-                />
+                                                                            <div className="schedule-date-grid">
 
-                <small>Actual effort</small>
-            </div>
+                                                                                <div className="schedule-field">
+                                                                                    <label>Actual Start Date</label>
 
-            <button
-                type="button"
-                className="save-schedule-button"
-                onClick={handleSaveSchedule}
-                disabled={savingSchedule}
-            >
-                {savingSchedule ? "Saving..." : "Save Schedule"}
-            </button>
+                                                                                    <input
+                                                                                        type="date"
+                                                                                        value={scheduleForm.actual_start_date}
+                                                                                        onChange={(e) =>
+                                                                                            setScheduleForm({
+                                                                                                ...scheduleForm,
+                                                                                                actual_start_date: e.target.value
+                                                                                            })
+                                                                                        }
+                                                                                    />
+                                                                                </div>
 
-            {scheduleMessage && (
-                <p className="schedule-message" role="status">
-                    {scheduleMessage}
-                </p>
-            )}
-            {scheduleMessage && (
-                    <p className="schedule-message" role="status">
-                        {scheduleMessage}
-                    </p>
-                )}
-            </section>                                                        
-                                                        
+                                                                                <div className="schedule-field">
+                                                                                    <label>Actual End Date</label>
+
+                                                                                    <input
+                                                                                        type="date"
+                                                                                        min={scheduleForm.actual_start_date || undefined}
+                                                                                        value={scheduleForm.actual_end_date}
+                                                                                        onChange={(e) =>
+                                                                                            setScheduleForm({
+                                                                                                ...scheduleForm,
+                                                                                                actual_end_date: e.target.value
+                                                                                            })
+                                                                                        }
+                                                                                    />
+                                                                                </div>
+
+                                                                            </div>
+
+                                                                            <div className="schedule-time-group actual-time-group">
+                                                                                <label>Actual Time Taken</label>
+
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={scheduleForm.actual_time}
+                                                                                    onChange={(e) =>
+                                                                                        setScheduleForm({
+                                                                                            ...scheduleForm,
+                                                                                            actual_time: e.target.value
+                                                                                        })
+                                                                                    }
+                                                                                    placeholder="e.g. 1h 45m"
+                                                                                />
+
+                                                                                <small>Actual effort</small>
+                                                                            </div>
+
+                                                                            <button
+                                                                                type="button"
+                                                                                className="save-schedule-button"
+                                                                                onClick={() => handleSaveSchedule("actual")}
+                                                                                disabled={savingSchedule}
+                                                                            >
+                                                                                {savingSchedule ? "Saving..." : "Save Actual Time"}
+                                                                            </button>
+                                                                        </>
+                                                                    )}
+
+                                                                    {/* ERROR / VALIDATION MESSAGE */}
+                                                                    {scheduleMessage && (
+                                                                        <p className="schedule-message" role="alert">
+                                                                            {scheduleMessage}
+                                                                        </p>
+                                                                    )}
+
+                                                                </>
+                                                            )}
+
+                                                        </section>
+                                                            
                                                     </div>
                                                 </>
                                             );
@@ -2499,6 +2647,8 @@ return (
     </div>
 )}
     </div>
+
+    
 );
 };
 export default Sprints;

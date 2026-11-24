@@ -34,6 +34,8 @@ const Projects = () => {
     
     const [editingProject, setEditingProject] = useState(null);
 
+    const [clients, setClients] = useState([]);
+
     const [currentPage, setCurrentPage] = useState(1);
     
     const projectsPerPage = 5;
@@ -68,20 +70,36 @@ const Projects = () => {
         return startDate <= today && endDate >= today;
     }).length;
 
-    const completedProjects = projects.filter((project) => {
+    const completedProjects = projects.filter(
+        (project) => project.status === "Completed"
+    ).length;
 
-        if (!project.end_date) return false;
+    // GET COMPLETED PROJECT NAMES
+const completedProjectList = projects.filter(
+    (project) => project.status === "Completed"
+);
 
-        const endDate = new Date(project.end_date);
-        endDate.setHours(0, 0, 0, 0);
+// DISPLAY COMPLETED PROJECTS IN CONSOLE
+useEffect(() => {
+    if (projects.length > 0) {
+        console.log("Completed Projects:");
 
-        return endDate < today;
-    }).length;
+        console.table(
+            completedProjectList.map((project) => ({
+                id: project.id,
+                project_name: project.project_name,
+                status: project.status
+            }))
+        );
+    }
+}, [projects]);
 
     const [selectedProject, setSelectedProject] = useState(null);
 
     const [projectForm, setProjectForm] = useState({
         project_name: "",
+        project_type: "Internal",
+        client: "",
         start_date: "",
         end_date: "",
         project_manager: "",
@@ -108,6 +126,14 @@ const Projects = () => {
 
         if (!projectForm.project_name.trim()) {
             setFormError("Project name is required.");
+            return;
+        }
+
+        if (
+            projectForm.project_type === "Client" &&
+            !projectForm.client
+        ) {
+            setFormError("Please select a client.");
             return;
         }
 
@@ -169,12 +195,15 @@ const Projects = () => {
 
             console.error("Project save error:", error);
 
-            console.error(
-                "Backend response:",
-                error.response?.data
-            );
+            const backendError = error.response?.data;
 
-            setFormError("Failed to save project.");
+            if (backendError?.project_name) {
+                setFormError(backendError.project_name[0]);
+            } else if (backendError?.detail) {
+                setFormError(backendError.detail);
+            } else {
+                setFormError("Unable to save project. Please try again.");
+            }
         }
     };
 
@@ -228,6 +257,7 @@ const Projects = () => {
     useEffect(() => {
         fetchProjects();
         fetchUsers();
+        fetchClients();
         fetchNotifications();
 
         const interval = setInterval(fetchNotifications, 30000);
@@ -276,6 +306,8 @@ const Projects = () => {
 
         setProjectForm({
             project_name: project.project_name || "",
+            project_type: project.project_type || "Internal",
+            client: project.client || "",
             start_date: project.start_date || "",
             end_date: project.end_date || "",
             project_manager: project.project_manager || "",
@@ -347,6 +379,19 @@ const Projects = () => {
         );
 
         return Math.min(Math.max(progress, 0), 100);
+    };
+
+    const fetchClients = async () => {
+        try {
+            const response = await api.get("clients/");
+            setClients(
+                Array.isArray(response.data)
+                    ? response.data
+                    : response.data.results || []
+            );
+        } catch (error) {
+            console.error("Error fetching clients:", error);
+        }
     };
    
     return (
@@ -524,7 +569,7 @@ const Projects = () => {
                             
 
                             <div className="project-form-header">    
-                                <h2>Add New Project</h2>
+                                <h2>{editingProject ? "Edit Project" : "Add New Project"}</h2>
 
                                 <p>Enter the project details below</p>
                             
@@ -553,90 +598,123 @@ const Projects = () => {
 
                             <div className="project-form-grid">
 
-                                {/* Project Name */}
+    {/* PROJECT NAME - FULL WIDTH */}
+    <div className="form-group full-width project-name-field">
+        <label>Project Name</label>
+        <input
+            type="text"
+            name="project_name"
+            value={projectForm.project_name}
+            onChange={handleChange}
+            placeholder="Enter project name"
+        />
+    </div>
 
-                                
-                                <div className="form-group full-width">
-                                    <label>Project Name</label>
+    {/* PROJECT MANAGER */}
+    <div className="form-group project-manager-field">
+        <label>Project Manager</label>
+        <select
+            name="project_manager"
+            value={projectForm.project_manager}
+            onChange={handleChange}
+        >
+            <option value="">Select Project Manager</option>
 
-                                    <input
-                                        type="text"
-                                        name="project_name"
-                                        value={projectForm.project_name}
-                                        onChange={handleChange}
-                                        placeholder="Enter project name"
-                                    />
-                                </div>
+            {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                    {user.username}
+                </option>
+            ))}
+        </select>
+    </div>
 
+    {/* PROJECT TYPE */}
+    <div className="form-group project-type-field">
+        <div className="project-type-client-box">
+            <label>Project Type</label>
 
-                                {/* project manager dropdown */}
-                                
+            <div className="project-type-options">
 
-                                <div className="form-group">
-                                    <label>Project Manager</label>
+                <label className="project-radio">
+                    <input
+                        type="radio"
+                        name="project_type"
+                        value="Internal"
+                        checked={projectForm.project_type === "Internal"}
+                        onChange={handleChange}
+                    />
+                    Internal Project
+                </label>
 
-                                    <select
-                                        name="project_manager"
-                                        value={projectForm.project_manager}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="">
-                                            Select Project Manager
-                                        </option>
+                <label className="project-radio">
+                    <input
+                        type="radio"
+                        name="project_type"
+                        value="Client"
+                        checked={projectForm.project_type === "Client"}
+                        onChange={handleChange}
+                    />
+                    Client Project
+                </label>
 
-                                        {users.map((user) => (
-                                            <option key={user.id} value={user.id}>
-                                                {user.username}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+            </div>
 
+            {projectForm.project_type === "Client" && (
+                <div className="project-client-dropdown">
+                    <label>Select Client</label>
 
-                            
-                                
+                    <select
+                        name="client"
+                        value={projectForm.client}
+                        onChange={handleChange}
+                    >
+                        <option value="">Select Client Name</option>
 
+                        {clients.map((client) => (
+                            <option key={client.id} value={client.id}>
+                                {client.client_name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+        </div>
+    </div>
 
-                                {/* Start Date */}
-                                <div className="form-group">
-                                    <label>Start Date</label>
+    
 
-                                    <input
-                                        type="date"
-                                        name="start_date"
-                                        value={projectForm.start_date}
-                                        onChange={handleChange}
-                                        min="2000-01-01"
-                                    
-                                    />
-                                </div>
+    {/* START DATE */}
+    <div className="form-group start-date-field">
+        <label>Start Date</label>
+        <input
+            type="date"
+            name="start_date"
+            value={projectForm.start_date}
+            onChange={handleChange}
+        />
+    </div>
 
+    {/* END DATE */}
+    <div className="form-group end-date-field">
+        <label>End Date</label>
+        <input
+            type="date"
+            name="end_date"
+            value={projectForm.end_date}
+            onChange={handleChange}
+        />
+    </div>
 
-                                {/* End Date */}
-                                <div className="form-group">
-                                    <label>End Date</label>
-
-                                    <input
-                                        type="date"
-                                        name="end_date"
-                                        value={projectForm.end_date}
-                                        onChange={handleChange}
-                                        min="2000-01-01"
-                                        
-                                    />
-                                </div>
-
-                                <div className="form-group full-width">
-                                    <label>Description</label>
-
-                                    <textarea
-                                        name="description"
-                                        value={projectForm.description}
-                                        onChange={handleChange}
-                                        placeholder="Enter project description"
-                                    />
-
-                                </div>
+    {/* DESCRIPTION - FULL WIDTH */}
+    <div className="form-group full-width description-field">
+        <label>Description</label>
+        <textarea
+            name="description"
+            value={projectForm.description}
+            onChange={handleChange}
+            placeholder="Enter project description"
+        />
+    </div>
 
                             </div>
 
@@ -658,7 +736,7 @@ const Projects = () => {
                                     className="create-project-btn"
                                     onClick={handleCreateProject}
                                 >
-                                    Save Project
+                                    {editingProject ? "Update Project" : "Create Project"}                                     
                                 </button>
 
                             </div>
@@ -702,13 +780,19 @@ const Projects = () => {
                             <FolderKanban size={18} />
                         </div>
 
-                        <div>
+                        <div className="project-name-details">
                             <Link
                                 to={`/projects/${project.id}`}
                                 className="project-name-link"
                             >
                                 {project.project_name}
                             </Link>
+
+                            {project.client_name && (
+                                <span className="project-client-name">
+                                    Client: {project.client_name}
+                                </span>
+                            )}
                         </div>
                     </div>
 

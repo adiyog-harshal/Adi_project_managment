@@ -180,7 +180,6 @@ const Dashboard = () => {
         } else {
             setSelectedProgressProject(null);
         }
-
         // Fetch all team members
         const memberResponses = await Promise.all(
             projectData.map(async (project) => {
@@ -216,7 +215,6 @@ const Dashboard = () => {
         );
     }
 };
-
     const fetchUsers = async () => {
         try {
             const response = await api.get("users/");
@@ -327,7 +325,6 @@ const Dashboard = () => {
         );
     }).length;
 
-
     // ===============================
     // ON TIME / DELAYED PROJECTS
     // ===============================
@@ -371,7 +368,7 @@ const Dashboard = () => {
     const onTimeProjectCount = onTimeProjects.length;
     const delayedProjectCount = delayedProjects.length;
 
-    // ===============================
+// ===============================
 // PROJECT PROGRESS CALCULATION
 // ===============================
 
@@ -796,12 +793,10 @@ console.log("PROJECT PROGRESS:", {
                                 </span>
 
                             </div>
-
                         </div>
 
 
                         {/* PENDING */}
-
                         <div className="stat-card">
 
                             <div className="stat-card-top">
@@ -870,11 +865,9 @@ console.log("PROJECT PROGRESS:", {
 
                     </div>
 
-
                     {/* =============================
                         PROJECT ANALYTICS
                     ============================= */}
-
                     <div className="dashboard-chart-card">
 
                         <div className="dashboard-chart-header">
@@ -885,7 +878,6 @@ console.log("PROJECT PROGRESS:", {
                                 </p>
                             </div>
                         </div>
-
 
                         <div className="dashboard-line-chart">
 
@@ -954,7 +946,6 @@ console.log("PROJECT PROGRESS:", {
                 {/* =================================
                     PROJECTS + PROJECT PROGRESS
                 ================================= */}
-
                 <div className="dashboard-project-section">
 
                     {/* =================================
@@ -982,8 +973,7 @@ console.log("PROJECT PROGRESS:", {
                             <table className="project-table">
 
                                 <thead>
-                                    <tr>
-                                    
+                                    <tr>                                    
                                         <th>Project Name</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
@@ -1008,8 +998,6 @@ console.log("PROJECT PROGRESS:", {
                                                     setSelectedProgressProject(project)
                                                 }
                                             >
-
-
                                                 <td>
                                                     {project.project_name || "-"}
                                                 </td>

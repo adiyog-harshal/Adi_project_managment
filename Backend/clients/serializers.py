@@ -5,8 +5,11 @@ import re
 
 class ClientSerializer(serializers.ModelSerializer):
 
+    has_account = serializers.SerializerMethodField()
+
     class Meta:
         model = Client
+
         fields = [
             "id",
             "client_name",
@@ -16,8 +19,12 @@ class ClientSerializer(serializers.ModelSerializer):
             "address",
             "created_at",
             "updated_at",
+            "has_account",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "has_account", "created_at", "updated_at"]       
+
+    def get_has_account(self, obj):
+        return bool(obj.user_id)
 
     def validate_client_name(self, value):
         value = value.strip()

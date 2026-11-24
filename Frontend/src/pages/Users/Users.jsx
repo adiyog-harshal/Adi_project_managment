@@ -10,6 +10,11 @@ import {
     Users as UsersIcon,
     UserIcon,
     LockKeyhole,
+    MoreVertical,
+    Pencil,
+    Trash2,
+    X,
+    Copy,
 } from "lucide-react";
 
 function Users() {
@@ -22,6 +27,10 @@ function Users() {
     const [showForm, setShowForm] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [credentials, setCredentials] = useState(null);
+
+    const [currentUser, setCurrentUser] = useState(null);
+    const [openActionId, setOpenActionId] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -36,6 +45,15 @@ function Users() {
             .toLowerCase()
             .includes(search.toLowerCase())
     );
+
+    const fetchCurrentUser = async () => {
+        try {
+            const response = await api.get("profile/");
+            setCurrentUser(response.data);
+        } catch (error) {
+            console.error("Failed to fetch current user:", error);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -94,27 +112,33 @@ const handleSubmit = async (e) => {
         status: formData.status,
     };
 
-    console.log("User update payload:", payload);
-    console.log("Available designations:", designations);
-    console.log("Available roles:", roles);
-
     try {
         if (editingUser) {
             // Update existing user
             await api.put(`users/${editingUser.id}/`, payload);
+
+            await fetchUsers();
+            closeForm();
+
+            alert("User updated successfully.");
+
         } else {
             // Create new user
-            await api.post("users/", payload);
+            const response = await api.post("users/", payload);
+
+            console.log("Create user response:", response.data);
+
+            await fetchUsers();
+            closeForm();
+
+            // Display generated login credentials
+            if (response.data.credentials) {
+                setCredentials(response.data.credentials);
+            } else {
+                alert("User created, but login credentials were not returned by the backend.");
+            }
         }
 
-        await fetchUsers();
-        closeForm();
-
-        alert(
-            editingUser
-                ? "User updated successfully."
-                : "User created successfully."
-        );
     } catch (error) {
         console.error(
             "Failed to save user:",
@@ -129,8 +153,34 @@ const handleSubmit = async (e) => {
                 ? JSON.stringify(errorData, null, 2)
                 : "Failed to save user. Please try again."
         );
+
     } finally {
         setIsSaving(false);
+    }
+};
+
+// Reset Employee Password
+const handleResetPassword = async (user) => {
+    const confirmReset = window.confirm(
+        `Are you sure you want to reset password for ${user.name}?`
+    );
+
+    if (!confirmReset) return;
+
+    try {
+        const response = await api.post(
+            `users/${user.id}/reset-password/`
+        );
+
+        setCredentials(response.data.credentials);
+
+    } catch (error) {
+        console.error("Password reset failed:", error);
+
+        alert(
+            error.response?.data?.detail ||
+            "Failed to reset password."
+        );
     }
 };
     
@@ -364,28 +414,68 @@ const handleSubmit = async (e) => {
                                                     Protected
                                                 </span>
                                             ) : (
-                                                <>
-                                                   <button
-                                                        type="button"
-                                                        className="user-edit-btn"
-                                                        onClick={() =>
-                                                            openEditForm(user)
-                                                        }
-                                                    >
-                                                        Edit
-                                                    </button>
+                                                <div className="action-menu-wrapper">
 
+                                                    {/* THREE DOTS BOTTON */}
                                                     <button
                                                         type="button"
-                                                        className="user-delete-btn"
+                                                        className='action-menu-trigger'
                                                         onClick={() =>
-                                                            handleDelete(user.id)
+                                                            setOpenActionId(
+                                                                openActionId === user.id ? null : user.id
+                                                            )
                                                         }
+                                                        title="More actions"
                                                     >
-                                                        Delete
+                                                        <MoreVertical size={20} />
                                                     </button>
-                                                </>                                        
-                                            )}                                          
+
+                                                    {/* DROPDOWN Menu */}
+                                                    {openActionId === user.id && (
+                                                        <div className='action-dropdown'>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>{
+                                                                    openEditForm(user);
+                                                                    setOpenActionId(null);
+                                                                }}
+                                                            >
+                                                                <Pencil size={15} />
+                                                                Edit
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                className="delete-action"
+                                                                onClick={() => {
+                                                                    handleDelete(user.id);
+                                                                    setOpenActionId(null);
+                                                                }}
+                                                            >
+                                                                <Trash2 size={15} />
+                                                                Delete
+                                                            </button>
+                                                            
+                                                        {/* {(currentUser?.is_staff || currentUser?.is_superuser) && ( */}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    handleResetPassword(user);
+                                                                    setOpenActionId(null);
+                                                                }}                                                                
+                                                            >
+                                                                <LockKeyhole size={15} />
+                                                                Reset Password
+                                                            </button>
+
+                                                        
+                                                        
+                                                        </div>
+                                                    )}
+                                                </div>                                                    
+                                                )}
+                                                                                                                               
                                         </div>
                                     </td>
                                 </tr>
@@ -534,6 +624,106 @@ const handleSubmit = async (e) => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+            {/* Employee Login Credentials Modal */}
+            {/* Employee Login Credentials Modal */}
+            {credentials && (
+                <div className="credentials-overlay">
+                    <div className="credentials-modal">
+
+                        {/* Close Button */}
+                        <button
+                            type="button"
+                            className="credentials-close"
+                            onClick={() => setCredentials(null)}
+                        >
+                            <X size={20} />
+                        </button>
+
+                        {/* Header */}
+                        <div className="credentials-header">
+                            <div className="credentials-icon">
+                                <ShieldCheck size={30} />
+                            </div>
+
+                            <h2>Employee Created Successfully!</h2>
+
+                            <p>
+                                Employee login credentials are ready.
+                                Share them securely with the employee.
+                            </p>
+                        </div>
+
+                        {/* Username */}
+                        <div className="credentials-field">
+                            <label>Username</label>
+
+                            <div className="credentials-input-group">
+                                <input
+                                    type="text"
+                                    value={credentials.username}
+                                    readOnly
+                                />
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        navigator.clipboard.writeText(credentials.username)
+                                    }
+                                >
+                                    <Copy size={16} />
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Password */}
+                        <div className="credentials-field">
+                            <label>Temporary Password</label>
+
+                            <div className="credentials-input-group">
+                                <input
+                                    type="text"
+                                    value={credentials.password}
+                                    readOnly
+                                />
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        navigator.clipboard.writeText(credentials.password)
+                                    }
+                                >
+                                    <Copy size={16} />
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Security Message */}
+                        <div className="credentials-warning">
+                            <LockKeyhole size={18} />
+
+                            <p>
+                                Please share these credentials securely.
+                                The employee should change their password
+                                after logging in.
+                            </p>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="credentials-footer">
+                            <button
+                                type="button"
+                                className="credentials-done-btn"
+                                onClick={() => setCredentials(null)}
+                            >
+                                Done
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             )}

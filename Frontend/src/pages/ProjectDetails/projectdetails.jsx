@@ -27,7 +27,7 @@ const ProjectDetails = () => {
     const [members, setMembers] = useState([]);
     const [tasks, setTasks] = useState([]);
     const [activeSection, setActiveSection] = useState("details");
-    const [selectedUser, setSelectedUser] = useState("");
+    const [selectedUsers, setSelectedUsers] = useState([]);
     const [showAddMember, setShowAddMember] = useState(false);
 
     const [projectSprints, setProjectSprints] = useState([]);
@@ -36,6 +36,24 @@ const ProjectDetails = () => {
     const [projectModules, setProjectModules] = useState([]);
     const [modulesLoading, setModulesLoading] = useState(true);
 
+const getMemberUserId = (member) => {
+    if (member.user && typeof member.user === "object") {
+        return member.user.id;
+    }
+
+    if (member.user !== undefined && member.user !== null) {
+        return member.user;
+    }
+
+    return member.user_id ?? null;
+};
+
+const assignedUserIds = new Set(
+    members
+        .map(getMemberUserId)
+        .filter((userId) => userId !== null)
+        .map(String)
+);
 
     useEffect(() => {
         fetchProject();
@@ -162,23 +180,73 @@ const ProjectDetails = () => {
     };
 
     const handleAddMember = async () => {
-        if (!selectedUser) {
-            alert("Please select a user.");
+
+        if (selectedUsers.length === 0) {
+            alert("Please select at least one employee.");
             return;
         }
 
         try {
-            const response = await api.post(
-                `projects/${id}/members/`,
-                {
-                    project: Number(id),
-                    user: Number(selectedUser),
-                }
+
+            // Send API request for each selected employee
+            const results = await Promise.all(
+                selectedUsers.map(async (userId) => {
+
+                    const employee = users.find(
+                        (user) => String(user.id) === String(userId)
+                    );
+
+                    const employeeName =
+                        `${employee?.first_name || ""} ${employee?.last_name || ""}`.trim() ||
+                        employee?.username ||
+                        "Unknown Employee";
+
+                    try {
+
+                        await api.post(`projects/${id}/members/`, {
+                            project: Number(id),
+                            user: Number(userId),
+                        });
+
+                        return {
+                            success: true,
+                            userId,
+                            employeeName
+                        };
+
+                    } catch (error) {
+
+                        const errorData = error.response?.data;
+
+                        const reason =
+                            errorData?.detail ||
+                            errorData?.non_field_errors?.[0] ||
+                            errorData?.user?.[0] ||
+                            error.message ||
+                            "Unknown error";
+
+                        return {
+                            success: false,
+                            userId,
+                            employeeName,
+                            reason: typeof reason === "string"
+                                ? reason
+                                : JSON.stringify(reason)
+                        };
+                    }
+                })
             );
 
-            console.log("MEMBER ADDED:", response.data);
+            // Separate successful and failed employees
+            const successfulEmployees = results.filter(
+                (result) => result.success
+            );
 
-            // REFRESH PROJECT MEMBERS
+            const failedEmployees = results.filter(
+                (result) => !result.success
+            );
+
+            // Refresh project members
             const membersResponse = await api.get(
                 `projects/${id}/members/`
             );
@@ -189,22 +257,50 @@ const ProjectDetails = () => {
 
             setMembers(memberData);
 
-            // Close popop
-            setSelectedUser("");
-            setShowAddMember(false);
-        
+            // Keep only failed employees selected for retry
+            if (failedEmployees.length > 0) {
+
+                setSelectedUsers(
+                    failedEmployees.map((employee) => String(employee.userId))
+                );
+
+            } else {
+
+                setSelectedUsers([]);
+                setShowAddMember(false);
+            }
+
+            // Prepare result message
+            let message = `${successfulEmployees.length} employee(s) added successfully.\n`;
+
+            if (failedEmployees.length > 0) {
+
+                message += `\nFailed to add ${failedEmployees.length} employee(s):\n\n`;
+
+                failedEmployees.forEach((employee, index) => {
+
+                    message += `${index + 1}. ${employee.employeeName}\n`;
+                    message += `   Reason: ${employee.reason}\n\n`;
+
+                });
+
+            }
+
+            alert(message);
+
         } catch (error) {
-            console.error("Failed to add team member:", error);
-            console.error("Backend response:", error.response?.data);
+
+            console.error("Failed to refresh project members:", error);
 
             alert(
                 error.response?.data
                     ? JSON.stringify(error.response.data)
-                    : "Failed to add team member."
+                    : "Unable to refresh team members. Please try again."
             );
         }
-
     };
+
+
     const projectManager = users.find(
         (user) => user.id === project?.project_manager
     );
@@ -360,23 +456,21 @@ const handleMemberRoleChange = async (
                     <button
                         type="button"
                         className={`project-section-btn ${
-                            activeSection === "overview" ? "active" : ""
-                        }`}
-                        onClick={() => setActiveSection("overview")}
-                    >
-                        <FileText size={17} />
-                        Overview
-                    </button>
-
-                    <button
-                        type="button"
-                        className={`project-section-btn ${
                             activeSection === "members" ? "active" : ""
                         }`}
                         onClick={() => setActiveSection("members")}
                     >
                         <Users size={17} />
                         Team Members
+                    </button>
+
+                    <button
+                        type="button"
+                        className="project-section-btn"
+                        onClick={() => navigate(`/projects/${id}/milestones`)}
+                    >
+                        <Flag size={17} />
+                        Modules
                     </button>
             
                     <button
@@ -389,16 +483,7 @@ const handleMemberRoleChange = async (
                         <ListTodo size={17} />
                         Backlog
                     </button>
-
-                    <button
-                        type="button"
-                        className="project-section-btn"
-                        onClick={() => navigate(`/projects/${id}/milestones`)}
-                    >
-                        <Flag size={17} />
-                        Modules
-                    </button>
-
+                    
                     <button
                         type="button"
                         className="project-section-btn"
@@ -406,6 +491,17 @@ const handleMemberRoleChange = async (
                     >
                         <Layers size={17} />
                         Sprints
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`project-section-btn ${
+                            activeSection === "overview" ? "active" : ""
+                        }`}
+                        onClick={() => setActiveSection("overview")}
+                    >
+                        <FileText size={17} />
+                        Overview
                     </button>
 
                 </aside>
@@ -694,8 +790,7 @@ const handleMemberRoleChange = async (
 
 
                                     <div className="overview-list">
-
-                                        
+                                       
                                     <div className="overview-list backlog-scroll-list">
                                         {tasks.map((task) => (
                                             <div
@@ -733,7 +828,6 @@ const handleMemberRoleChange = async (
 
                                     </div>
 
-
                                     <button
                                         type="button"
                                         className="overview-view-button"
@@ -745,7 +839,6 @@ const handleMemberRoleChange = async (
                                     </button>
 
                                 </div>
-
 
                                 {/* MILESTONES */}
 
@@ -817,7 +910,7 @@ const handleMemberRoleChange = async (
                                 type="button"
                                 className="add-member-button"
                                 onClick={() => {
-                                    setSelectedUser("");
+                                    setSelectedUsers("");
                                     setShowAddMember(true);
                                 }}
                             >
@@ -967,88 +1060,114 @@ const handleMemberRoleChange = async (
                                 type="button"
                                 className="member-modal-close"
                                 onClick={() => {
-                                    setShowAddMember(false);
-                                    setSelectedUser("");
+                                    setSelectedUsers([]);
+                                    setShowAddMember(true);
                                 }}
                             >
                                 x
                             </button>
                         </div>
 
+                        {/* MULTIPLE EMPLOYEE SECTION */}
                         <div className="member-form-group">
-                            <label>Select User</label>
 
-                            <select
-                                value={selectedUser}
-                                onChange={(e) => setSelectedUser(e.target.value)}
-                            > 
-                                <option value="">
-                                    Select user
-                                </option>
+                            <label>Select Team Members</label>
 
-                            {users.map((user) => {
-                                const fullname =
-                                    `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-                                    user.username ||
-                                    "Unknown User";
+                            <div className="member-selection-list">
 
-                                const designationId =
-                                    typeof user.designation === "object"
-                                        ? user.designation?.id
-                                        : user.designation;
+                                {users.length === 0 ? (
 
-                                const designation =
-                                    typeof user.designation === "object"
-                                        ? user.designation?.name ||
-                                        user.designation?.designation_name
-                                        : user.designation_name ||
-                                        user.designation ||
-                                        "No Designation";
+                                    <p className="no-available-members">
+                                        No employees found.
+                                    </p>
 
-                                return (
-                                    <option key={user.id} value={user.id}>
-                                        {user.username || fullname}
-                                        {" - "}
-                                        {designation}
-                                    </option>
-                                );
-                            })}
+                                ) : (
 
-                            </select>
+                                    users.map((user) => {
+
+                                        const isAlreadyAssigned = assignedUserIds.has(
+                                            String(user.id)
+                                        );
+
+                                        const isSelected = selectedUsers.includes(
+                                            String(user.id)
+                                        );
+
+                                        const fullName =
+                                            `${user.first_name || ""} ${user.last_name || ""}`.trim()
+                                            || user.username
+                                            || "Unknown User";
+
+                                        const designation =
+                                            typeof user.designation === "object"
+                                                ? user.designation?.name ||
+                                                user.designation?.designation_name
+                                                : user.designation_name ||
+                                                user.designation ||
+                                                "No Designation";
+
+                                        return (
+                                            <label
+                                                key={user.id}
+                                                className={`member-selection-option ${
+                                                    isAlreadyAssigned ? "assigned-member-option" : ""
+                                                }`}
+                                            >
+
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isAlreadyAssigned || isSelected}
+                                                    disabled={isAlreadyAssigned}
+                                                    onChange={(e) => {
+
+                                                        const userId = String(user.id);
+
+                                                        setSelectedUsers((previousUsers) =>
+                                                            e.target.checked
+                                                                ? [...previousUsers, userId]
+                                                                : previousUsers.filter(
+                                                                    (id) => id !== userId
+                                                                )
+                                                        );
+                                                    }}
+                                                />
+
+                                                <div className="member-selection-info">
+
+                                                    <strong>{fullName}</strong>
+
+                                                    <span>{designation}</span>
+
+                                                    <span>
+                                                        {user.email || "Email not available"}
+                                                    </span>
+
+                                                </div>
+
+                                                {isAlreadyAssigned ? (
+                                                    <span className="member-assigned-badge">
+                                                        Already Assigned
+                                                    </span>
+                                                ) : (
+                                                    <span className="member-available-badge">
+                                                        Available
+                                                    </span>
+                                                )}
+
+                                            </label>
+                                        );
+                                    })
+
+                                )}
+
+                            </div>
+
+                            <p className="selected-members-count">
+                                {selectedUsers.length} employee(s) selected
+                            </p>
+
                         </div>
-
-                        {selectedUser && (() => {
-
-                            const selectedUserData = users.find(
-                                (user) => 
-                                    String(user.id) ===
-                                    String(selectedUser)
-                            );
-                            const designation = 
-                                typeof selectedUserData?.designation === "object"
-                                    ? selectedUserData?.designation?.name
-                                    : selectedUserData?.designation;
-
-                            return (
-                                <div className="selected-user-info">
-
-                                    <div>
-                                        <label>Email</label>
-                                        <p>
-                                            {selectedUserData?.email || "-"}
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <label>Designation</label>
-                                        <p>
-                                            {designation || "-"}
-                                        </p>
-                                    </div>                               
-
-                                </div>
-                            );
-                        })()}
+                        
 
                         <div className="member-modal-actions">
 
@@ -1057,7 +1176,7 @@ const handleMemberRoleChange = async (
                                 className="member-cancel-button"
                                 onClick={() => {
                                     setShowAddMember(false);
-                                    setSelectedUser("");
+                                    setSelectedUsers([]);
                                 }}
                             >
                                 Cancel
@@ -1067,8 +1186,11 @@ const handleMemberRoleChange = async (
                                 type="button"
                                 className="member-add-button"
                                 onClick={handleAddMember}
+                                disabled={selectedUsers.length === 0}
                             >
-                                Add Member
+                                Add {selectedUsers.length > 0
+                                    ? `${selectedUsers.length} Members`
+                                    : "Members"}
                             </button>
                         </div>
                     </div>

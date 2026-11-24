@@ -7,6 +7,10 @@ import {
     Search,
     Trash2,
     X,
+    UserPlus,
+    Copy,
+    Eye,
+    EyeOff
 } from "lucide-react";
 import { PMSPageHeader } from "../../components/Common/Common";
 import api from "../../services/api";
@@ -64,18 +68,37 @@ export default function Clients() {
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState("");
 
+    const [credentials, setCredentials] = useState(null);
+
+    const [isCreatingAccountId, setIsCreatingAccountId] = useState(null);
+
+    const [showCredentialPassword, setShowCredentialPassword] = useState(false);
+
+    const [copyMessage, setCopyMessage] = useState("");
+
     const fetchClients = async () => {
         try {
             const response = await api.get("clients/");
-            setClients(response.data);
+
+            const data = response.data;
+
+            setClients(
+                Array.isArray(data) ? data : data.results || []
+            );
             setError("");
+
         } catch (requestError) {
             console.error("Failed to fetch clients:", requestError);
+
             setError(getErrorMessage(requestError));
         } finally {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchClients();
+    }, []);
 
     useEffect(() => {
         let isCurrent = true;
@@ -175,6 +198,86 @@ export default function Clients() {
         }
     };
 
+    const handleCreateAccount = async (client) => {
+
+        setOpenMenuId(null);
+        setError("");
+
+        setIsCreatingAccountId(client.id);
+
+        try {
+            
+            const response = await api.post(
+                `clients/${client.id}/create-account/`
+            );
+            // Save credentials 
+            setCredentials({
+                clientName: client.client_name,
+                username: response.data.username,
+                password: response.data.password
+            });
+
+            setShowCredentialPassword(false);
+            setCopyMessage("");
+
+            await fetchClients();
+        
+        } catch (requestError) {
+            console.error("Create client account error:", requestError);
+
+            setError(getErrorMessage(requestError));
+        
+        } finally {
+            setIsCreatingAccountId(null);
+        }
+    };
+
+    const handleCopyCredentials = async () => {
+
+        if (!credentials) return;
+
+        const text = `
+    Client Name: ${credentials.clientName}
+    Username: ${credentials.username}
+    Password: ${credentials.password}
+    `;
+        try {
+            await navigator.clipboard.writeText(text);
+
+            setCopyMessage("Credentials copied successfull!y");
+        } catch (error) {
+
+            console.error("Copy failed:", error);
+
+            setCopyMessage("Unable to copy. Please copy manually.");
+        }
+    };
+
+    const handleResetPassword = async (client) => {
+
+        setOpenMenuId(null);
+        setError("");
+
+        try {
+            const response = await api.post(
+                `clients/${client.id}/reset-account-password/`
+            );
+
+            setCredentials({
+                clientName: client.client_name,
+                username: response.data.username,
+                password: response.data.password
+            });
+
+            setShowCredentialPassword(false);
+            setCopyMessage("");
+
+        } catch (requestError) {
+            console.error("Password reset error:", requestError);
+            setError(getErrorMessage(requestError));
+        }
+    };
+
     const closeModal = () => {
         setIsModalOpen(false);
         setEditingClient(null);
@@ -221,13 +324,14 @@ export default function Clients() {
                                 <th>Client Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
-                                <th>Action</th>
+                                <th>Login Account</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {isLoading ? (
                                 <tr>
-                                    <td className="clients-empty" colSpan="4">Loading clients...</td>
+                                    <td className="clients-empty" colSpan="5">Loading clients...</td>
                                 </tr>
                             ) : filteredClients.length ? (
                                 filteredClients.map((client) => (
@@ -242,6 +346,22 @@ export default function Clients() {
                                         </td>
                                         <td>{client.email || "—"}</td>
                                         <td>{client.phone_number || "—"}</td>
+
+                                        <td>
+                                            {isCreatingAccountId === client.id ? (
+                                                <span className="client-account-loading">
+                                                    Creating...
+                                                </span>
+                                            ) : client.has_account ? (
+                                                <span className="client-account-created">
+                                                    Account Created
+                                                </span>
+                                            ) : (
+                                                <span className="client-account-pending">
+                                                    Not Created
+                                                </span>
+                                            )}
+                                        </td>
                                         
                                         <td className="client-action-cell">
                                             <div
@@ -261,6 +381,16 @@ export default function Clients() {
                                                 </button>
                                                 {openMenuId === client.id && (
                                                     <div className="client-action-menu">
+                                                        {!client.has_account && (
+                                                            <button
+                                                                type="button"
+                                                                disabled={isCreatingAccountId === client.id}
+                                                                onClick={() => handleCreateAccount(client)}
+                                                            >
+                                                                <UserPlus size={16} />
+                                                                Create Login
+                                                            </button>
+                                                        )}
                                                         <button
                                                             type="button"
                                                             onClick={() => openEditForm(client)}
@@ -276,6 +406,16 @@ export default function Clients() {
                                                             <Trash2 size={16} />
                                                             Delete
                                                         </button>
+
+                                                        {client.has_account && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleResetPassword(client)}
+                                                            >
+                                                                <UserPlus size={16} />
+                                                                Reset Login Password
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
@@ -339,7 +479,7 @@ export default function Clients() {
                             <label>
                                 Email Address 
                                 <input
-                                    type={form.email}
+                                    type="email"
                                     value={form.email}
                                     onChange={(event) =>
                                         setForm({ ...form, email: event.target.value })
@@ -379,6 +519,118 @@ export default function Clients() {
                             </div>
                         </form>
                     </section>
+                </div>
+            )}
+
+            {/* CLIENT LOGIN CREDENTIALS MODAL */}
+
+            {credentials && (
+                <div className="client-credentials-backdrop">
+
+                    <section
+                        className="client-credentials-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="credentials-title"
+                    >
+
+                        <div className="credentials-success-icon">
+                            <UserPlus size={28} />
+                        </div>
+
+                        <h2 id="credentials-title">
+                            Client Account Created!
+                        </h2>
+
+                        <p className="credentials-subtitle">
+                            Share these login credentials with your client.
+                        </p>
+
+                        <div className="credentials-details">
+
+                            <label>Client Name</label>
+
+                            <div className="credentials-value">
+                                {credentials.clientName}
+                            </div>
+
+                            <label>Username</label>
+
+                            <div className="credentials-value">
+                                {credentials.username}
+                            </div>
+
+                            <label>Temporary Password</label>
+
+                            <div className="credentials-password">
+
+                                <span>
+                                    {showCredentialPassword
+                                        ? credentials.password
+                                        : "•".repeat(credentials.password.length)}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowCredentialPassword(
+                                            !showCredentialPassword
+                                        )
+                                    }
+                                    aria-label={
+                                        showCredentialPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                >
+                                    {showCredentialPassword
+                                        ? <EyeOff size={18} />
+                                        : <Eye size={18} />
+                                    }
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <p className="credentials-warning">
+                            Important: This password is displayed only once.
+                            Copy and share it securely with your client.
+                        </p>
+
+                        {copyMessage && (
+                            <p className="credentials-copy-message">
+                                {copyMessage}
+                            </p>
+                        )}
+
+                        <div className="credentials-actions">
+
+                            <button
+                                type="button"
+                                className="credentials-copy-btn"
+                                onClick={handleCopyCredentials}
+                            >
+                                <Copy size={16} />
+                                Copy Credentials
+                            </button>
+
+                            <button
+                                type="button"
+                                className="credentials-done-btn"
+                                onClick={() => {
+                                    setCredentials(null);
+                                    setCopyMessage("");
+                                    setShowCredentialPassword(false);
+                                }}
+                            >
+                                Done
+                            </button>
+
+                        </div>
+
+                    </section>
+
                 </div>
             )}
         </section>

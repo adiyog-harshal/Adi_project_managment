@@ -31,23 +31,42 @@ from django.shortcuts import render, get_object_or_404
 from django.db import models
 from django.db.models import Count, Q
 
+def get_visible_projects(user):
+    # Admin / superuser cxan see evrything
+    if user.is_superuser:
+        return Project.objects.all()
+
+    # Project managers and assigned members
+    return Project.objects.filter(
+        Q(project_manager=user) |
+        Q(project_members__user=user)
+    ).distinct()
+
 class ProjectListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        return get_visible_projects(self.request.user)
+
+    def get_queryset(self):
         user = self.request.user
+
         #Superusers can see all projects
         if user.is_superuser:
             queryset = Project.objects.all()
+
+        # Client can see only thire projects
+        elif hasattr(user, "client_account"):
+            queryset = Project.objects.filter(
+                client__user=user               
+            )
+
+        # Employee and project Mangaers
         else:
             queryset = Project.objects.filter(
                 models.Q(project_members__user=user) |
-                models.Q(project_manager=user),
-                models.Q(
-                    project_members__user=user,
-                    project_members__is_project_manager=True
-                )
+                models.Q(project_manager=user)
             ).distinct()
             
         return queryset.annotate(
@@ -59,35 +78,53 @@ class ProjectListCreateView(generics.ListCreateAPIView):
             )
         )
 
-        # Employess see projects they are member of.
-        # Project managers see projects they manage or are assigned to.
-        return Project.objects.filter(
-            models.Q(project_members__user=user) |
-            models.Q(project_manager=user),
-            models.Q(
-                project_members__user=user,
-                project_members__is_project_manager=True
+    def perform_create(self, serializer):
+        if hasattr(self.request.user, "client_account"):
+            raise PermissionDenied(
+                "Clients cannot create projects."
             )
-        ).distinct()
+        serializer.save()
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-       user = self.request.user
+        return get_visible_projects(self.request.user)
 
-       if user.is_superuser:
+    def get_queryset(self):
+        user = self.request.user
+
+        # Admin can access all projects
+        if user.is_superuser:
            return Project.objects.all()
 
-       return Project.objects.filter(
+        # client can access only their own projects
+        elif hasattr(user, "client_account"):
+           return Project.objects.filter(
+               client__user=user
+           )
+       
+        # Employees and project Managers
+        return Project.objects.filter(
            models.Q(project_members__user=user) |
-           models.Q(project_manager=user),
-           models.Q(
-                project_members__user=user,
-                project_members__is_project_manager=True
+           models.Q(project_manager=user)
+        ).distinct()
+
+    def perform_update(self, serializer):
+        if hasattr(self.request.user, "client__account"):
+            raise PermissionDenied(
+                "Clients cannot update projects."
             )
-       ).distinct()
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if hasattr(self.request.user, "client_account"):
+            raise PermissionDenied(
+                "Clients cannot delete projects."
+            )
+
+        instance.delete()
 
 
 class ProjectCommentListCreateView(generics.ListCreateAPIView):
