@@ -78,64 +78,60 @@ function Users() {
         setShowForm(false);
         setEditingUser(null);
     };
-   
-const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (isSaving) return;
+        if (isSaving) return;
 
-    setIsSaving(true);
+        setIsSaving(true);
 
-    const payload = {
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        role: formData.role,
-        designation: formData.designation,
-        status: formData.status,
+        const payload = {
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            role: formData.role,
+            designation: formData.designation,
+            status: formData.status,
+        };
+
+        console.log("User update payload:", payload);
+        console.log("Available designations:", designations);
+        console.log("Available roles:", roles);
+
+        try {
+            if (editingUser) {
+                await api.put(`users/${editingUser.id}/`, payload);
+            } else {
+                await api.post("users/", payload);
+            }
+
+            await fetchUsers();
+            closeForm();
+
+            alert(
+                editingUser
+                    ? "User updated successfully."
+                    : "User created successfully."
+            );
+        } catch (error) {
+            console.error(
+                "Failed to save user:",
+                error.response?.status,
+                error.response?.data || error.message
+            );
+
+            const errorData = error.response?.data;
+
+            alert(
+                errorData
+                    ? JSON.stringify(errorData, null, 2)
+                    : "Failed to save user. Please try again."
+            );
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    console.log("User update payload:", payload);
-    console.log("Available designations:", designations);
-    console.log("Available roles:", roles);
-
-    try {
-        if (editingUser) {
-            // Update existing user
-            await api.put(`users/${editingUser.id}/`, payload);
-        } else {
-            // Create new user
-            await api.post("users/", payload);
-        }
-
-        await fetchUsers();
-        closeForm();
-
-        alert(
-            editingUser
-                ? "User updated successfully."
-                : "User created successfully."
-        );
-    } catch (error) {
-        console.error(
-            "Failed to save user:",
-            error.response?.status,
-            error.response?.data || error.message
-        );
-
-        const errorData = error.response?.data;
-
-        alert(
-            errorData
-                ? JSON.stringify(errorData, null, 2)
-                : "Failed to save user. Please try again."
-        );
-    } finally {
-        setIsSaving(false);
-    }
-};
-    
-    const handleDelete = async (id) => {
-        const confirmed = window.confirm(
+    const handleDelete = async (id) => {const confirmed = window.confirm(
             "Are you sure you want to delete this user?"
         );
 
@@ -271,7 +267,7 @@ const handleSubmit = async (e) => {
         <div className="users-page">
 
             {/* Header */}
-           
+
 <div className="common-page-toolbar">
 
     <div className="common-page-title">
@@ -280,14 +276,19 @@ const handleSubmit = async (e) => {
             <h1>User Management</h1>
             <p>Manage users, roles, and designations.</p>
         </div>
-        
+
     </div>
 
-    <CommonSearch
-        search={search}
-        setSearch={setSearch}
-        placeholder="Search users..."
-    />
+
+            {/* Search */}
+
+            <CommonSearch
+                value={search}
+                onChange={(e) => {
+                    setSearch(e.target.value);
+                }}
+                placeholder="Search users"
+            />
 
     <button
         type="button"
@@ -299,7 +300,10 @@ const handleSubmit = async (e) => {
     </button>
 
 </div>
-            
+
+
+
+
             {/* Users Table */}
             <div className="users-card">
                 <table className="users-table">
@@ -384,8 +388,8 @@ const handleSubmit = async (e) => {
                                                     >
                                                         Delete
                                                     </button>
-                                                </>                                        
-                                            )}                                          
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -524,7 +528,7 @@ const handleSubmit = async (e) => {
                                     Cancel
                                 </button>
 
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={isSaving}
                                 >
@@ -540,4 +544,5 @@ const handleSubmit = async (e) => {
         </div>
     );
 }
+
 export default Users;

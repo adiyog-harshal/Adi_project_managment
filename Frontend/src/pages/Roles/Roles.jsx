@@ -46,7 +46,7 @@ function Roles() {
         fetchRoles();
     }, []);
 
-    
+
     const handleToggleRoleStatus = async (role, newStatus) => {
          try {
             await api.patch(`roles/${role.id}/`, {
@@ -68,7 +68,7 @@ function Roles() {
         if (role.is_active === isActive){
             setOpenStatusId(null);
             return;
-        } 
+        }
 
         await handleToggleRoleStatus(role, isActive);
     };
@@ -82,7 +82,7 @@ function Roles() {
         setSelectedRole(role);
         setIsModalOpen(true);
     };
-   
+
     const handleDeleteRole = async (id) => {
 
         const confirmed = window.confirm(
@@ -242,7 +242,7 @@ function Roles() {
 
                                             </div>
 
-                                        </td>                                      
+                                        </td>
                                     <td>
                                         <div className="status-dropdown-wrapper">
                                             <button
@@ -259,7 +259,7 @@ function Roles() {
                                                 {role.is_active ? "Active" : "Inactive"}
                                             </button>
 
-                                        
+
                                         </div>
                                     </td>
                                         <td>
@@ -277,7 +277,7 @@ function Roles() {
                                                 >
                                                     <MoreVertical size={20} />
                                                 </button>
-                                                 
+
                                                  {openActionId === role.id && (
                                                     <div className="role-actions-dropdown">
                                                         <button

@@ -9,10 +9,8 @@ https://docs.djangoproject.com/en/6.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
-
 from pathlib import Path
 from datetime import timedelta
-
 import os
 import logging
 from dotenv import load_dotenv
@@ -21,18 +19,20 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "temporary-local-key")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY") or os.getenv("SECRET_KEY")
 
-# SECURITY WARNING: keep the secret key used in production secret!
+if not SECRET_KEY:
+    raise ValueError(
+        "SECRET_KEY or DJANGO_SECRET_KEY must be set in the Backend .env file"
+    )
+
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-# SECURITY WARNING: don't run with debug turned on in production!
-
-
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'role',
     'sprints',
     'clients',
+    'history',
 ]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -111,27 +112,26 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-
-# Database
 DB_SSL_CA = BASE_DIR / "ca.pem"
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "NAME": os.getenv("DB_NAME", "project_management_db"),
+        "USER": os.getenv("DB_USER", "root"),
+        "PASSWORD": os.getenv("DB_PASSWORD", ""),
         "HOST": os.getenv("DB_HOST", "127.0.0.1"),
         "PORT": os.getenv("DB_PORT", "3306"),
-        "OPTIONS": {
-            "ssl": {
-                "ca": str(DB_SSL_CA)
-            } if DB_SSL_CA.exists() and os.getenv("DB_SSL", "False").lower() == "true" else {}
-        },
         "CONN_MAX_AGE": 60,
     }
 }
 
+if DB_SSL_CA.exists() and os.getenv("DB_SSL", "False").lower() == "true":
+    DATABASES["default"]["OPTIONS"] = {
+        "ssl": {
+            "ca": str(DB_SSL_CA)
+        }
+    }
 
 
 # Password validation

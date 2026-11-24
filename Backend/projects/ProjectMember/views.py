@@ -95,7 +95,7 @@ class ProjectMemberRoleUpdateView(APIView):
                 pk=member.pk
             ).update(
                 **{role_field: False}
-            )   
+            )
 
         setattr(member, role_field, value)
         member.save(update_fields=[role_field])

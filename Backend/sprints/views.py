@@ -7,7 +7,22 @@ from .serializers import SprintSerializer
 from tasks.models import Task
 from django.utils import timezone
 from tasks.models import TaskSprintHistory
+from history.services import log_activity
 
+def get_sprint_values(sprint):
+    return {
+        "sprint_name": sprint.sprint_name,
+        "project": sprint.project_id,
+        "milestone": sprint.milestone_id,
+        "goal": sprint.goal,
+        "start_date": str(sprint.start_date) if sprint.start_date else None,
+        "end_date": str(sprint.end_date) if sprint.end_date else None,
+        "actual_start_date": (
+            str(sprint.actual_start_date)
+            if sprint.actual_start_date else None
+        ),
+        "status": sprint.status,
+    }
 def has_active_sprint(project, exclude_pk=None):
     sprints = Sprint.objects.filter(
         project=project,
@@ -84,15 +99,24 @@ class SprintListCreateView(APIView):
                 )
 
             if (
-                sprint_status == "In Progress" 
+                sprint_status == "In Progress"
                 and has_active_sprint(project)
-            ):     
+            ):
                 return Response(
                     {"detail": "Another sprint is already in progress. "},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
             sprint = serializer.save()
+            log_activity(
+            user=request.user,
+            module="Sprints",
+            action="Created",
+            object_id=sprint.id,
+            object_name=sprint.sprint_name,
+            description=f"Sprint '{sprint.sprint_name}' was created.",
+            new_values=get_sprint_values(sprint),
+        )
 
             return Response(
                 SprintSerializer(sprint).data,
@@ -103,7 +127,7 @@ class SprintListCreateView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-    
+
 class SprintDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -148,6 +172,7 @@ class SprintDetailView(APIView):
 
         if serializer.is_valid():
             data = serializer.validated_data
+            old_values = get_sprint_values(sprint)
 
             project = data.get("project", sprint.project)
             start_date = data.get("start_date", sprint.start_date)
@@ -188,16 +213,41 @@ class SprintDetailView(APIView):
                 )
 
             updated_sprint = serializer.save()
+            new_values = get_sprint_values(updated_sprint)
+
+            changed_fields = [
+                field for field in old_values
+                if old_values[field] != new_values[field]
+            ]
+
+            if changed_fields:
+                changed_old_values = {
+                    field: old_values[field] for field in changed_fields
+                }
+                changed_new_values = {
+                    field: new_values[field] for field in changed_fields
+                }
+
+                log_activity(
+                    user=request.user,
+                    module="Sprints",
+                    action="Updated",
+                    object_id=updated_sprint.id,
+                    object_name=updated_sprint.sprint_name,
+                    description=f"Sprint '{updated_sprint.sprint_name}' was updated.",
+                    old_values=changed_old_values,
+                    new_values=changed_new_values,
+                )
 
             return Response(
                 SprintSerializer(updated_sprint).data,
                 status=status.HTTP_200_OK
             )
 
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def patch(self, request, pk):
         sprint = self.get_object(pk)
@@ -215,6 +265,7 @@ class SprintDetailView(APIView):
         )
 
         if serializer.is_valid():
+            old_values = get_sprint_values(sprint)
             project = serializer.validated_data.get(
                 "project", sprint.project
             )
@@ -241,6 +292,32 @@ class SprintDetailView(APIView):
                 )
 
             updated_sprint = serializer.save()
+            new_values = get_sprint_values(updated_sprint)
+
+            changed_fields = [
+                field for field in old_values
+                if old_values[field] != new_values[field]
+            ]
+
+            if changed_fields:
+                changed_old_values = {
+                    field: old_values[field] for field in changed_fields
+                }
+
+                changed_new_values = {
+                    field: new_values[field] for field in changed_fields
+                }
+
+            log_activity(
+                user=request.user,
+                module="Sprints",
+                action="Updated",
+                object_id=updated_sprint.id,
+                object_name=updated_sprint.sprint_name,
+                description=f"Sprint '{updated_sprint.sprint_name}' was updated.",
+                old_values=changed_old_values,
+                new_values=changed_new_values,
+            )
 
             return Response(
                 SprintSerializer(updated_sprint).data,
@@ -260,6 +337,18 @@ class SprintDetailView(APIView):
                 {"detail": "Sprint not found."},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+        old_values = get_sprint_values(sprint)
+
+        log_activity(
+            user=request.user,
+            module="Sprints",
+            action="Deleted",
+            object_id=sprint.id,
+            object_name=sprint.sprint_name,
+            description=f"Sprint '{sprint.sprint_name}' was deleted.",
+            old_values=old_values,
+        )
 
         sprint.delete()
 
@@ -318,13 +407,15 @@ class SprintStartView(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST
                 )
-
+            old_values = get_sprint_values(sprint)
             sprint.start_date = new_start_date
             sprint.end_date = new_end_date
             sprint.actual_start_date = None
             sprint.status = "Planned"
 
+
             sprint.save(
+
                 update_fields=[
                     "start_date",
                     "end_date",
@@ -333,6 +424,16 @@ class SprintStartView(APIView):
                     "updated_at",
                 ]
             )
+            log_activity(
+                user=request.user,
+                module="Sprints",
+                action="Updated",
+                object_id=sprint.id,
+                object_name=sprint.sprint_name,
+                description=f"Sprint '{sprint.sprint_name}' was scheduled to start tomorrow.",
+                old_values=old_values,
+                new_values=get_sprint_values(sprint),
+)
 
             return Response(
                 {
@@ -378,7 +479,7 @@ class SprintStartView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+        old_values = get_sprint_values(sprint)
         # Start sprint today.
         sprint.start_date = today
         sprint.actual_start_date = today
@@ -392,6 +493,16 @@ class SprintStartView(APIView):
                 "updated_at",
             ]
         )
+        log_activity(
+            user=request.user,
+            module="Sprints",
+            action="Started",
+            object_id=sprint.id,
+            object_name=sprint.sprint_name,
+            description=f"Sprint '{sprint.sprint_name}' was started.",
+            old_values=old_values,
+            new_values=get_sprint_values(sprint),
+        )
 
         return Response(
             {
@@ -401,7 +512,7 @@ class SprintStartView(APIView):
             status=status.HTTP_200_OK
         )
 
-            
+
 class SprintTaskAssignView(APIView):
     permission_classes = [IsAuthenticated]
 

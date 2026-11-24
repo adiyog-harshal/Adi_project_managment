@@ -108,7 +108,7 @@ const [scheduleForm, setScheduleForm] = useState({
     actual_end_date: "",
     estimated_time: "",
     actual_time: "",
-    
+
 });
 
 const [savingSchedule, setSavingSchedule] = useState(false);
@@ -278,14 +278,14 @@ const handleSaveSchedule = async () => {
             ...selectedTask,
             ...response.data,
         };
-        // updated the selected task details 
+        // updated the selected task details
         setSelectedTask(updatedTask);
 
-        setSprintTasks((previous) => 
-            previous.map((task) => 
+        setSprintTasks((previous) =>
+            previous.map((task) =>
                 String(task.id) === String(updatedTask.id)
                     ? {...task, ...response.data }
-                    : task   
+                    : task
         ));
 
         setScheduleForm((previous) => ({
@@ -354,7 +354,7 @@ const getNextSprintSuggestion = (sprints) => {
     };
     // Find the highest sprint number, even if some numbers are missing
     const nextNumber =
-        Math.max(0, ...sprints.map((sprint) => 
+        Math.max(0, ...sprints.map((sprint) =>
             getNumber(sprint.sprint_name)
         )) + 1;
 
@@ -465,11 +465,11 @@ const loadData = async () => {
             sprint => (sprint.status || "").toLowerCase() === "planned"
         );
 
-        const defaultSprint = 
+        const defaultSprint =
             clickedSprint || activeSprint || plannedSprint || null;
 
         setSelectedSprint(defaultSprint);
-        
+
         return allProjectSprints;
 
     } catch (err) {
@@ -733,7 +733,7 @@ const handleStartSprint = async (sprintId, startChoice) => {
 };
 
 
-   
+
 const sprintTasks = tasks.filter(task =>
     String(
         typeof task.sprint === "object"
@@ -970,7 +970,7 @@ const handleCarryOver = async (task, targetSprintId) => {
         );
 
         setError(
-            error.response?.data?.detail || 
+            error.response?.data?.detail ||
             "Unable to carry over this task."
         );
     }
@@ -1105,7 +1105,7 @@ const handleTaskAssigneeChange = async (task, userId) => {
 
 const getSprintTaskCount = (sprintId) => {
     return tasks.filter((task) => {
-        const taskSprintId = 
+        const taskSprintId =
             typeof task.sprint === "object"
                 ? task.sprint?.id
                 : task.sprint;
@@ -1151,7 +1151,7 @@ return (
                         );
                         setDuration(String(suggestion.duration));
                         setStartDate(suggestion.start_date);
-                        setEndDate(suggestion.end_date); 
+                        setEndDate(suggestion.end_date);
 
                         setSprintForm({
                         sprint_name: suggestion.sprint_name,
@@ -1170,7 +1170,7 @@ return (
             >
                 <Plus size={18} />
                 Create Sprint
-            </button>     
+            </button>
         </div>
         {toast.message && (
     <div
@@ -1193,7 +1193,7 @@ return (
 
         {error && <div className="sprints-error">{error}</div>}
 
-        
+
 {showForm && (
     <div
         className="sprint-modal-overlay"
@@ -1406,19 +1406,9 @@ return (
         ) : (
             <div className="sprint-cards">
                 {sprints
-                    .filter(sprint => {
-                    const status = sprint.status?.toLowerCase();
+                    .filter(sprint => sprint)
+                    .map(sprint => (
 
-                    const isActive =
-                        status === "in progress" || status === "active";
-
-                    const isClickedSprint =
-                        String(sprint.id) === String(sprintId);
-
-                    // Always show active sprints and only the
-                    // future sprint clicked from Project Overview.
-                    return isActive || isClickedSprint;
-                }).map(sprint => (
                     <div
                         key={sprint.id}
                         className={`sprint-card ${
@@ -1449,7 +1439,7 @@ return (
                                 </span>
 
                                 {/* Start sprint Button */}
-                                
+
                                 <button
                                     type="button"
                                     className="edit-sprint-button"
@@ -1478,11 +1468,11 @@ return (
                                     <Pencil size={16} />
                                 </button>
                             </span>
-                            
+
                         </div>
 
                         <h3>{sprint.sprint_name}</h3>
-                        
+
 
                         <div className="sprint-card-dates">
                             <CalendarDays size={15} />
@@ -1502,7 +1492,7 @@ return (
                             {(sprint.task_ids || []).length} assigned tasks
                         </button>
 
-                        
+
                     </div>
                 ))}
             </div>
@@ -1570,9 +1560,9 @@ return (
                                 </button>
                             )}
                     </div>
-               
+
                 </div>
-                
+
                 {showAddTasks && selectedSprint && (
                     <div
                         className="sprint-modal-overlay"
@@ -1702,7 +1692,7 @@ return (
                             </div>
                         </div>
                     </div>
-                )}             
+                )}
                 <div className={`sprint-content-layout ${!selectedTask ? "no-task-selected" : ""}`}>
 
                 {/* LEFT: TASK TABLE */}
@@ -1819,7 +1809,7 @@ return (
                                 className="task-details-backdrop"
                                 onClick={() => setSelectedTask(null)}
                             />
-                        
+
                             <aside className="task-details-panel task-details-drawer">
                                 {!selectedTask ? (
                                     <div className="task-details-empty">
@@ -1854,7 +1844,7 @@ return (
                                                 savedMinutes +
                                                 (timerRunning ? Math.floor(timerSeconds / 60) : 0);
 
-                                        
+
                                             return (
                                                 <>
                                                     {/* HEADER */}
@@ -1891,7 +1881,7 @@ return (
                                                             </p>
                                                         </section>
 
-                                                        <div className="task-priority-assignee-row">                                          
+                                                        <div className="task-priority-assignee-row">
 
                                                         {/* STATUS */}
                                                             <section className="task-info-section">
@@ -1932,7 +1922,7 @@ return (
                                                                                 e.target.value
                                                                             );
                                                                         }
-                                                                    }}     
+                                                                    }}
                                                                 >
                                                                     <option value="">Select user</option>
 
@@ -1946,7 +1936,7 @@ return (
                                                                 </select>
                                                             </section>
                                                         </div>
-                                                        
+
                                                         <div className="task-priority-assignee-row">
 
                                                             {/* PRIORITY */}
@@ -1971,7 +1961,7 @@ return (
                                                                             selectedTask.assigned_to?.first_name ||
                                                                             "Assigned user"
                                                                             : users.find(
-                                                                                (user) => 
+                                                                                (user) =>
                                                                                     String(user.id) ===
                                                                                     String(selectedTask.assigned_to)
                                                                             )
@@ -1980,7 +1970,7 @@ return (
                                                                                         (user) =>
                                                                                             String(user.id) ===
                                                                                             String(selectedTask.assigned_to)
-                                                                                
+
                                                                                     );
 
                                                                                     return user.first_name
@@ -1993,8 +1983,8 @@ return (
                                                         </div>
 
                                                         {/* TIME SUMMARY */}
-                                                                                                
-                                                    
+
+
                                                     {/* TASK SCHEDULE AND MANUAL TIME */}
             <section className="task-info-section task-schedule-section">
                 <h4>Task Schedule</h4>
@@ -2073,7 +2063,7 @@ return (
                         setScheduleForm({
                             ...scheduleForm,
                             estimated_time: e.target.value
-                        }) 
+                        })
                     }
                     placeholder="e.g. 2h 30m"
                 />
@@ -2090,13 +2080,13 @@ return (
                 <input
                     id="actual-time"
                     type="text"
-                    
+
                     value={scheduleForm.actual_time}
                     onChange={(e) =>
                         setScheduleForm({
                             ...scheduleForm,
                             actual_time: e.target.value
-                        }) 
+                        })
                     }
                     placeholder="e.g. 1h 45m"
                 />
@@ -2123,8 +2113,8 @@ return (
                         {scheduleMessage}
                     </p>
                 )}
-            </section>                                                        
-                                                        
+            </section>
+
                                                     </div>
                                                 </>
                                             );
@@ -2373,7 +2363,7 @@ return (
             </select>
         </div>
     )}
-                        
+
                     </div>
 
                     {sprintTasks.filter(

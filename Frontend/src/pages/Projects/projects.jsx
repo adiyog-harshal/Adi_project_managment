@@ -31,11 +31,11 @@ const Projects = () => {
     const [openAction, setOpenAction] = useState(null);
 
     const navigate = useNavigate();
-    
+
     const [editingProject, setEditingProject] = useState(null);
 
     const [currentPage, setCurrentPage] = useState(1);
-    
+
     const projectsPerPage = 5;
 
     const totalProjectCount = projects.length;
@@ -193,7 +193,7 @@ const Projects = () => {
     const fetchProjects = async () => {
         try {
             const response = await api.get("projects/");
-            
+
             setProjects([...response.data].reverse());
         } catch (error) {
             console.error("Error fetching projects:", error);
@@ -240,7 +240,7 @@ const Projects = () => {
                 `projects/notifications/${notificationId}/read`
             );
 
-            setNotifications((prev) => 
+            setNotifications((prev) =>
                 prev.map((notification) =>
                     notification.id === notificationId
                         ? { ...notification, is_read: true }
@@ -349,6 +349,8 @@ const Projects = () => {
         return Math.min(Math.max(progress, 0), 100);
     };
    
+
+
     return (
 
         <div className={`projects-page ${showForm ? "form-open" : "" }`}>
@@ -383,13 +385,13 @@ const Projects = () => {
                         + Add Project
                     </button>
                 </div>
-                
+
 
                 <div className="project-header-actions">
 
                     <div className="notification-wrapper">
-                        <button 
-                            className="header-icon-btn" 
+                        <button
+                            className="header-icon-btn"
                             title="Notifications"
                             onClick={() => setShowNotifications(!showNotifications)}
                         >
@@ -404,7 +406,7 @@ const Projects = () => {
 
                         {showNotifications && (
                             <div className="notification-dropdown">
-                                
+
                                 <div className="notification-header">
                                     <span>Notifications</span>
                                 </div>
@@ -420,7 +422,7 @@ const Projects = () => {
                                             className={`notification-item ${
                                                 !notification.is_read ? "unread" : ""
                                             }`}
-                                            onClick={() => 
+                                            onClick={() =>
                                                 !notification.is_read &&
                                                 markAsRead(notification.id)
                                             }
@@ -521,16 +523,16 @@ const Projects = () => {
 
                         <div className="project-form-top">
 
-                            
 
-                            <div className="project-form-header">    
+
+                            <div className="project-form-header">
                                 <h2>Add New Project</h2>
 
                                 <p>Enter the project details below</p>
-                            
+
 
                             </div>
-                                
+
                                 <button
                                     type="button"
                                     className="project-close-btn"
@@ -538,12 +540,12 @@ const Projects = () => {
                                         setShowForm(false);
                                         setFormError("");
                                     }}
-                                    
+
                                 >
                                     x
                                 </button>
                         </div>
-                            
+
 
                             {formError && (
                                 <div className="project-form-error">
@@ -555,7 +557,7 @@ const Projects = () => {
 
                                 {/* Project Name */}
 
-                                
+
                                 <div className="form-group full-width">
                                     <label>Project Name</label>
 
@@ -570,7 +572,7 @@ const Projects = () => {
 
 
                                 {/* project manager dropdown */}
-                                
+
 
                                 <div className="form-group">
                                     <label>Project Manager</label>
@@ -593,8 +595,8 @@ const Projects = () => {
                                 </div>
 
 
-                            
-                                
+
+
 
 
                                 {/* Start Date */}
@@ -607,7 +609,7 @@ const Projects = () => {
                                         value={projectForm.start_date}
                                         onChange={handleChange}
                                         min="2000-01-01"
-                                    
+
                                     />
                                 </div>
 
@@ -622,7 +624,7 @@ const Projects = () => {
                                         value={projectForm.end_date}
                                         onChange={handleChange}
                                         min="2000-01-01"
-                                        
+
                                     />
                                 </div>
 
@@ -662,6 +664,8 @@ const Projects = () => {
                                 </button>
 
                             </div>
+
+
 
                     </div>
                 </div>
@@ -742,17 +746,17 @@ const Projects = () => {
                     </div>
 
                     {/* STATUS */}
-                
+
 
                     {/* ACTION */}
-                    <div 
+                    <div
                         className="action-menu"
                     >                        
-                        <button 
+                        <button
                             type="button"
                             className="action-button"
                             onClick={() => {
-                                
+
 
                                 setOpenAction(
                                     openAction === project.id ? null : project.id
@@ -763,16 +767,16 @@ const Projects = () => {
                         </button>
 
                         {openAction === project.id && (
-                            <div 
+                            <div
                                 className="action-dropdown"
-                                
+
                             >
                                 <button
                                     type="button"
                                     onClick={() => {
                                         setOpenAction(null);
                                         handleEditProject(project);
-                                    }}                                
+                                    }}
                                 >
                                     Edit
                                 </button>
@@ -785,7 +789,7 @@ const Projects = () => {
 
                                     }}
                                 >
-                                    
+
                                     Delete
                                 </button>
                             </div>
@@ -802,6 +806,10 @@ const Projects = () => {
 
                 </div> {/* Close projects-table */}
  
+
+
+
+
                 {/* PAGINATION - OUTSIDE TABLE */}
                 <div className="project-pagination">
                     <span className="project-pagination-info">

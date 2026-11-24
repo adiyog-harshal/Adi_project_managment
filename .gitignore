@@ -24,6 +24,10 @@ Backend/db.sqlite3
 Frontend/node_modules/
 Frontend/dist/
 Frontend/.env
+
+.env
+Backend/.env
+Frontend/.env
 Frontend/.env.*
 !Frontend/.env.example
 
@@ -35,7 +39,6 @@ Thumbs.db
 
 # Archives
 *.zip
-
 
 # Salesforce local files
 .sf/

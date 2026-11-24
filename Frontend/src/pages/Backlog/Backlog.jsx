@@ -125,7 +125,7 @@ const Backlog = () => {
                 ? data
                 : data.results || [];
 
-            // GET THE CURRENT PROJECT'S ID 
+            // GET THE CURRENT PROJECT'S ID
             const currentProjectId = id;
 
             const projectMilestones = allMilestones.filter((milestone) => {
@@ -192,7 +192,7 @@ const Backlog = () => {
             alert("Please select priority.")
             return;
         }
-        
+
         try {
             setSaving(true);
 
@@ -219,11 +219,11 @@ const Backlog = () => {
             if (editingTask) {
                 // Edit
                 const response = await api.put(
-                    `tasks/${editingTask.id}/`, 
+                    `tasks/${editingTask.id}/`,
                     payload
                 );
                 console.log("UPDATE RESPONSE:", response.data);
-                
+
             } else {
                 // Create
                 const response = await api.post(
@@ -342,11 +342,11 @@ const Backlog = () => {
                 ? task.assigned_to.id
                 : task.assigned_to || "",
             priority: task.priority || "",
-            milestone: 
+            milestone:
                 task.milestone && typeof task.milestone === "object"
-                ? task.milestone.id 
+                ? task.milestone.id
                 : task.milestone || "",
-            
+
         });
 
         setShowForm(true);
@@ -360,7 +360,7 @@ const Backlog = () => {
         return (
             <div className="backlog-page">
 
-            
+
 
             </div>
         );
@@ -504,7 +504,7 @@ const Backlog = () => {
                                     rows={2}
                                 />
                             </div>
-                            
+
                             <div className="backlog-form-group">
                                 <label>Module</label>
 
@@ -542,12 +542,12 @@ const Backlog = () => {
                                     </option>
 
                                     {users.map((user) => {
-                                        const fullName = 
+                                        const fullName =
                                             `${user.first_name || ""} ${
                                                 user.last_name || ""
                                             }`.trim() || user.username;
- 
-                                        const designation = 
+
+                                        const designation =
                                             typeof user.designation === "object"
                                                 ? user.designation?.name
                                                 : user.designation;
@@ -669,13 +669,13 @@ const Backlog = () => {
                             (item) =>
                                 String(item.id) === String(assignedUserId)
                         );
-                        
+
                         const assignedName =
                             `${user?.first_name || ""} ${
                                 user?.last_name || ""
                             }`.trim() ||
                             user?.username ||
-                            "Unassigned";                       
+                            "Unassigned";
 
                         const milestoneId =
                             task.milestone && typeof task.milestone === "object"
@@ -688,16 +688,16 @@ const Backlog = () => {
 
                         const milestoneName =
                             (task.milestone &&
-                                typeof task.milestone === "object" && 
+                                typeof task.milestone === "object" &&
                                 (task.milestone.milestone_name ||
                                  task.milestone.name)) ||
                             matchedMilestone?.milestone_name ||
-                            matchedMilestone?.name ||                   
-                            "-"; 
-        
+                            matchedMilestone?.name ||
+                            "-";
+
                         return (
 
-                            <div 
+                            <div
                                 className="backlog-table-row"
                                 key={task.id}
                             >
@@ -712,12 +712,12 @@ const Backlog = () => {
                                 <div className="backlog-milestone">
                                     {milestoneName}
                                 </div>
-                                
+
                                {/* PRIORITY */}
                                <span className={`backlog-priority ${(task.priority || "").toLowerCase()}`}>
                                     {task.priority}
                                 </span>
-                                
+
                                 {/* ASSIGNED */}
 
                                 <div className="backlog-assigned">

@@ -1,4 +1,6 @@
 from projects.models import Notification
+from history.services import log_activity
+
 
 #=================================================
 #NOTIFICATION HELPERS

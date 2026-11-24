@@ -8,7 +8,12 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from users.views import ProfileView
+from users.views import ProfileView, PasswordChangeView
+
+
+def home(request):
+    return HttpResponse("PMS Backend is running successfully!")
+
 
 
 def home(request):
@@ -24,6 +29,11 @@ urlpatterns = [
     path('api/login/', TokenObtainPairView.as_view(), name='login'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/profile/', ProfileView.as_view(), name='profile'),
+    path(
+        'api/profile/password/',
+        PasswordChangeView.as_view(),
+        name='password_change',
+    ),
 
     # Applications
     path('api/users/', include('users.urls')),
@@ -34,4 +44,5 @@ urlpatterns = [
     path('api/designations/', include('designations.urls')),
     path('api/roles/', include('role.urls')),
     path('api/clients/', include('clients.urls')),
+    path('api/history/', include('history.urls')),
 ]

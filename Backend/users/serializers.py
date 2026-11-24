@@ -107,7 +107,6 @@ class UserSerializer(serializers.ModelSerializer):
             )
 
         return attrs
-
     def create(self, validated_data):
         name = validated_data.pop("name", "").strip()
         designation = validated_data.pop("designation", None)

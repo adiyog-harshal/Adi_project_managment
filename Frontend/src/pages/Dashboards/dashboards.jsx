@@ -110,7 +110,7 @@ const Dashboard = () => {
                     let taskProjectId = null;
 
                     if (projectValue && typeof projectValue === "object") {
-                        taskProjectId = 
+                        taskProjectId =
                             projectValue.id ??
                             projectValue.project_id;
                     } else {
@@ -145,8 +145,8 @@ const Dashboard = () => {
                 console.log("===========================");
 
                 // Handle normal array OR DRF pagination
-            
-            } catch (error) {               
+
+            } catch (error) {
                 console.error(
                     "FAILED TO FETCH TASKS:",
                     error.response?.data || error
@@ -464,7 +464,7 @@ console.log("PROJECT PROGRESS:", {
 
         if (sortBy === "start_date") {
 
-            return new Date(a.start_date || 0) - 
+            return new Date(a.start_date || 0) -
                 new Date(b.start_date || 0);
         }
 
@@ -543,7 +543,7 @@ console.log("PROJECT PROGRESS:", {
         });
     };
 
-    const completedProjectsData = 
+    const completedProjectsData =
         getCompletedProjectsCumulative(projects);
 
     /* =========================
@@ -614,7 +614,7 @@ console.log("PROJECT PROGRESS:", {
         headers,
         ...rows
     ]
-        .map((row) => 
+        .map((row) =>
             row
                 .map((value) =>
                     `"${String(value).replace(/"/g, '""')}"`
@@ -622,7 +622,7 @@ console.log("PROJECT PROGRESS:", {
                 .join(",")
         )
         .join("/n");
-    
+
     const blob = new Blob(
         [csvContent],
         {
@@ -657,7 +657,7 @@ console.log("PROJECT PROGRESS:", {
                 HEADER
             ================================= */}
 
-            
+
 <div className="dashboard-header">
     <div className="dashboard-header-right">
         <div className="dashboard-search">
@@ -834,7 +834,7 @@ console.log("PROJECT PROGRESS:", {
 
                                 <button className="card-more">
                                     <MoreHorizontal size={17} />
-                                </button>                                                   
+                                </button>
                             </div>
 
                             <h2>{onTimeProjectCount}</h2>
@@ -983,7 +983,7 @@ console.log("PROJECT PROGRESS:", {
 
                                 <thead>
                                     <tr>
-                                    
+
                                         <th>Project Name</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
@@ -1076,12 +1076,12 @@ console.log("PROJECT PROGRESS:", {
                             </div>
 
                         </div>
-                        
+
                         <div className="project-progress-content">
 
                             <div
                                 className="progress-circle"
-                                
+
                         style={{
                             background: "conic-gradient(#16a34a 0% 33%, #3b82f6 33% 66%, #f59e0b 66% 100%)"
                         }}
@@ -1116,7 +1116,7 @@ console.log("PROJECT PROGRESS:", {
                         </div>
 
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
     );

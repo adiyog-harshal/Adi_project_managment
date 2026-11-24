@@ -1,14 +1,9 @@
 
 import React from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, MoreVertical } from "lucide-react";
 import "./Common.css";
 
-// Reusable search component
-export default function CommonSearch({
-    search,
-    setSearch,
-    placeholder = "Search..."
-}) {
+function SearchField({ value, onChange, onClear, placeholder }) {
     return (
         <div className="common-search-box">
             <Search
@@ -20,21 +15,63 @@ export default function CommonSearch({
                 type="text"
                 className="common-search-input"
                 placeholder={placeholder}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={value}
+                onChange={onChange}
             />
 
-            {search && (
+            {value && onClear && (
                 <button
                     type="button"
                     className="common-search-clear"
-                    onClick={() => setSearch("")}
+                    onClick={onClear}
                     aria-label="Clear search"
                 >
                     <X size={16} />
                 </button>
             )}
         </div>
+    );
+}
+
+export function PMSSearch({
+    value,
+    onChange,
+    placeholder = "Search",
+}) {
+    return (
+        <SearchField
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+        />
+    );
+}
+
+export default function CommonSearch({
+    search,
+    setSearch,
+    placeholder = "Search..."
+}) {
+    return (
+        <SearchField
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            onClear={() => setSearch("")}
+            placeholder={placeholder}
+        />
+    );
+}
+
+export function PMSActionButton({ onClick }) {
+    return (
+        <button
+            type="button"
+            className="pms-action-button"
+            onClick={onClick}
+            aria-label="Actions"
+        >
+            <MoreVertical size={18} />
+        </button>
     );
 }
 

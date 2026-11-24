@@ -766,7 +766,7 @@
 }
 
 .form-group input,
-.form-group select 
+.form-group select
 .form-group-textarea {
     width: 100%;
     height: 40px;
@@ -1045,7 +1045,7 @@
     padding: 24px;
 
     background: white;
-}  
+}
 
 /* =========================================
    FIX ADD PROJECT MODAL POSITION
@@ -1074,7 +1074,7 @@
 
     /* Covers the project page behind the form */
     background: #f5f6fa !important;
-    
+
 
     z-index: 99999 !important;
 }
