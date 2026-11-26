@@ -16,6 +16,7 @@ import {
     User,
     Handshake,
     History as HistoryIcon,
+    ChartNoAxesCombined,
 } from "lucide-react";
 
     const Sidebar = ({
@@ -97,16 +98,6 @@ import {
                 <span>Users</span>
                 </NavLink>
 
-
-                {/* <NavLink
-                    to="/milestones"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <ClipboardList size={20} />
-                    <span>Milestones</span>
-                </NavLink> */}
                 <NavLink
                     to="/history"
                     className={({ isActive }) =>
@@ -115,6 +106,16 @@ import {
                 >
                     <HistoryIcon size={20} />
                     <span>History</span>
+                </NavLink>
+
+                <NavLink
+                    to="/reports"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <ChartNoAxesCombined size={20} />
+                    <span>Reports</span>
                 </NavLink>
 
                 {/* MASTER MENU */}

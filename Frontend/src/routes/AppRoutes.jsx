@@ -15,6 +15,8 @@ import Profile from "../pages/Profile/Profile";
 import Settings from "../pages/Settings/Settings";
 import Clients from "../pages/clients/client";
 import History from "../pages/History/History";
+import Report from "../pages/Report/Report";
+
 function AppRoutes() {
     return (
         <Routes>
@@ -167,16 +169,6 @@ function AppRoutes() {
             />
 
             <Route
-                path="/reports"
-                element={
-                    <ProtectedRoute>
-                        <h1>Reports</h1>
-                    </ProtectedRoute>
-                }
-            />
-
-
-            <Route
                 path="/profile"
                 element={
                 <ProtectedRoute>
@@ -201,13 +193,24 @@ function AppRoutes() {
                     <ProtectedRoute>
                         <History />
                     </ProtectedRoute>
-    }
-/>
+                }
+            />
+
+            <Route
+                path="/reports"
+                element={
+                    <ProtectedRoute>
+                        <Report />
+                    </ProtectedRoute>
+                }
+            />
+
 
             {/* UNKNOWN ROUTES */}
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
+
 }
 
 export default AppRoutes;

@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'sprints',
     'clients',
     'history',
+    'reports',
 ]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

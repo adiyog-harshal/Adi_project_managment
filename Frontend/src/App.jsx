@@ -111,7 +111,8 @@ function RoutesLayout() {
         "/tasks": "Tasks",
         "/profile": "Profile",
         "/settings": "Settings",
-        "/history": "Activity History"
+        "/history": "Activity History",
+        "/reports": "Reports",
     };
 
     const pageTitle =
