@@ -16,6 +16,7 @@ import {
     User,
     Handshake,
     History as HistoryIcon,
+    ChartNoAxesCombined,
 } from "lucide-react";
 
     const Sidebar = ({
@@ -124,6 +125,15 @@ import {
                 </NavLink>
 
 
+                <NavLink
+                    to="/reports"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <ChartNoAxesCombined size={20} />
+                    <span>Reports</span>
+                </NavLink>
                 {/* MASTER MENU */}
 
                 <div className="master-menu">
