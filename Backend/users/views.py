@@ -20,8 +20,9 @@ from rest_framework import status
 
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
-
+import os
 User = get_user_model()
+
 
 
 class ProfileView(APIView):
@@ -130,7 +131,6 @@ class UserListCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-
         users = User.objects.filter(
             client_account__isnull=True
         ).select_related(

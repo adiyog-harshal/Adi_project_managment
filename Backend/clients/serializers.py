@@ -7,6 +7,7 @@ import re
 class ClientSerializer(serializers.ModelSerializer):
 
     has_account = serializers.SerializerMethodField()
+    account_username = serializers.SerializerMethodField()
 
     class Meta:
         model = Client
@@ -21,11 +22,15 @@ class ClientSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "has_account",
+            "account_username",
         ]
-        read_only_fields = ["id", "has_account", "created_at", "updated_at"]       
+        read_only_fields = ["id", "has_account", "account_username", "created_at", "updated_at"]       
 
     def get_has_account(self, obj):
         return bool(obj.user_id)
+
+    def get_account_username(self, obj):
+        return obj.user.username if obj.user_id else None
 
     def validate_client_name(self, value):
         value = value.strip()

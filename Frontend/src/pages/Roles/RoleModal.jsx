@@ -66,13 +66,24 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
                 
                     <div className="form-group">
                         <label htmlFor="role-status">Status</label>
+
                         <select
                             id="role-status"
                             value={formData.status}
-                            onChange={(event) => setFormData({ ...formData, status: event.target.value })}
+                            onChange={(event) => 
+                                setFormData({ 
+                                    ...formData, 
+                                    status: event.target.value 
+                                })
+                            }
+                            disabled={!role}
                         >
                             <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
+
+                            {role && (
+                                <option value="Inactive">Inactive</option>
+                            )}
+                            
                         </select>
                     </div>
                     <div className="modal-actions">

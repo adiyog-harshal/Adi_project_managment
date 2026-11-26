@@ -79,6 +79,7 @@ export default function Clients() {
     const [error, setError] = useState("");
 
     const [credentials, setCredentials] = useState(null);
+    const [selectedClient, setSelectedClient] = useState(null);
 
     const [isCreatingAccountId, setIsCreatingAccountId] = useState(null);
 
@@ -208,6 +209,11 @@ export default function Clients() {
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const handleViewDetails = (client) => {
+        setOpenMenuId(null);
+        setSelectedClient(client);
     };
 
 
@@ -368,7 +374,6 @@ export default function Clients() {
                         <thead>
                             <tr>
                                 <th>Client Name</th>
-                                <th>Project Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
                                 <th>Login Account</th>
@@ -443,6 +448,14 @@ export default function Clients() {
 
                                                 {openMenuId === client.id && (
                                                     <div className="client-action-menu">
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleViewDetails(client)}
+                                                        >
+                                                            <Eye size={16} />
+                                                            Details
+                                                        </button>
                                                         {!client.has_account && (
                                                             <button
                                                                 type="button"
@@ -571,23 +584,6 @@ export default function Clients() {
                             </label>
 
                             <label>
-                                Project Name
-
-                                <input
-                                    type="text"
-                                    maxLength="200"
-                                    value={form.project_name}
-                                    onChange={(event) =>
-                                        setForm({
-                                            ...form,
-                                            project_name: event.target.value,
-                                        })
-                                    }
-                                    placeholder="Enter project name"
-                                />
-                            </label>
-
-                            <label>
                                 Email Address
 
                                 <input
@@ -663,8 +659,104 @@ export default function Clients() {
                 </div>
             )}
 
-            {/* CLIENT LOGIN CREDENTIALS MODAL */}
+            {/* CLIENT DETAILS MODAL */}
+            {selectedClient &&(
+                <div
+                    className="client-details-backdrop"
+                    onMouseDown={() => setSelectedClient(null)}
+                >
+                    <section
+                        className="client-details-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="client-details-title"
+                        onMouseDown={(event) => event.stopPropagation()}
+                    >
+                        <div className="client-details-header">
+                            <div>
+                                <h2 id="client-details-title">Client Details</h2>
+                                <p>Complete client and login account information.</p>
+                            </div>
 
+                            <button
+                                type="button"
+                                onClick={() => setSelectedClient(null)}
+                                aria-label="Close details"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="client-details-content">
+                            <div className="client-details-section">
+                                <h3>Basic Information</h3>
+
+                                <div className="client-detail-item">
+                                    <span>Client Name</span>
+                                    <strong>{selectedClient.project_name || "-"}</strong>
+                                </div>
+
+                                <div className="client-detail-item">
+                                    <span>Email Address</span>
+                                    <strong>{selectedClient.email || "-"}</strong>
+                                </div>
+
+                                <div className="client-detail-item">
+                                    <span>Contact Number</span>
+                                    <strong>{selectedClient.phone_number || "-"}</strong>
+                                </div>
+
+                                <div className="client-detail-item">
+                                    <span>Address</span>
+                                    <strong>{selectedClient.address || "Not provided"}</strong>
+                                </div>
+                            </div>
+
+                            <div className="client-details-section">
+                                <h3>Login Information</h3>
+
+                                <div className="client-detail-item">
+                                    <span>Account Status</span>
+                                    <strong>
+                                        {selectedClient.has_account
+                                            ? "Account Created"
+                                            : "Not Created"}
+                                    </strong>
+                                </div>
+
+                                {selectedClient.has_account && (
+                                    <>
+                                        <div className="client-detail-item">
+                                            <span>Username</span>
+                                            <strong>
+                                                {selectedClient.account_username || "-"}
+                                            </strong>
+                                        </div>
+
+                                        <div className="client-detail-item">
+                                            <span>Password</span>
+                                            <strong>
+                                                Secured - not displayed
+                                            </strong>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="client-details-footer">
+                            <button
+                                type="button"
+                                onClick={() => setSelectedClient(null)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            )}
+
+            {/* CLIENT LOGIN CREDENTIALS MODAL */}
             {credentials && (
                 <div className="client-credentials-backdrop">
 

@@ -13,7 +13,6 @@ import RoleModal from "./RoleModal";
 import "./Roles.css";
 import api from "../../services/api";
 
-
 function Roles() {
 
     const [roles, setRoles] = useState([]);
@@ -109,13 +108,14 @@ function Roles() {
             alert("Failed to delete role.");
         }
     };
-
-
     // Save role
     const handleSaveRole = async (roleData) => {
+
         const payload = {
             role_name: roleData.name.trim(),
-            is_active: roleData.status === "Active",
+            is_active: selectedRole
+                ? roleData.status === "Active"
+                : true,
         };
 
         try {
@@ -137,8 +137,6 @@ function Roles() {
         }
     };
     // Search
-
-
     const filteredRoles = roles.filter((role) => {
 
         const searchText = search.toLowerCase();
@@ -197,11 +195,9 @@ function Roles() {
                         </p>
 
                     </div>
-
                 </div>
 
                 {/* Table */}
-
                 <div className="table-container">
 
                     <table>
@@ -258,8 +254,6 @@ function Roles() {
                                             >
                                                 {role.is_active ? "Active" : "Inactive"}
                                             </button>
-
-
                                         </div>
                                     </td>
                                         <td>
@@ -309,15 +303,11 @@ function Roles() {
                             )}
 
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
 
             {/* Modal */}
-
             <RoleModal
                 isOpen={isModalOpen}
                 onClose={() => {
@@ -327,7 +317,6 @@ function Roles() {
                 onSave={handleSaveRole}
                 role={selectedRole}
             />
-
         </div>
     );
 }

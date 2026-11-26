@@ -122,14 +122,6 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
             )
         serializer.save()
 
-    def perform_destroy(self, instance):
-        if hasattr(self.request.user, "client_account"):
-            raise PermissionDenied(
-                "Clients cannot delete projects."
-            )
-
-        instance.delete()
-
 
     def perform_destroy(self, instance):
         user = self.request.user
@@ -147,7 +139,15 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
                 "Only Admins and Project Managers can delete projects."
             )
 
-        old_values = get_project_values(instance)
+        old_values = {
+            "project_name": instance.project_name,
+            "description": instance.description,
+            "status": instance.status,
+            "project_manager": (
+                instance.project_manager.username
+                if instance.project_manager else None
+            ),
+        }
 
         log_activity(
             user=user,
@@ -160,6 +160,7 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         )
 
         instance.delete()
+        
 class ProjectCommentListCreateView(generics.ListCreateAPIView):
 
     serializer_class = ProjectCommentSerializer

@@ -318,14 +318,19 @@ useEffect(() => {
 
     // EDIT PROJECT
     const handleEditProject = (project) => {
+        setFormError("");
 
         setProjectForm({
             project_name: project.project_name || "",
             project_type: project.project_type || "Internal",
-            client: project.client || "",
+             client: project.client?.id || project.client || "",
             start_date: project.start_date || "",
             end_date: project.end_date || "",
-            project_manager: project.project_manager || "",
+            project_manager: 
+                project.project_manager?.id ||
+                project.project_manager_id ||
+                project.project_manager ||
+                "",
             description: project.description || ""
         });
 
@@ -908,10 +913,6 @@ useEffect(() => {
 
                 </div> {/* Close projects-table */}
  
-
-
-
-
                 {/* PAGINATION - OUTSIDE TABLE */}
                 <div className="project-pagination">
                     <span className="project-pagination-info">

@@ -60,16 +60,10 @@ import {
         <aside className="sidebar">
             {/* LOGO */}
             <div className="sidebar-logo">
-                            {/* LOGO */}
-            <div className="sidebar-logo">
                 <div className="logo-icon">PMS</div>
                 <span>Project Management System</span>
             </div>
-            </div>
-
-
-            {/* NAVIGATION */}
-
+            
             {/* NAVIGATION */}
             <nav className="sidebar-nav">
                 <NavLink
@@ -123,9 +117,7 @@ import {
                     <span>History</span>
                 </NavLink>
 
-
                 {/* MASTER MENU */}
-
                 <div className="master-menu">
 
                     <button

@@ -29,7 +29,7 @@ const Designations = () => {
     const [showForm, setShowForm] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 4;
+    const itemsPerPage = 8;
 
     const [designationForm, setDesignationForm] = useState({
         name: "",

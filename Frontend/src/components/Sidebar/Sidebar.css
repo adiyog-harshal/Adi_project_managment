@@ -161,10 +161,36 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 20px 12px;
-    min-height: 82px;
+    padding: 18px 12px;
+    min-height: 90px;
+    width: 100%;
     box-sizing: border-box;
     flex-shrink: 0;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #6c5ce7;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.sidebar-logo span {
+    flex: 1;
+    min-width: 0;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
 
 .logo-text {

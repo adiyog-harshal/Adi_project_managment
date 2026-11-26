@@ -114,22 +114,43 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DB_SSL_CA = BASE_DIR / "ca.pem"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME", "project_management_db"),
-        "USER": os.getenv("DB_USER", "root"),
-        "PASSWORD": os.getenv("DB_PASSWORD", ""),
-        "HOST": os.getenv("DB_HOST", "127.0.0.1"),
-        "PORT": os.getenv("DB_PORT", "3306"),
-        "CONN_MAX_AGE": 60,
-    }
-}
+DB_ENV = os.getenv("DB_ENV", "local")
+print("Testing in settings file : ", DB_ENV)
+if DB_ENV == "production":
 
-if DB_SSL_CA.exists() and os.getenv("DB_SSL", "False").lower() == "true":
-    DATABASES["default"]["OPTIONS"] = {
-        "ssl": {
-            "ca": str(DB_SSL_CA)
+    mysql_options = {}
+
+    ssl_ca = os.getenv("MYSQL_SSL_CA")
+
+    if ssl_ca:
+        mysql_options["ssl"] = {
+            "ca": ssl_ca
+        }
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("MYSQL_DATABASE"),
+            "USER": os.getenv("MYSQL_USER"),
+            "PASSWORD": os.getenv("MYSQL_PASSWORD"),
+            "HOST": os.getenv("MYSQL_HOST"),
+            "PORT": os.getenv("MYSQL_PORT", "3306"),
+            "OPTIONS": mysql_options,
+            "CONN_MAX_AGE": 60,
+        }
+    }
+
+else:
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("DB_NAME", "project_management_db"),
+            "USER": os.getenv("DB_USER", "root"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+            "PORT": os.getenv("DB_PORT", "3306"),
+            "CONN_MAX_AGE": 60,
         }
     }
 
