@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import RegexValidator
 
+from django.conf import settings
+
 phone_validator = RegexValidator(
     regex=r'^[0-9]{10}$',
     message="Phone number must contain exactly 10 digits."
@@ -32,6 +34,14 @@ class Client(models.Model):
         blank=True,
         default=""
     )
+
+    user = models.OneToOneField(
+            settings.AUTH_USER_MODEL,
+            on_delete=models.SET_NULL,
+            null=True,
+            blank=True,
+            related_name="client_account"
+        )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

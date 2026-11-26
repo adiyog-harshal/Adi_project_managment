@@ -1,4 +1,4 @@
-from rest_framework import generics
+﻿from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
@@ -51,32 +51,35 @@ class ProjectListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
 
-        # Superusers can see all projects.
         if user.is_superuser:
             queryset = Project.objects.all()
+        elif hasattr(user, "client_account"):
+            queryset = Project.objects.filter(client__user=user)
         else:
-            # Members and project managers can see their projects.
             queryset = Project.objects.filter(
                 Q(project_members__user=user) |
                 Q(project_manager=user)
             ).distinct()
 
-        # Preserve task-count annotations.
         return queryset.annotate(
-            total_tasks=Count('tasks', distinct=True),
+            total_tasks=Count("tasks", distinct=True),
             completed_tasks=Count(
-                'tasks',
-                filter=Q(tasks__status='Completed'),
+                "tasks",
+                filter=Q(tasks__status="Completed"),
                 distinct=True
             )
         )
 
-    # Record project creation in Activity History.
     def perform_create(self, serializer):
+        user = self.request.user
+
+        if hasattr(user, "client_account"):
+            raise PermissionDenied("Clients cannot create projects.")
+
         project = serializer.save()
 
         log_activity(
-            user=self.request.user,
+            user=user,
             module="Projects",
             action="Created",
             object_id=project.id,
@@ -84,7 +87,6 @@ class ProjectListCreateView(generics.ListCreateAPIView):
             description=f"Project '{project.project_name}' was created.",
             new_values=get_project_values(project),
         )
-
 
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -97,14 +99,21 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         if user.is_superuser:
             return Project.objects.all()
 
+        if hasattr(user, "client_account"):
+            return Project.objects.filter(client__user=user)
+
         return Project.objects.filter(
-            models.Q(project_members__user=user) |
-            models.Q(project_manager=user)
+            Q(project_members__user=user) |
+            Q(project_manager=user)
         ).distinct()
 
     def perform_update(self, serializer):
-        project = self.get_object()
         user = self.request.user
+
+        if hasattr(user, "client_account"):
+            raise PermissionDenied("Clients cannot update projects.")
+
+        project = self.get_object()
 
         is_project_manager = (
             project.project_manager_id == user.id
@@ -120,14 +129,11 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
             )
 
         old_values = get_project_values(project)
-
         project = serializer.save()
-
         new_values = get_project_values(project)
 
         changed_fields = [
-            field
-            for field in old_values
+            field for field in old_values
             if old_values[field] != new_values[field]
         ]
 
@@ -152,9 +158,11 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
                 },
             )
 
-
     def perform_destroy(self, instance):
         user = self.request.user
+
+        if hasattr(user, "client_account"):
+            raise PermissionDenied("Clients cannot delete projects.")
 
         is_project_manager = (
             instance.project_manager_id == user.id
@@ -182,6 +190,7 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         )
 
         instance.delete()
+
 class ProjectCommentListCreateView(generics.ListCreateAPIView):
 
     serializer_class = ProjectCommentSerializer
@@ -247,11 +256,16 @@ class NotificationListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-
-        return Notification.objects.filter(
+        queryset = Notification.objects.filter(
             recipient=self.request.user
         ).order_by("-created_at")
 
+        unread = self.request.query_params.get("unread")
+
+        if unread == "true":
+            queryset = queryset.filter(is_read=False)
+
+        return queryset
 
 class NotificationReadView(generics.UpdateAPIView):
 
@@ -265,13 +279,7 @@ class NotificationReadView(generics.UpdateAPIView):
         )
 
     def perform_update(self, serializer):
-
-        notification = serializer.save(
-            is_read=True
-        )
-
-        mark_notification_as_read(notification)
-
+        serializer.save(is_read=True)
 
 class ResourceListCreateView(generics.ListCreateAPIView):
 

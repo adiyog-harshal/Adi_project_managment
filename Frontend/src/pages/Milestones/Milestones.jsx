@@ -7,9 +7,6 @@ import api from "../../services/api";
 
 const initialFormData = {
     name: '',
-    description: '',
-    startDate: '',
-    endDate: '',
     status: 'Not Started',
 };
 const API_BASE_URL = 'http://127.0.0.1:8000/api';
@@ -38,6 +35,7 @@ function Milestones() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [formError, setFormError] = useState("");
     useEffect(() => {
         fetchProjects();
         fetchMilestones();
@@ -108,14 +106,13 @@ function Milestones() {
     const [formData, setFormData] = useState({
         ...initialFormData,
     });
-    const [fieldErrors, setFieldErrors] = useState({});
 
     const filteredMilestones = milestones.filter((milestone) => {
     const project = projects.find(
         (item) => Number(item.id) === Number(milestone.project)
     );
 
-    
+
 
     return `${milestone.name}
         ${milestone.description}
@@ -127,35 +124,18 @@ function Milestones() {
 });
 
     const handleChange = (e) => {
-    const { name, value } = e.target;
+        const { name, value } = e.target;
 
-    setFormData((previousData) => ({
-        ...previousData,
-        [name]: value,
-    }));
-
-    const errorFieldMap = {
-        name: 'milestone_name',
-        startDate: 'start_date',
-        endDate: 'due_date',
+        setFormData((previousData) => ({
+            ...previousData,
+            [name]: value,
+        }));
     };
 
-    setFieldErrors((previousErrors) => {
-        const updatedErrors = { ...previousErrors };
-        delete updatedErrors[name];
-
-        if (errorFieldMap[name]) {
-            delete updatedErrors[errorFieldMap[name]];
-        }
-
-        return updatedErrors;
-    });
-
-    setError('');
-};
     const openAddForm = () => {
         setEditingMilestone(null);
         setOpenMenu(null);
+        setFormError("");
 
         setFormData({
             ...initialFormData,
@@ -173,12 +153,13 @@ function Milestones() {
             name: milestone.name || "",
             project: id,
             description: milestone.description || "",
-            startDate: milestone.startDate || "",
-            endDate: milestone.endDate || "",
             status: milestone.status || "Not Started",
         });
 
+        setFormError("");
+
         setShowForm(true);
+
     };
 
     const closeForm = () => {
@@ -188,132 +169,80 @@ function Milestones() {
         setFormData({
             ...initialFormData,
         });
+
+        setFormError("");
     };
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    setError('');
-    setFieldErrors({});
+        setFormError("");
 
-    const newErrors = {};
-
-    if (!formData.name.trim()) {
-        newErrors.milestone_name = ['Milestone name is required.'];
-    } else if (formData.name.trim().length < 2) {
-        newErrors.milestone_name = [
-            'Milestone name must contain at least 2 characters.',
-        ];
-    }
-
-    if (!formData.startDate) {
-        newErrors.start_date = ['Start date is required.'];
-    }
-
-    if (!formData.endDate) {
-        newErrors.due_date = ['End date is required.'];
-    }
-
-    if (
-        formData.startDate &&
-        formData.endDate &&
-        formData.endDate < formData.startDate
-    ) {
-        newErrors.due_date = [
-            'Due date cannot be before the start date.',
-        ];
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-        setFieldErrors(newErrors);
-        return;
-    }
-
-    const payload = {
-        project: Number(id),
-        milestone_name: formData.name.trim(),
-        description: formData.description,
-        start_date: formData.startDate,
-        due_date: formData.endDate,
-        status: statusToBackend[formData.status],
-    };
-
-    try {
-        const url = editingMilestone
-            ? `${API_BASE_URL}/milestones/${editingMilestone.id}/update/`
-            : `${API_BASE_URL}/milestones/create/`;
-
-        const response = await fetch(url, {
-            method: editingMilestone ? 'PUT' : 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-
-        const responseText = await response.text();
-
-        let responseData = {};
-
-        try {
-            responseData = responseText
-                ? JSON.parse(responseText)
-                : {};
-        } catch {
-            console.error(
-                'Milestone API returned a non-JSON response:',
-                response.status,
-                responseText
-            );
-        }
-
-        if (!response.ok) {
-            if (
-                responseData &&
-                typeof responseData === 'object' &&
-                !Array.isArray(responseData)
-            ) {
-                const backendErrors = {};
-
-                Object.entries(responseData).forEach(([key, value]) => {
-                    backendErrors[key] = Array.isArray(value)
-                        ? value.map(String)
-                        : [String(value)];
-                });
-
-                setFieldErrors(backendErrors);
-
-                const messages = Object.entries(backendErrors)
-                    .flatMap(([key, values]) =>
-                        values.map((message) => `${key}: ${message}`)
-                    );
-
-                setError(
-                    messages.length
-                        ? messages.join(' ')
-                        : `Unable to save milestone (HTTP ${response.status}).`
-                );
-            } else {
-                setError(
-                    `Unable to save milestone (HTTP ${response.status}). Check the API URL and server logs.`
-                );
-            }
-
+        if (
+            formData.startDate &&
+            formData.endDate &&
+            formData.endDate < formData.startDate
+        ) {
+            alert('End date cannot be before start date.');
             return;
         }
 
-        setFieldErrors({});
-        setError('');
-        await fetchMilestones();
-        closeForm();
-    } catch (err) {
-        console.error('Error saving milestone:', err);
-        setError(
-            err.message || 'Unable to save milestone. Check your connection.'
-        );
-    }
-};
+        const payload = {
+            project: Number(id),
+            milestone_name: formData.name,
+            description: formData.description,
+            start_date: formData.startDate,
+            due_date: formData.endDate,
+            status: statusToBackend[formData.status],
+        };
 
+        try {
+            let response;
+
+            if (editingMilestone) {
+                response = await fetch(
+                    `${API_BASE_URL}/milestones/${editingMilestone.id}/update/`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload),
+                    }
+                );
+            } else {
+                response = await fetch(
+                    `${API_BASE_URL}/milestones/create/`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload),
+                    }
+                );
+            }
+
+            if (!response.ok) {
+                const responseData = await response.json();
+
+                const errorMessage =
+                    responseData.milestone_name?.[0] ||
+                    responseData.detail ||
+                    'Unable to save module.';
+
+                throw new Error(errorMessage);
+            }
+
+            await fetchMilestones();
+            closeForm();
+        } catch (err) {
+            console.error("Module save error:", err);
+            setFormError(
+                err.message || "Unable to save Module. Please try again."
+            );
+        }
+    };
 
     const handleDelete = async (id) => {
         const confirmed = window.confirm(
@@ -390,7 +319,7 @@ const handleSubmit = async (e) => {
                 </button>
             </div>
 
-        
+
 
             {/* Milestones Table */}
             <div className="milestones-card">
@@ -400,8 +329,6 @@ const handleSubmit = async (e) => {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -410,7 +337,7 @@ const handleSubmit = async (e) => {
                     <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="5" className="empty-milestones">
+                                    <td colSpan="3" className="empty-milestones">
                                         Loading milestones...
                                     </td>
                                 </tr>
@@ -422,16 +349,6 @@ const handleSubmit = async (e) => {
                                     {/* NAME */}
                                     <td className="milestone-name">
                                         {milestone.name || "-"}
-                                    </td>
-
-                                    {/* START DATE */}
-                                    <td>
-                                        {milestone.startDate || "-"}
-                                    </td>
-
-                                    {/* END DATE */}
-                                    <td>
-                                        {milestone.endDate || "-"}
                                     </td>
 
                                     {/* STATUS */}
@@ -456,7 +373,7 @@ const handleSubmit = async (e) => {
                                                 }
                                                 aria-label="More actions"
                                             >
-                                                â‹®
+                                                ⋮
                                             </button>
 
                                             {openMenu === milestone.id && (
@@ -492,7 +409,7 @@ const handleSubmit = async (e) => {
 
                             <tr>
                                 <td
-                                    colSpan="7"
+                                    colSpan="3"
                                     className="empty-milestones"
                                 >
                                     No milestones found.
@@ -518,7 +435,7 @@ const handleSubmit = async (e) => {
                             <h2>
                                 {editingMilestone
                                     ? "Edit Module"
-                                    : "Update Module"}
+                                    : "Add New Module"}
                             </h2>
 
                             <button
@@ -527,16 +444,17 @@ const handleSubmit = async (e) => {
                                 onClick={closeForm}
                                 aria-label="Close"
                             >
-                                Ã—
+                                ×
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} noValidate>
-                            {error && (
-                            <div className="milestone-error-message" role="alert">
-                                {error}
+                        {formError && (
+                            <div className="milestone-form-error" role="alert">
+                                {formError}
                             </div>
                         )}
+
+                        <form onSubmit={handleSubmit}>
 
                             {/* Name */}
                             <div className="milestone-form-group">
@@ -549,14 +467,6 @@ const handleSubmit = async (e) => {
                                     placeholder="Enter module name"
                                     required
                                 />
-                                {(fieldErrors.milestone_name || fieldErrors.name) && (
-                                <p className="milestone-field-error" role="alert">
-                                    {(
-                                        fieldErrors.milestone_name ||
-                                        fieldErrors.name
-                                    ).join(' ')}
-                                </p>
-                            )}
                             </div>
 
                             {/* Description */}
@@ -572,79 +482,6 @@ const handleSubmit = async (e) => {
                             </div> */}
 
                             {/* Dates */}
-                            <div className="milestone-form-date-row">
-                                <div className="milestone-form-group">
-                                    <label>Start Date</label>
-                                    <input
-                                        type="date"
-                                        name="startDate"
-                                        value={formData.startDate || ""}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-
-
-                                <div className="milestone-form-group">
-                                    <label>End Date</label>
-                                    <input
-                                        type="date"
-                                        name="endDate"
-                                        value={formData.endDate || ""}
-                                        onChange={handleChange}
-                                        min={formData.startDate || undefined}
-                                        required
-                                    />
-                                    {(fieldErrors.due_date || fieldErrors.endDate) && (
-                                        <p className="milestone-field-error" role="alert">
-                                            {(
-                                                fieldErrors.due_date ||
-                                                fieldErrors.endDate
-                                            ).join(" ")}
-                                        </p>
-                                    )}
-                                </div>
-
-
-                                <input
-                                    type="date"
-                                    name="startDate"
-                                    value={formData.startDate || ""}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                {(fieldErrors.start_date || fieldErrors.startDate) && (
-                                <p className="milestone-field-error" role="alert">
-                                    {(
-                                        fieldErrors.start_date ||
-                                        fieldErrors.startDate
-                                    ).join(' ')}
-                                </p>
-                            )}
-                            </div>
-
-                            {/* End Date */}
-                            <div>
-                                <label>End Date:</label>
-
-                                <input
-                                    type="date"
-                                    name="endDate"
-                                    value={formData.endDate}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                {(fieldErrors.due_date || fieldErrors.endDate) && (
-                                <p className="milestone-field-error" role="alert">
-                                    {(
-                                        fieldErrors.due_date ||
-                                        fieldErrors.endDate
-                                    ).join(' ')}
-                                </p>
-                            )}
-
-                            </div>
 
                             {/* Status */}
                             <div className="milestone-form-group">
@@ -686,8 +523,6 @@ const handleSubmit = async (e) => {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 }

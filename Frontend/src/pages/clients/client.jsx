@@ -8,6 +8,10 @@ import {
     Search,
     Trash2,
     X,
+    UserPlus,
+    Copy,
+    Eye,
+    EyeOff
 } from "lucide-react";
 
 import { PMSPageHeader } from "../../components/Common/Common";
@@ -74,20 +78,39 @@ export default function Clients() {
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState("");
 
+    const [credentials, setCredentials] = useState(null);
+    const [selectedClient, setSelectedClient] = useState(null);
+
+    const [isCreatingAccountId, setIsCreatingAccountId] = useState(null);
+
+    const [showCredentialPassword, setShowCredentialPassword] = useState(false);
+
+    const [copyMessage, setCopyMessage] = useState("");
 
     const fetchClients = async () => {
         try {
             const response = await api.get("clients/");
-            setClients(response.data);
+
+            const data = response.data;
+
+            setClients(
+                Array.isArray(data) ? data : data.results || []
+            );
             setError("");
+
         } catch (requestError) {
             console.error("Failed to fetch clients:", requestError);
+
             setError(getErrorMessage(requestError));
         } finally {
             setIsLoading(false);
         }
     };
 
+
+    useEffect(() => {
+        fetchClients();
+    }, []);
 
     useEffect(() => {
         let isCurrent = true;
@@ -188,6 +211,11 @@ export default function Clients() {
         }
     };
 
+    const handleViewDetails = (client) => {
+        setOpenMenuId(null);
+        setSelectedClient(client);
+    };
+
 
     const handleDelete = async (client) => {
         setOpenMenuId(null);
@@ -209,6 +237,85 @@ export default function Clients() {
         }
     };
 
+    const handleCreateAccount = async (client) => {
+
+        setOpenMenuId(null);
+        setError("");
+
+        setIsCreatingAccountId(client.id);
+
+        try {
+
+            const response = await api.post(
+                `clients/${client.id}/create-account/`
+            );
+            // Save credentials
+            setCredentials({
+                clientName: client.client_name,
+                username: response.data.username,
+                password: response.data.password
+            });
+
+            setShowCredentialPassword(false);
+            setCopyMessage("");
+
+            await fetchClients();
+
+        } catch (requestError) {
+            console.error("Create client account error:", requestError);
+
+            setError(getErrorMessage(requestError));
+
+        } finally {
+            setIsCreatingAccountId(null);
+        }
+    };
+
+    const handleCopyCredentials = async () => {
+
+        if (!credentials) return;
+
+        const text = `
+    Client Name: ${credentials.clientName}
+    Username: ${credentials.username}
+    Password: ${credentials.password}
+    `;
+        try {
+            await navigator.clipboard.writeText(text);
+
+            setCopyMessage("Credentials copied successfull!y");
+        } catch (error) {
+
+            console.error("Copy failed:", error);
+
+            setCopyMessage("Unable to copy. Please copy manually.");
+        }
+    };
+
+    const handleResetPassword = async (client) => {
+
+        setOpenMenuId(null);
+        setError("");
+
+        try {
+            const response = await api.post(
+                `clients/${client.id}/reset-account-password/`
+            );
+
+            setCredentials({
+                clientName: client.client_name,
+                username: response.data.username,
+                password: response.data.password
+            });
+
+            setShowCredentialPassword(false);
+            setCopyMessage("");
+
+        } catch (requestError) {
+            console.error("Password reset error:", requestError);
+            setError(getErrorMessage(requestError));
+        }
+    };
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -267,10 +374,10 @@ export default function Clients() {
                         <thead>
                             <tr>
                                 <th>Client Name</th>
-                                <th>Project Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
-                                <th>Action</th>
+                                <th>Login Account</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
@@ -295,17 +402,23 @@ export default function Clients() {
                                                 {client.client_name}
                                             </span>
                                         </td>
+                                        <td>{client.email || "—"}</td>
+                                        <td>{client.phone_number || "—"}</td>
 
                                         <td>
-                                            {client.project_name || "—"}
-                                        </td>
-
-                                        <td>
-                                            {client.email || "—"}
-                                        </td>
-
-                                        <td>
-                                            {client.phone_number || "—"}
+                                            {isCreatingAccountId === client.id ? (
+                                                <span className="client-account-loading">
+                                                    Creating...
+                                                </span>
+                                            ) : client.has_account ? (
+                                                <span className="client-account-created">
+                                                    Account Created
+                                                </span>
+                                            ) : (
+                                                <span className="client-account-pending">
+                                                    Not Created
+                                                </span>
+                                            )}
                                         </td>
 
                                         <td className="client-action-cell">
@@ -335,6 +448,24 @@ export default function Clients() {
 
                                                 {openMenuId === client.id && (
                                                     <div className="client-action-menu">
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleViewDetails(client)}
+                                                        >
+                                                            <Eye size={16} />
+                                                            Details
+                                                        </button>
+                                                        {!client.has_account && (
+                                                            <button
+                                                                type="button"
+                                                                disabled={isCreatingAccountId === client.id}
+                                                                onClick={() => handleCreateAccount(client)}
+                                                            >
+                                                                <UserPlus size={16} />
+                                                                Create Login
+                                                            </button>
+                                                        )}
                                                         <button
                                                             type="button"
                                                             onClick={() =>
@@ -355,6 +486,16 @@ export default function Clients() {
                                                             <Trash2 size={16} />
                                                             Delete
                                                         </button>
+
+                                                        {client.has_account && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleResetPassword(client)}
+                                                            >
+                                                                <UserPlus size={16} />
+                                                                Reset Login Password
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
@@ -443,23 +584,6 @@ export default function Clients() {
                             </label>
 
                             <label>
-                                Project Name
-
-                                <input
-                                    type="text"
-                                    maxLength="200"
-                                    value={form.project_name}
-                                    onChange={(event) =>
-                                        setForm({
-                                            ...form,
-                                            project_name: event.target.value,
-                                        })
-                                    }
-                                    placeholder="Enter project name"
-                                />
-                            </label>
-
-                            <label>
                                 Email Address
 
                                 <input
@@ -532,6 +656,214 @@ export default function Clients() {
                             </div>
                         </form>
                     </section>
+                </div>
+            )}
+
+            {/* CLIENT DETAILS MODAL */}
+            {selectedClient &&(
+                <div
+                    className="client-details-backdrop"
+                    onMouseDown={() => setSelectedClient(null)}
+                >
+                    <section
+                        className="client-details-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="client-details-title"
+                        onMouseDown={(event) => event.stopPropagation()}
+                    >
+                        <div className="client-details-header">
+                            <div>
+                                <h2 id="client-details-title">Client Details</h2>
+                                <p>Complete client and login account information.</p>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => setSelectedClient(null)}
+                                aria-label="Close details"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="client-details-content">
+                            <div className="client-details-section">
+                                <h3>Basic Information</h3>
+
+                                <div className="client-detail-item">
+                                    <span>Client Name</span>
+                                    <strong>{selectedClient.project_name || "-"}</strong>
+                                </div>
+
+                                <div className="client-detail-item">
+                                    <span>Email Address</span>
+                                    <strong>{selectedClient.email || "-"}</strong>
+                                </div>
+
+                                <div className="client-detail-item">
+                                    <span>Contact Number</span>
+                                    <strong>{selectedClient.phone_number || "-"}</strong>
+                                </div>
+
+                                <div className="client-detail-item">
+                                    <span>Address</span>
+                                    <strong>{selectedClient.address || "Not provided"}</strong>
+                                </div>
+                            </div>
+
+                            <div className="client-details-section">
+                                <h3>Login Information</h3>
+
+                                <div className="client-detail-item">
+                                    <span>Account Status</span>
+                                    <strong>
+                                        {selectedClient.has_account
+                                            ? "Account Created"
+                                            : "Not Created"}
+                                    </strong>
+                                </div>
+
+                                {selectedClient.has_account && (
+                                    <>
+                                        <div className="client-detail-item">
+                                            <span>Username</span>
+                                            <strong>
+                                                {selectedClient.account_username || "-"}
+                                            </strong>
+                                        </div>
+
+                                        <div className="client-detail-item">
+                                            <span>Password</span>
+                                            <strong>
+                                                Secured - not displayed
+                                            </strong>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="client-details-footer">
+                            <button
+                                type="button"
+                                onClick={() => setSelectedClient(null)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            )}
+
+            {/* CLIENT LOGIN CREDENTIALS MODAL */}
+            {credentials && (
+                <div className="client-credentials-backdrop">
+
+                    <section
+                        className="client-credentials-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="credentials-title"
+                    >
+
+                        <div className="credentials-success-icon">
+                            <UserPlus size={28} />
+                        </div>
+
+                        <h2 id="credentials-title">
+                            Client Account Created!
+                        </h2>
+
+                        <p className="credentials-subtitle">
+                            Share these login credentials with your client.
+                        </p>
+
+                        <div className="credentials-details">
+
+                            <label>Client Name</label>
+
+                            <div className="credentials-value">
+                                {credentials.clientName}
+                            </div>
+
+                            <label>Username</label>
+
+                            <div className="credentials-value">
+                                {credentials.username}
+                            </div>
+
+                            <label>Temporary Password</label>
+
+                            <div className="credentials-password">
+
+                                <span>
+                                    {showCredentialPassword
+                                        ? credentials.password
+                                        : "•".repeat(credentials.password.length)}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowCredentialPassword(
+                                            !showCredentialPassword
+                                        )
+                                    }
+                                    aria-label={
+                                        showCredentialPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                >
+                                    {showCredentialPassword
+                                        ? <EyeOff size={18} />
+                                        : <Eye size={18} />
+                                    }
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <p className="credentials-warning">
+                            Important: This password is displayed only once.
+                            Copy and share it securely with your client.
+                        </p>
+
+                        {copyMessage && (
+                            <p className="credentials-copy-message">
+                                {copyMessage}
+                            </p>
+                        )}
+
+                        <div className="credentials-actions">
+
+                            <button
+                                type="button"
+                                className="credentials-copy-btn"
+                                onClick={handleCopyCredentials}
+                            >
+                                <Copy size={16} />
+                                Copy Credentials
+                            </button>
+
+                            <button
+                                type="button"
+                                className="credentials-done-btn"
+                                onClick={() => {
+                                    setCredentials(null);
+                                    setCopyMessage("");
+                                    setShowCredentialPassword(false);
+                                }}
+                            >
+                                Done
+                            </button>
+
+                        </div>
+
+                    </section>
+
                 </div>
             )}
         </section>

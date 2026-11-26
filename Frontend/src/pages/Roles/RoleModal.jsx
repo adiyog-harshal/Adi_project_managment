@@ -27,7 +27,7 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
             alert("Please enter a role name");
             return;
         }
-        
+
         onSave({
             name: formData.name.trim(),
             status: formData.status,
@@ -63,16 +63,27 @@ function RoleModal({ isOpen, onClose, onSave, role }) {
                             onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                         />
                     </div>
-                
+
                     <div className="form-group">
                         <label htmlFor="role-status">Status</label>
+
                         <select
                             id="role-status"
                             value={formData.status}
-                            onChange={(event) => setFormData({ ...formData, status: event.target.value })}
+                            onChange={(event) =>
+                                setFormData({
+                                    ...formData,
+                                    status: event.target.value
+                                })
+                            }
+                            disabled={!role}
                         >
                             <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
+
+                            {role && (
+                                <option value="Inactive">Inactive</option>
+                            )}
+
                         </select>
                     </div>
                     <div className="modal-actions">

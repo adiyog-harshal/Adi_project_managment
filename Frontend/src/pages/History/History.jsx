@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { Fragment,useEffect, useState } from "react";
 import {
     History as HistoryIcon,
     Search,
@@ -83,6 +83,8 @@ export default function History() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
 
+    const [refreshKey, setRefreshKey] = useState(0);
+
     useEffect(() => {
         let isCurrent = true;
 
@@ -135,7 +137,7 @@ export default function History() {
         return () => {
             isCurrent = false;
         };
-    }, [page, module, action, appliedSearch]);
+    }, [page, module, action, appliedSearch, refreshKey]);
 
     const handleSearch = (event) => {
         event.preventDefault();
@@ -174,10 +176,7 @@ export default function History() {
                 <button
                     type="button"
                     className="history-refresh"
-                    onClick={() => {
-                        setPage((current) => current);
-                        setAppliedSearch((current) => current);
-                    }}
+                    onClick={() => setRefreshKey((current) => current + 1)}
                     title="Refresh history"
                 >
                     <RefreshCw size={17} />
@@ -296,8 +295,8 @@ export default function History() {
                                 </tr>
                             ) : activities.length > 0 ? (
                                 activities.map((item) => (
-                                    <>
-                                        <tr key={item.id}>
+                                    <Fragment key={item.id}>
+                                        <tr>
                                             <td className="history-date">
                                                 {formatDate(item.created_at)}
                                             </td>
@@ -385,7 +384,7 @@ export default function History() {
                                                 </td>
                                             </tr>
                                         )}
-                                    </>
+                                    </Fragment>
                                 ))
                             ) : (
                                 <tr>
@@ -421,9 +420,7 @@ export default function History() {
                         <button
                             type="button"
                             disabled={!hasNext || isLoading}
-                            onClick={() =>
-                                setPage((current) => current + 1)
-                            }
+                            onClick={() => setPage((current) => current + 1)}
                         >
                             Next
                             <ChevronRight size={17} />

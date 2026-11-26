@@ -61,15 +61,9 @@ import {
         <aside className="sidebar">
             {/* LOGO */}
             <div className="sidebar-logo">
-                            {/* LOGO */}
-            <div className="sidebar-logo">
                 <div className="logo-icon">PMS</div>
                 <span>Project Management System</span>
             </div>
-            </div>
-
-
-            {/* NAVIGATION */}
 
             {/* NAVIGATION */}
             <nav className="sidebar-nav">
@@ -105,7 +99,7 @@ import {
                 </NavLink>
 
 
-                <NavLink
+                {/* <NavLink
                     to="/milestones"
                     className={({ isActive }) =>
                         `sidebar-link ${isActive ? "active" : ""}`
@@ -113,7 +107,7 @@ import {
                 >
                     <ClipboardList size={20} />
                     <span>Milestones</span>
-                </NavLink>
+                </NavLink> */}
                 <NavLink
                     to="/history"
                     className={({ isActive }) =>
@@ -123,7 +117,6 @@ import {
                     <HistoryIcon size={20} />
                     <span>History</span>
                 </NavLink>
-
 
                 <NavLink
                     to="/reports"
@@ -135,7 +128,6 @@ import {
                     <span>Reports</span>
                 </NavLink>
                 {/* MASTER MENU */}
-
                 <div className="master-menu">
 
                     <button

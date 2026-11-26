@@ -6,36 +6,36 @@ from .models import Milestone
 class MilestoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Milestone
-        fields = "__all__"
+        fields = '__all__'
 
     def validate_milestone_name(self, value):
-        if not value or not value.strip():
+
+        value = value.strip()
+
+        if not value:
             raise serializers.ValidationError(
-                "Milestone name is required."
+                "Module name is required."
             )
 
-        if len(value.strip()) < 2:
-            raise serializers.ValidationError(
-                "Milestone name must contain at least 2 characters."
+        project_id = self.initial_data.get("project")
+
+        if not project_id and self.instance:
+            project_id = self.instance.project_id
+
+        existing_modules = Milestone.objects.filter(
+            project_id=project_id,
+            milestone_name__iexact=value
+        )
+
+        # Allow the existing name while editing the same module
+        if self.instance:
+            existing_modules = existing_modules.exclude(
+                id=self.instance.id
             )
 
-        return value.strip()
+        if existing_modules.exists():
+            raise serializers.ValidationError(
+                "This module name already exists in this project."
+            )
 
-    def validate(self, attrs):
-        start_date = attrs.get(
-            "start_date",
-            getattr(self.instance, "start_date", None)
-        )
-        due_date = attrs.get(
-            "due_date",
-            getattr(self.instance, "due_date", None)
-        )
-
-        if start_date and due_date and due_date < start_date:
-            raise serializers.ValidationError({
-                "due_date": (
-                    "Due date cannot be before the start date."
-                )
-            })
-
-        return attrs
+        return value

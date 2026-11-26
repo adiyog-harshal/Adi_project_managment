@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from django.utils import timezone
-
+from clients.models import Client
 
 class Project(models.Model):
 
@@ -13,7 +13,25 @@ class Project(models.Model):
         ('On Hold', 'On Hold'),
     ]
 
+    PROJECT_TYPE_CHOICES = [
+        ('Client', 'Client Project'),
+        ('Internal', 'Internal Project'),
+    ]
+
     project_name = models.CharField(max_length=200)
+    project_type = models.CharField(
+        max_length=20,
+        choices=PROJECT_TYPE_CHOICES,
+        default='Internal'
+    )
+
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='projects'
+    )
     description = models.TextField(blank=True)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)

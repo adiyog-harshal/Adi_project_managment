@@ -41,6 +41,11 @@ const Dashboard = () => {
     const [filterStatus, setFilterStatus] = useState("all");
     const [sortBy, setSortBy] = useState("none");
 
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [notificationLoading, setNotificationLoading] = useState(false);
+
     const [showFilterMenu, setShowFilterMenu] = useState(false)
     const [showSortMenu, setShowSortMenu] = useState(false);
 
@@ -64,6 +69,7 @@ const Dashboard = () => {
     useEffect(() => {
         fetchProjects();
         fetchUsers();
+        fetchNotifications();
     }, []);
 
     useEffect(() => {
@@ -180,7 +186,6 @@ const Dashboard = () => {
         } else {
             setSelectedProgressProject(null);
         }
-
         // Fetch all team members
         const memberResponses = await Promise.all(
             projectData.map(async (project) => {
@@ -216,7 +221,6 @@ const Dashboard = () => {
         );
     }
 };
-
     const fetchUsers = async () => {
         try {
             const response = await api.get("users/");
@@ -229,6 +233,66 @@ const Dashboard = () => {
             console.error(
                 "Failed to fetch users:",
                 error
+            );
+        }
+    };
+
+    const fetchNotifications = async () => {
+        try {
+            setNotificationLoading(true);
+
+            const response = await api.get("notifications/");
+
+            const data= Array.isArray(response.data)
+                ? response.data
+                : response.data.results || [];
+
+            setNotifications(data);
+
+            setUnreadCount(
+                data.filter(notification => !notification.is_read).length
+            );
+        } catch (error) {
+            console.error(
+                "Failed to fetch notifications:",
+                error.response?.data || error
+            );
+        } finally {
+            setNotificationLoading(false);
+        }
+    };
+
+    const toggleNotifications = () => {
+        const nextState = !showNotifications;
+        setShowNotifications(nextState);
+
+        if (nextState) {
+            fetchNotifications();
+        }
+    };
+
+    const handleNotificationClick = async (notification) => {
+        if (notification.is_read) return;
+
+        try {
+            await api.patch(
+                `notifications/${notification.id}/read/`,
+                {is_read: true}
+            );
+
+            setNotifications(previous =>
+                previous.map(item =>
+                    item.id === notification.id
+                        ? { ...item, is_read: true }
+                        : item
+                )
+            );
+
+            setUnreadCount(previous => Math.max(0, previous - 1));
+        } catch (error) {
+            console.error(
+                "Failed to mark notifications as read:",
+                error.response?.data || error
             );
         }
     };
@@ -327,7 +391,6 @@ const Dashboard = () => {
         );
     }).length;
 
-
     // ===============================
     // ON TIME / DELAYED PROJECTS
     // ===============================
@@ -371,7 +434,7 @@ const Dashboard = () => {
     const onTimeProjectCount = onTimeProjects.length;
     const delayedProjectCount = delayedProjects.length;
 
-    // ===============================
+// ===============================
 // PROJECT PROGRESS CALCULATION
 // ===============================
 
@@ -671,13 +734,83 @@ console.log("PROJECT PROGRESS:", {
             />
         </div>
 
-        <button
-            type="button"
-            className="dashboard-notification"
-            title="Notification"
-        >
-            <Bell size={19} />
-        </button>
+        <div className="dashboard-notification-wrapper">
+            <button
+                type="button"
+                className="dashboard-notification"
+                title="Notifications"
+                onClick={toggleNotifications}
+            >
+                <Bell size={19} />
+
+                {unreadCount > 0 && (
+                    <span className="notification-badge">
+                        {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
+                )}
+            </button>
+
+            {showNotifications && (
+                <div className="notification-dropdown">
+                    <div className="notification-dropdown-header">
+                        <h3>Notifications</h3>
+                        <span>{unreadCount} unread</span>
+                    </div>
+
+                    <div className="notification-list">
+
+                        {notificationLoading ? (
+                            <p className="notification-empty">
+                                Loading notifications...
+                            </p>
+                        ) : notifications.length > 0 ? (
+
+                            notifications.map(notification => (
+                                <div
+                                    key={notification.id}
+                                    className={`notification-item ${
+                                        !notification.is_read ? "unread" : ""
+                                    }`}
+                                    onClick={() =>
+                                        handleNotificationClick(notification)
+                                    }
+                                >
+                                    <div className="notification-message">
+                                        <p>{notification.message}</p>
+
+                                        <small>
+                                            {new Date(
+                                                notification.created_at
+                                            ).toLocaleString("en-IN")}
+                                        </small>
+                                    </div>
+
+                                    {notification.is_read && (
+                                        <span className="notification-unread-dot" />
+                                    )}
+                                </div>
+                            ))
+
+                        ) : (
+                            <p className="notification-empty">
+                                No Notifications availabe.
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="notification-dropdown-footer">
+                        <button
+                            type="button"
+                            onClick={fetchNotifications}
+                        >
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+
+
     </div>
 </div>
 
@@ -796,12 +929,10 @@ console.log("PROJECT PROGRESS:", {
                                 </span>
 
                             </div>
-
                         </div>
 
 
                         {/* PENDING */}
-
                         <div className="stat-card">
 
                             <div className="stat-card-top">
@@ -870,11 +1001,9 @@ console.log("PROJECT PROGRESS:", {
 
                     </div>
 
-
                     {/* =============================
                         PROJECT ANALYTICS
                     ============================= */}
-
                     <div className="dashboard-chart-card">
 
                         <div className="dashboard-chart-header">
@@ -885,7 +1014,6 @@ console.log("PROJECT PROGRESS:", {
                                 </p>
                             </div>
                         </div>
-
 
                         <div className="dashboard-line-chart">
 
@@ -954,7 +1082,6 @@ console.log("PROJECT PROGRESS:", {
                 {/* =================================
                     PROJECTS + PROJECT PROGRESS
                 ================================= */}
-
                 <div className="dashboard-project-section">
 
                     {/* =================================
@@ -983,7 +1110,6 @@ console.log("PROJECT PROGRESS:", {
 
                                 <thead>
                                     <tr>
-
                                         <th>Project Name</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
@@ -1008,8 +1134,6 @@ console.log("PROJECT PROGRESS:", {
                                                     setSelectedProgressProject(project)
                                                 }
                                             >
-
-
                                                 <td>
                                                     {project.project_name || "-"}
                                                 </td>

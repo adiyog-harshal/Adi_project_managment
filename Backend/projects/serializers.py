@@ -6,9 +6,50 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     progress = serializers.SerializerMethodField()
 
+    client_name = serializers.CharField(
+        source="client.client_name",
+        read_only=True
+    )
+
     class Meta:
         model = Project
         fields = '__all__'
+        read_only_fields = ['completed_at']
+
+    def get_fields(self):
+        fields = super().get_fields()
+
+        request = self.context.get("request")
+
+        if not request or not request.user.is_superuser:
+            fields.pop("client_name", None)
+
+        return fields
+
+    def validate_project_name(self, value):
+        value = value.strip()
+
+        if not value:
+            raise serializers.ValidationError(
+                "Project name cannot be empty."
+            )
+
+        existing_projects = Project.objects.filter(
+            project_name__iexact=value
+        )
+
+        # Allow the current project name while editing that project
+        if self.instance:
+            existing_projects = existing_projects.exclude(
+                id=self.instance.id
+            )
+
+        if existing_projects.exists():
+            raise serializers.ValidationError(
+                "A project with this name already exists."
+            )
+
+        return value
 
     def get_progress(self, obj):
         total_tasks = getattr(obj, 'total_tasks', 0)

@@ -112,6 +112,11 @@ class UserSerializer(serializers.ModelSerializer):
         designation = validated_data.pop("designation", None)
         role = validated_data.pop("role", None)
         password = validated_data.pop("password", None)
+
+        if not password:
+            password = get_random_string(12)
+
+        self.generated_password = password
         status = validated_data.pop("status", "Active")
 
         if name:

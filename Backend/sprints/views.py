@@ -369,7 +369,7 @@ class SprintStartView(APIView):
                 {"detail": "Sprint not found."},
                 status=status.HTTP_404_NOT_FOUND
             )
-
+        # STEP 1: Validate start choise
         choice = request.data.get("start_choice")
         today = timezone.localdate()
 
@@ -378,15 +378,54 @@ class SprintStartView(APIView):
                 {"detail": "Select either today or tomorrow."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+        # STEP 2: Check sprint status
         if sprint.status in ["Completed", "Cancelled"]:
             return Response(
                 {"detail": "Completed or cancelled sprints cannot be started."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        if sprint.status == "in Progress":
+            return Response(
+                {"detail": "This sprint is already in progress."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # STEP 3: Get tasks belonging to this sprint
+        sprint_tasks = Task.objects.filter(sprint_id=sprint.id)
+
+        if not sprint_tasks.exists():
+            return Response(
+                {
+                    "detail":
+                    "Please add at least one task before starting the sprint."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # STEP 4: Check employee assignment
+        unassigned_tasks = sprint_tasks.filter(
+            assigned_to__isnull=True
+        )
+
+        if unassigned_tasks.exists():
+            return Response(
+                {
+                    "detail":
+                    "Assign an employee to every task before starting the sprint.",
+                    "unassigned_task_ids": list(
+                        unassigned_tasks.values_list("id", flat=True)
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        # STEP 5: Handle tommorow scheduling
         if choice == "tomorrow":
-            duration = (sprint.end_date - sprint.start_date).days
+
+            duration = (
+                sprint.end_date - sprint.start_date
+            ).days
+
             tomorrow = today + timezone.timedelta(days=1)
 
             new_start_date = tomorrow
@@ -400,10 +439,8 @@ class SprintStartView(APIView):
             ):
                 return Response(
                     {
-                        "detail": (
-                            "Another sprint already exists during these "
-                            "dates in this project. Choose different dates."
-                        )
+                        "detail":
+                        "Another sprint already exists during these dates."
                     },
                     status=status.HTTP_400_BAD_REQUEST
                 )
@@ -442,6 +479,69 @@ class SprintStartView(APIView):
                 },
                 status=status.HTTP_200_OK
             )
+
+        # STEP 6: Check another active sprint
+        if has_active_sprint(
+            sprint.project,
+            exclude_pk=sprint.pk
+        ):
+            return Response(
+                {
+                    "detail":
+                    "Another sprint is already in progress."
+                    "Complete it before starting a new sprint."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # STEP 7: Check sprint end date
+        if sprint.end_date < today:
+            return Response(
+                {
+                    "detail":
+                    "This sprint's end date has already passed."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # STEP 8: Check overlapping sprint dates
+        if has_overlapping_sprint(
+            sprint.project,
+            today,
+            sprint.end_date,
+            exclude_pk=sprint.pk
+        ):
+            return Response(
+                {
+                    "detail":
+                    "Another sprint already exists during these dates. "
+                    "Choose different dates."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # STEP 9: Start sprint
+        sprint.start_date = today
+        sprint.actual_start_date = today
+        sprint.status = "In Progress"
+
+        sprint.save(
+            update_fields=[
+                "start_date",
+                "actual_start_date",
+                "status",
+                "updated_at",
+            ]
+        )
+
+        return Response(
+            {
+                "message": "Sprint started successfully.",
+                "sprint": SprintSerializer(sprint).data,
+            },
+            status=status.HTTP_200_OK
+        )
+
 
         # TODAY: Check for another active sprint first.
         if has_active_sprint(

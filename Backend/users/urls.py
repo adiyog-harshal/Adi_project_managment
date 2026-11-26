@@ -4,6 +4,8 @@ from .views import (
     ProfileView,
     UserListCreateView,
     UserDetailView,
+    ChangePasswordView,
+    ResetUserPasswordView,
 )
 
 urlpatterns = [
@@ -21,5 +23,15 @@ urlpatterns = [
         "<int:pk>/",
         UserDetailView.as_view(),
         name="user-detail",
+    ),
+    path(
+        "change-password/",
+        ChangePasswordView.as_view(),
+        name="change-password",
+    ),
+    path(
+        "<int:pk>/reset-password/",
+        ResetUserPasswordView.as_view(),
+        name="reset-user-password"
     ),
 ]

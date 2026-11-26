@@ -26,12 +26,27 @@ from helpers import (
     notify_task_reassigned,
 )
 
+def get_visible_tasks(user):
+    # Admin / superuser
+    if user.is_superuser:
+        return Task.objects.all()
+
+    # All tasks inside projects the user can access
+    return Task.objects.filter(
+        project__in=get_visible_projects(user)
+    ).distinct()
+
+
 class TaskListCreateView(generics.ListCreateAPIView):
 
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        return get_visible_tasks(self.request.user)
+
+    def get_queryset(self):
+
         queryset = Task.objects.select_related(
             'project',
             'sprint',
@@ -51,8 +66,53 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
         return queryset
 
+class TaskListCreateView(generics.ListCreateAPIView):
+
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return get_visible_tasks(self.request.user)
+
+    def get_queryset(self):
+
+        user = self.request.user
+
+        queryset = Task.objects.select_related(
+            'project',
+            'sprint',
+            'assigned_to'
+        ).all().order_by('-created_at')
+
+        # Admin can see all tasks
+        if user.is_superuser:
+            pass
+
+        # Client can see tasks only from thier own projects
+        elif hasattr(user, "client_account"):
+            queryset = queryset.filter(
+                project__client__user=user
+            )
+
+        project_id = self.request.query_params.get('project')
+        sprint_id = self.request.query_params.get('sprint')
+
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+
+        if sprint_id == 'null':
+            queryset = queryset.filter(sprint__isnull=True)
+        elif sprint_id:
+            queryset = queryset.filter(sprint_id=sprint_id)
+
+        return queryset.distinct()
+
     def perform_create(self, serializer):
 
+        if hasattr(self.request.user, "client_account"):
+            raise PermissionDenied(
+                "Clients cannot create tasks."
+            )
         task = serializer.save()
 
         log_activity(
@@ -98,17 +158,37 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
-    queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return get_visible_tasks(self.request.user)
+
+    def get_queryset(self):
+
+        user = self.request.user
+
+        # Client can access only tasks from their own projects
+
+        if hasattr(user, "Client_account"):
+            return Task.objects.filter(
+                project__client__user=user
+            )
+
+        # Preserve existing access for other users
+        return Task.objects.all()
+
     def perform_update(self, serializer):
 
+        if hasattr(self.request.user, "client_account"):
+            raise PermissionDenied(
+                "Clients cannot update tasks."
+            )
         old_task = self.get_object()
 
-        old_assignee = old_task.assigned_to
         old_sprint = old_task.sprint
         old_status = old_task.status
+        old_assignee = old_task.assigned_to
 
         old_values = {
             "task_name": old_task.task_name,
@@ -131,7 +211,9 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         task = serializer.save()
 
-        # Preserve existing sprint movement history.
+        new_assignee = task.assigned_to
+
+         # Record sprint movement
         if old_sprint != task.sprint:
 
             if task.sprint is None:
@@ -149,39 +231,22 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
                 moved_by=self.request.user,
                 reason=reason
             )
+        # Existing assignment notification logic
+        if old_assignee != new_assignee:
 
-        new_assignee = task.assigned_to
+            if old_assignee is not None:
+                notify_task_reassigned(task, old_assignee)
 
-        new_values = {
-            "task_name": task.task_name,
-            "description": task.description,
-            "status": task.status,
-            "priority": task.priority,
-            "project_id": task.project_id,
-            "milestone_id": task.milestone_id,
-            "sprint_id": task.sprint_id,
-            "assigned_to_id": task.assigned_to_id,
-            "start_date": (
-                task.start_date.isoformat()
-                if task.start_date else None
-            ),
-            "due_date": (
-                task.due_date.isoformat()
-                if task.due_date else None
-            ),
-        }
+            elif new_assignee is not None:
+                notify_task_assigned(task)
 
-        if old_values != new_values:
-            log_activity(
-                user=self.request.user,
-                module="Tasks",
-                action="Updated",
-                object_id=task.id,
-                object_name=task.task_name,
-                description=f"Task '{task.task_name}' was updated.",
-                old_values=old_values,
-                new_values=new_values
+    def perform_destroy(self, instance):
+
+        if hasattr(self.request.user, "client_account"):
+            raise PermissionDenied(
+                "Clients cannot delete tasks."
             )
+        instance.delete()
 
         # Log status changes separately.
         if old_status != task.status:
